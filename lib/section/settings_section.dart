@@ -46,7 +46,7 @@ class SettingsSection extends StatelessWidget {
                     subtitle: const Text(
                         'Dir gefällt die App? Ich würde mich über eine Spende freuen.'),
                   ),
-                  new ButtonTheme.bar(
+                  new ButtonTheme(
                     // make buttons use the appropriate styles for cards
                     child: new ButtonBar(
                       children: <Widget>[
@@ -73,7 +73,7 @@ class SettingsSection extends StatelessWidget {
                     subtitle: new Text(
                         'Anregungen, Wünsche oder Bugs? Gib Feedback auf Github. Danke für deinen Beitrag!'),
                   ),
-                  new ButtonTheme.bar(
+                  new ButtonTheme(
                     // make buttons use the appropriate styles for cards
                     child: new ButtonBar(
                       children: <Widget>[

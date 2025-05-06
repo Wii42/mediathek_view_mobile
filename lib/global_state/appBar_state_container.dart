@@ -31,8 +31,7 @@ class FilterBarSharedState extends StatefulWidget {
   });
 
   static StateContainerAppBarState of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(_InheritedStateContainer)
-            as _InheritedStateContainer)
+    return (context.dependOnInheritedWidgetOfExactType<_InheritedStateContainer>())
         .data;
   }
 

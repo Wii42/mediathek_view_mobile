@@ -93,8 +93,7 @@ class AppSharedStateContainer extends StatefulWidget {
       {@required this.child, this.videoListState, this.appState});
 
   static AppSharedState of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(_InheritedWidget)
-            as _InheritedWidget)
+    return (context.dependOnInheritedWidgetOfExactType<_InheritedWidget>())
         .data;
   }
 
