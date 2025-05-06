@@ -13,7 +13,7 @@ class GradientAppBar extends StatelessWidget {
   final bool isFilterMenuOpen;
   final int currentAmountOfVideosInList;
   final int totalAmountOfVideosForSelection;
-  FilterMenu filterMenu;
+  final FilterMenu filterMenu;
   List<SearchFilter> searchFilters;
   StateContainerAppBarState state;
   TickerProviderStateMixin mixin;

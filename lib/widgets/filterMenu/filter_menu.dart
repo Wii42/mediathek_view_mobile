@@ -145,7 +145,7 @@ class FilterMenu extends StatelessWidget {
               ),
               contentPadding: new EdgeInsets.only(bottom: 0.0),
 //              counterStyle: buttonTextStyle,
-              hintStyle: theme.textTheme.display1,
+              hintStyle: theme.textTheme.headline4,
             ),
           ),
         ),

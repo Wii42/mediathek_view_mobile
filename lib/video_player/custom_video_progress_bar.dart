@@ -86,7 +86,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
       painter = _ProgressBarPainter(
         flutterPlayerController.value.initialized,
         tvPlayerController.value.position,
-        new List<DurationRange>(),
+        [],
         flutterPlayerController.value.duration,
         widget.colors,
       );

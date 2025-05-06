@@ -22,7 +22,7 @@ class APIQuery {
   APIQuery({@required this.onDataReceived, @required this.onError});
 
   void search(String genericQuery, Map<String, SearchFilter> searchFilters) {
-    List<String> queryFilters = new List();
+    List<String> queryFilters = [];
 
     logger.info("Query skip: " + skip.toString());
 

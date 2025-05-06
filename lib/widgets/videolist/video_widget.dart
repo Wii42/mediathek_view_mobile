@@ -54,6 +54,7 @@ class VideoWidgetState extends State<VideoWidget> {
 
   @override
   void initState() {
+    super.initState();
     heroUuid = new Uuid().v1().toString();
     checkPlaybackProgress();
     checkIfAlreadyDownloaded();

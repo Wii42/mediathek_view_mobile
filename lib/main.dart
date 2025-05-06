@@ -56,11 +56,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
         textTheme: new TextTheme(
-            subhead: subHeaderTextStyle,
-            title: headerTextStyle,
-            body1: body1TextStyle,
-            body2: body2TextStyle,
-            display1: hintTextStyle,
+            subtitle1: subHeaderTextStyle,
+            headline6: headerTextStyle,
+            bodyText2: body1TextStyle,
+            bodyText1: body2TextStyle,
+            headline4: hintTextStyle,
             button: buttonTextStyle),
         chipTheme: new ChipThemeData.fromDefaults(
             secondaryColor: Colors.black,
@@ -181,7 +181,7 @@ class HomePageState extends State<MyHomePage>
 
   @override
   void initState() {
-    videos = new List();
+    videos = [];
     searchFilters = new Map();
     filterMenuOpen = false;
     filterMenuChannelFilterIsOpen = false;

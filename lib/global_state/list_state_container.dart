@@ -140,7 +140,7 @@ class AppSharedState extends State<AppSharedStateContainer> {
         new SamsungTVCastManager(context),
         false,
         new Video(""),
-        new List(),
+        [],
         new Map());
 
     // async execution to concurrently open database

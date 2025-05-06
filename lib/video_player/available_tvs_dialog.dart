@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'TVPlayerController.dart';
 
 class AvailableTVsDialog extends StatefulWidget {
-  TvPlayerController tvPlayerController;
+  final TvPlayerController tvPlayerController;
 
   AvailableTVsDialog(this.tvPlayerController);
 
@@ -65,10 +65,10 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
         .toList();
     if (tvPlayerController.value.playbackOnTvStarted) {
       availableTVs.add(new SimpleDialogOption(
-        child: new RaisedButton(
+        child: new ElevatedButton(
           child: new Text("Verbindung trennen",
               style: new TextStyle(color: Colors.white, fontSize: 20.0)),
-          color: Color(0xffffbf00),
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xffffbf00))),
           onPressed: () {
             tvPlayerController.disconnect();
             Navigator.pop(context, true);

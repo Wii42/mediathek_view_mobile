@@ -25,7 +25,7 @@ class CurrentDownloads extends StatefulWidget {
 }
 
 class _CurrentDownloadsState extends State<CurrentDownloads> {
-  List<Video> currentDownloads = new List();
+  List<Video> currentDownloads = [];
   Map<DownloadController, Function> downloadControllerToListener =
       new Map<DownloadController, Function>();
   BuildContext context;
@@ -112,7 +112,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
         .appWideState.appState.downloadManager
         .getCurrentDownloads();
 
-    List<Video> currentDownloads = new List();
+    List<Video> currentDownloads = [];
     downloads.forEach((entity) {
       var video = Video.fromMap(entity.toMap());
       currentDownloads.add(video);

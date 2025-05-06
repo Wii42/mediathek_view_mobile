@@ -66,7 +66,7 @@ class VideoPreviewManager {
     }
 
     videoIdToPreviewReceived.putIfAbsent(videoId, () {
-      List<TriggerStateReloadOnPreviewReceived> list = new List();
+      List<TriggerStateReloadOnPreviewReceived> list = [];
       list.add(triggerStateReload);
       return list;
     });

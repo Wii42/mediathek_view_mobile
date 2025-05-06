@@ -50,8 +50,10 @@ class SettingsSection extends StatelessWidget {
                     // make buttons use the appropriate styles for cards
                     child: new ButtonBar(
                       children: <Widget>[
-                        new FlatButton(
-                          color: Colors.blue,
+                        new TextButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.blue)),
                           child: new Text('Paypal', style: body2TextStyle),
                           onPressed: () {
                             _launchURL(payPal);
@@ -77,8 +79,10 @@ class SettingsSection extends StatelessWidget {
                     // make buttons use the appropriate styles for cards
                     child: new ButtonBar(
                       children: <Widget>[
-                        new FlatButton(
-                          color: Colors.grey[800],
+                        new TextButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.grey[800])),
                           child: new Text('Github', style: body2TextStyle),
                           onPressed: () => _launchURL(githubUrl),
                         ),

@@ -35,7 +35,7 @@ class DownloadSection extends StatefulWidget {
 }
 
 class DownloadSectionState extends State<DownloadSection> {
-  List<Video> currentDownloads = new List();
+  List<Video> currentDownloads = [];
   Set<Video> downloadedVideos = new Set();
   Set<String> userDeletedAppId; //used for fade out animation
   int milliseconds = 1500;

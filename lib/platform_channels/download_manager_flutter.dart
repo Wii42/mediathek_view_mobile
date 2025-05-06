@@ -466,7 +466,7 @@ class DownloadManager {
     return FlutterDownloader.loadTasksWithRawQuery(query: query)
         .then((List<DownloadTask> list) {
       if (list == null) {
-        return new List();
+        return [];
       }
       return list;
     });

@@ -18,14 +18,15 @@ class FilterMenuChannelEditButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
         height: 35.0,
-        child: new RaisedButton(
-          color: Colors.black,
-          shape: RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(8.0)),
+        child: new ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(8.0))),elevation: MaterialStateProperty.all<double>(6.0)),
           onPressed: () {
             handleTabCallback(context);
           },
-          elevation: 6.0,
           child: new Row(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

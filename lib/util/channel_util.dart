@@ -3,7 +3,7 @@ import 'package:flutter_ws/enum/channels.dart';
 
 class ChannelUtil {
   static List<Widget> getAllChannelImages() {
-    List<Widget> images = new List();
+    List<Widget> images = [];
     Channels.channelMap.forEach((name, assetPath) {
       images.add(new Container(
         margin: new EdgeInsets.only(left: 2.0, top: 5.0),

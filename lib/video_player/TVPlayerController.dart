@@ -330,7 +330,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         String tvName = raw['name'];
         logger.info("discovered TV with name " + tvName);
         if (!value.availableTvs.contains(tvName)) {
-          List<String> avail = new List();
+          List<String> avail = [];
           avail.addAll(value.availableTvs);
           avail.add(tvName);
           value = value.copyWith(availableTvs: avail);
@@ -358,7 +358,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         String tvName = raw['name'];
         logger.info("lost TV with name " + tvName);
         if (value.availableTvs.contains(tvName)) {
-          List<String> avail = new List();
+          List<String> avail = [];
           avail.addAll(value.availableTvs);
           avail.remove(tvName);
           value = value.copyWith(availableTvs: avail);

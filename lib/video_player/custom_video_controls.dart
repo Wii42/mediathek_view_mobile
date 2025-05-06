@@ -52,7 +52,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   StreamSubscription<dynamic> tvConnectionSubscription;
   StreamSubscription<dynamic> tvPlayerSubscription;
   StreamSubscription<dynamic> tvPlaybackPositionSubscription;
-  List<String> discoveredTvs = new List();
+  List<String> discoveredTvs = [];
 
   final Logger logger = new Logger('CustomVideoControls');
   VideoPlayerValue _latestFlutterPlayerValue;

@@ -162,14 +162,14 @@ class WatchHistoryState extends State<WatchHistory> {
       try {
         daysPassedSinceVideoWatched =
             getDaysSinceVideoWatched(progress.timestampLastViewed);
-      } on Exception catch (e) {
+      } on Exception {
         continue;
       }
 
       Widget historyItem = Util.getWatchHistoryItem(progress, width);
 
       if (watchHistoryItems[daysPassedSinceVideoWatched] == null) {
-        List<Widget> itemList = new List();
+        List<Widget> itemList = [];
         itemList.add(historyItem);
 
         watchHistoryItems[daysPassedSinceVideoWatched] =
@@ -180,7 +180,7 @@ class WatchHistoryState extends State<WatchHistory> {
     }
 
     // now for each day group create a grid
-    List<Widget> resultList = new List();
+    List<Widget> resultList = [];
 
     watchHistoryItems.entries.forEach((entry) {
       String heading = getWatchHistoryHeading(

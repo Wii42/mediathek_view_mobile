@@ -11,7 +11,7 @@ class VideoListItemBuilder {
   // called when the user pressed on the remove button
   var onRemoveVideo;
 
-  List<Video> videos = new List();
+  List<Video> videos = [];
 
   bool previewNotDownloadedVideos;
   bool showDeleteButton;

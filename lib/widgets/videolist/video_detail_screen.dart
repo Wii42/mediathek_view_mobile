@@ -364,11 +364,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       title: new Text(
         title,
         style:
-            Theme.of(context).textTheme.subhead.copyWith(color: Colors.white),
+            Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white),
       ),
       subtitle: new Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
-        style: Theme.of(context).textTheme.title.copyWith(color: Colors.white),
+        style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white),
       ),
     );
   }

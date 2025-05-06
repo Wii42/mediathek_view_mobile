@@ -29,8 +29,7 @@ class FlutterVideoPlayer extends StatefulWidget {
   final Logger logger = new Logger('FlutterVideoPlayer');
 
   FlutterVideoPlayer(BuildContext context, AppSharedState appSharedState,
-      Video video, VideoEntity entity, VideoProgressEntity progress) {
-    this.video = video;
+      this.video, VideoEntity entity, VideoProgressEntity progress) {
     this.videoId = video != null ? video.id : entity.id;
     this.databaseManager = appSharedState.appState.databaseManager;
     this.progressEntity = progress;
@@ -209,7 +208,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       content: new Text('Soll die aktuelle TV Wiedergabe unterbrochen werden?',
           style: new TextStyle(color: Colors.white, fontSize: 16.0)),
       actions: <Widget>[
-        RaisedButton(
+        ElevatedButton(
           child: const Text('Nein'),
           onPressed: () async {
             widget.isAlreadyPlayingDifferentVideoOnTV = false;
@@ -232,7 +231,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             setState(() {});
           },
         ),
-        RaisedButton(
+        ElevatedButton(
           child: const Text('Ja'),
           onPressed: () {
             widget.appSharedState.appState.samsungTVCastManager.stop();
