@@ -1,5 +1,5 @@
 class QueryInfo {
-  String filmlisteTimestamp;
+  int filmlisteTimestamp;
   String searchEngineTime;
   int resultCount;
   int totalResults;

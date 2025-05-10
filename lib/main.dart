@@ -156,7 +156,7 @@ class HomePageState extends State<MyHomePage>
   SharedPreferences prefs;
   bool isFirstStart = false;
 
-  // Cuuntly
+  // Countly
   bool showCountlyGDPRDialog = false;
   static const COUNTLY_GITHUB =
       "https://raw.githubusercontent.com/mediathekview/MediathekViewMobile/master/resources/countly/config/endpoint.txt";
@@ -434,8 +434,9 @@ class HomePageState extends State<MyHomePage>
       logger.fine("Refresh operation finished.");
       HapticFeedback.lightImpact();
     }
-
+    print("start");
     QueryResult queryResult = JSONParser.parseQueryResult(data);
+    print("finished");
 
     List<Video> newVideosFromQuery = queryResult.videos;
     totalQueryResults = queryResult.queryInfo.totalResults;
