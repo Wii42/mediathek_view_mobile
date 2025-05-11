@@ -36,7 +36,7 @@ void main() {
 class MyApp extends StatelessWidget {
   final TextEditingController textEditingController = TextEditingController();
 
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +85,13 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   final String title;
-  final TextEditingController textEditingController;
-  final PageController pageController;
+  final TextEditingController? textEditingController;
+  final PageController? pageController;
   final Logger logger = Logger('Main');
 
   MyHomePage(
-      {Key key,
-      @required this.title,
+      {Key? key,
+      required this.title,
       this.pageController,
       this.textEditingController})
       : super(key: key);
@@ -104,40 +104,40 @@ class MyHomePage extends StatefulWidget {
 
 class HomePageState extends State<MyHomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  List<Video> videos;
+  List<Video>? videos;
   final Logger logger;
 
   //global state
-  AppSharedState appWideState;
+  AppSharedState? appWideState;
 
   //AppBar
-  IconButton buttonOpenFilterMenu;
-  String currentUserQueryInput;
+  IconButton? buttonOpenFilterMenu;
+  String? currentUserQueryInput;
 
   //Filter Menu
-  Map<String, SearchFilter> searchFilters;
-  bool filterMenuOpen;
-  bool filterMenuChannelFilterIsOpen;
+  Map<String, SearchFilter>? searchFilters;
+  bool? filterMenuOpen;
+  bool? filterMenuChannelFilterIsOpen;
 
   // API
-  static APIQuery api;
-  IndexingInfo indexingInfo;
-  bool refreshOperationRunning;
-  bool apiError;
-  Completer<Null> refreshCompleter;
+  static late APIQuery api;
+  IndexingInfo? indexingInfo;
+  late bool refreshOperationRunning;
+  bool? apiError;
+  late Completer<Null> refreshCompleter;
 
   //Keys
-  Key videoListKey;
-  Key statusBarKey;
-  Key indexingBarKey;
+  Key? videoListKey;
+  Key? statusBarKey;
+  Key? indexingBarKey;
 
   //mock
-  static Timer mockTimer;
+  static Timer? mockTimer;
 
   //Statusbar
-  StatusBar statusBar;
+  StatusBar? statusBar;
 
-  TabController _controller;
+  TabController? _controller;
 
   /// Indicating the current displayed page
   /// 0: videoList
@@ -147,18 +147,18 @@ class HomePageState extends State<MyHomePage>
   int _page = 0;
 
   //search
-  TextEditingController searchFieldController;
-  bool scrolledToEndOfList;
-  int lastAmountOfVideosRetrieved;
-  int totalQueryResults = 0;
+  TextEditingController? searchFieldController;
+  bool? scrolledToEndOfList;
+  int? lastAmountOfVideosRetrieved;
+  int? totalQueryResults = 0;
 
   //Tabs
-  Widget videoSearchList;
-  static DownloadSection downloadSection;
-  SettingsSection aboutSection;
+  Widget? videoSearchList;
+  static DownloadSection? downloadSection;
+  SettingsSection? aboutSection;
 
   //intro slider
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
   bool isFirstStart = false;
 
   // Countly
@@ -197,13 +197,13 @@ class HomePageState extends State<MyHomePage>
     scrolledToEndOfList = false;
     currentUserQueryInput = "";
     inputListener() => handleSearchInput();
-    searchFieldController.addListener(inputListener);
+    searchFieldController!.addListener(inputListener);
 
     //register Observer to react to android/ios lifecycle events
     WidgetsBinding.instance.addObserver(this);
 
     _controller = TabController(length: 3, vsync: this);
-    _controller.addListener(() => onUISectionChange());
+    _controller!.addListener(() => onUISectionChange());
 
     //Init tabs
     //liveTVSection = new LiveTVSection();
@@ -217,7 +217,7 @@ class HomePageState extends State<MyHomePage>
 
     api = APIQuery(
         onDataReceived: onSearchResponse, onError: onAPISearchError);
-    api.search(currentUserQueryInput, searchFilters);
+    api.search(currentUserQueryInput, searchFilters!);
 
     checkForFirstStart();
 
@@ -252,7 +252,7 @@ class HomePageState extends State<MyHomePage>
         controller: _controller,
         children: <Widget>[
           getVideoSearchListWidget(),
-          downloadSection,
+          downloadSection!,
           aboutSection ?? SettingsSection()
         ],
       ),
@@ -325,9 +325,11 @@ class HomePageState extends State<MyHomePage>
                       FilterMenu(
                           searchFilters: searchFilters,
                           onFilterUpdated: _filterMenuUpdatedCallback,
-                          onSingleFilterTapped: _singleFilterTappedCallback),
+                          onSingleFilterTapped: _singleFilterTappedCallback,
+                      onChannelsSelected: (){},),
+
                       false,
-                      videos.length,
+                      videos!.length,
                       totalQueryResults),
                 ),
               ),
@@ -338,14 +340,16 @@ class HomePageState extends State<MyHomePage>
                   queryEntries: onQueryEntries,
                   currentQuerySkip: api.getCurrentSkip(),
                   totalResultSize: totalQueryResults,
-                  mixin: this),
+                  mixin: this,
+              refreshList: [],),
+
               SliverToBoxAdapter(
                 child: StatusBar(
                     key: statusBarKey,
                     apiError: apiError,
-                    videoListIsEmpty: videos.isEmpty,
+                    videoListIsEmpty: videos!.isEmpty,
                     lastAmountOfVideosRetrieved: lastAmountOfVideosRetrieved,
-                    firstAppStartup: lastAmountOfVideosRetrieved < 0),
+                    firstAppStartup: lastAmountOfVideosRetrieved! < 0),
               ),
             ],
           ),
@@ -358,7 +362,7 @@ class HomePageState extends State<MyHomePage>
   // Called when the user presses on of the BottomNavigationBarItems. Does not get triggered by a users swipe.
   void navigationTapped(int page) {
     logger.info("New Navigation Tapped: ---> Page $page");
-    _controller.animateTo(page,
+    _controller!.animateTo(page,
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
 
     setState(() {
@@ -371,13 +375,13 @@ class HomePageState extends State<MyHomePage>
     This can be due to a user's swipe or via tab on the BottomNavigationBar
    */
   onUISectionChange() {
-    if (_page != _controller.index) {
+    if (_page != _controller!.index) {
       logger
-          .info("UI Section Change: ---> Page ${_controller.index}");
+          .info("UI Section Change: ---> Page ${_controller!.index}");
 
       Countly.isInitialized().then((initialized) {
         if (initialized) {
-          switch (_controller.index) {
+          switch (_controller!.index) {
             case 0:
               Countly.recordView("Mediathek");
               break;
@@ -393,7 +397,7 @@ class HomePageState extends State<MyHomePage>
       });
 
       setState(() {
-        _page = _controller.index;
+        _page = _controller!.index;
       });
     }
   }
@@ -430,7 +434,7 @@ class HomePageState extends State<MyHomePage>
     if (refreshOperationRunning) {
       refreshOperationRunning = false;
       refreshCompleter.complete();
-      videos.clear();
+      videos!.clear();
       logger.fine("Refresh operation finished.");
       HapticFeedback.lightImpact();
     }
@@ -438,14 +442,14 @@ class HomePageState extends State<MyHomePage>
     QueryResult queryResult = JSONParser.parseQueryResult(data);
     print("finished");
 
-    List<Video> newVideosFromQuery = queryResult.videos;
+    List<Video> newVideosFromQuery = queryResult.videos as List<Video>;
     totalQueryResults = queryResult.queryInfo.totalResults;
     lastAmountOfVideosRetrieved = newVideosFromQuery.length;
     logger.info("received videos: $lastAmountOfVideosRetrieved");
 
-    int videoListLengthOld = videos.length;
-    videos = VideoListUtil.sanitizeVideos(newVideosFromQuery, videos);
-    int newVideosCount = videos.length - videoListLengthOld;
+    int videoListLengthOld = videos!.length;
+    videos = VideoListUtil.sanitizeVideos(newVideosFromQuery, videos!);
+    int newVideosCount = videos!.length - videoListLengthOld;
     logger.info("received new videos: $newVideosCount");
 
     if (newVideosCount == 0 && scrolledToEndOfList == false) {
@@ -457,13 +461,13 @@ class HomePageState extends State<MyHomePage>
       return;
     } else if (newVideosCount != 0) {
       // client side result filtering
-      if (searchFilters["Länge"] != null) {
+      if (searchFilters!["Länge"] != null) {
         videos =
-            VideoListUtil.applyLengthFilter(videos, searchFilters["Länge"]);
+            VideoListUtil.applyLengthFilter(videos!, searchFilters!["Länge"]!);
       }
-      int newVideosCount = videos.length - videoListLengthOld;
+      int newVideosCount = videos!.length - videoListLengthOld;
 
-      logger.info('Received $newVideosCount new video(s). Amount of videos in list ${videos.length}');
+      logger.info('Received $newVideosCount new video(s). Amount of videos in list ${videos!.length}');
 
       lastAmountOfVideosRetrieved = newVideosCount;
       scrolledToEndOfList == false;
@@ -474,13 +478,13 @@ class HomePageState extends State<MyHomePage>
   // ----------CALLBACKS: From List View ----------------
 
   onQueryEntries() {
-    api.search(currentUserQueryInput, searchFilters);
+    api.search(currentUserQueryInput, searchFilters!);
   }
 
   // ---------- SEARCH Input ----------------
 
   void handleSearchInput() {
-    if (currentUserQueryInput == searchFieldController.text) {
+    if (currentUserQueryInput == searchFieldController!.text) {
       logger.fine(
           "Current Query Input equals new query input - not querying again!");
       return;
@@ -490,14 +494,14 @@ class HomePageState extends State<MyHomePage>
   }
 
   void _createQuery() {
-    currentUserQueryInput = searchFieldController.text;
+    currentUserQueryInput = searchFieldController!.text;
 
-    api.search(currentUserQueryInput, searchFilters);
+    api.search(currentUserQueryInput, searchFilters!);
   }
 
   void _createQueryWithClearedVideoList() {
     logger.fine("Clearing video list");
-    videos.clear();
+    videos!.clear();
     api.resetSkip();
 
     if (mounted) setState(() {});
@@ -508,16 +512,16 @@ class HomePageState extends State<MyHomePage>
 
   _filterMenuUpdatedCallback(SearchFilter newFilter) {
     //called whenever a filter in the menu gets a value
-    if (searchFilters[newFilter.filterId] != null) {
-      if (searchFilters[newFilter.filterId].filterValue !=
+    if (searchFilters![newFilter.filterId] != null) {
+      if (searchFilters![newFilter.filterId]!.filterValue !=
           newFilter.filterValue) {
-        logger.fine("Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters[newFilter.filterId].filterValue} New : ${newFilter.filterValue}");
+        logger.fine("Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters![newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
-        searchFilters.remove(newFilter.filterId);
+        searchFilters!.remove(newFilter.filterId);
         if (newFilter.filterValue.isNotEmpty)
-          searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+          searchFilters!.putIfAbsent(newFilter.filterId, () => newFilter);
         //updates state internally
         _createQueryWithClearedVideoList();
       }
@@ -526,14 +530,14 @@ class HomePageState extends State<MyHomePage>
 
       HapticFeedback.mediumImpact();
 
-      searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+      searchFilters!.putIfAbsent(newFilter.filterId, () => newFilter);
       _createQueryWithClearedVideoList();
     }
   }
 
   _singleFilterTappedCallback(String id) {
     //remove filter from list and refresh state to trigger build of app bar and list!
-    searchFilters.remove(id);
+    searchFilters!.remove(id);
     HapticFeedback.mediumImpact();
     _createQueryWithClearedVideoList();
   }
@@ -554,27 +558,27 @@ class HomePageState extends State<MyHomePage>
   void setupCountly() async {
     logger.info("setup countly");
     var sharedPreferences = await SharedPreferences.getInstance();
-    appWideState.appState.setSharedPreferences(sharedPreferences);
+    appWideState!.appState!.setSharedPreferences(sharedPreferences);
 
     logger.info("setup countly -2");
 
-    if (appWideState.appState.sharedPreferences
+    if (appWideState!.appState!.sharedPreferences
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_API) &&
-        appWideState.appState.sharedPreferences
+        appWideState!.appState!.sharedPreferences
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
       logger.info("setup countly -4");
 
-      bool countlyConsent = appWideState.appState.sharedPreferences
-          .getBool(SHARED_PREFERENCE_KEY_COUNTLY_CONSENT);
+      bool countlyConsent = appWideState!.appState!.sharedPreferences
+          .getBool(SHARED_PREFERENCE_KEY_COUNTLY_CONSENT)!;
 
       if (!countlyConsent) {
         logger.info("Countly - no consent.");
         return;
       }
 
-      String countlyAPI = appWideState.appState.sharedPreferences
+      String? countlyAPI = appWideState!.appState!.sharedPreferences
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_API);
-      String countlyAppKey = appWideState.appState.sharedPreferences
+      String? countlyAppKey = appWideState!.appState!.sharedPreferences
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
 
       logger.info("Loaded Countly data from shared preferences");

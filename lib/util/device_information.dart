@@ -6,9 +6,9 @@ import 'package:logging/logging.dart';
 
 class DeviceInformation {
   static final Logger logger = new Logger('OsChecker');
-  static TargetPlatform platform;
+  static TargetPlatform? platform;
 
-  static Future<TargetPlatform> getTargetPlatform() async {
+  static Future<TargetPlatform?> getTargetPlatform() async {
     if (platform != null) return platform;
 
     DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();

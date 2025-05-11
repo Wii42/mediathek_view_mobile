@@ -6,7 +6,7 @@ import 'package:flutter_ws/widgets/videolist/video_preview_adapter.dart';
 
 class Util {
   static List<Widget> getWatchHistoryItems(
-      Map<String, VideoProgressEntity> videos, double width) {
+      Map<String?, VideoProgressEntity> videos, double width) {
     List<Widget> result = [];
     var videoProgressEntities = videos.values.toList();
     for (var i = 0; i < videos.length; i++) {
@@ -18,7 +18,7 @@ class Util {
 
   static Widget getWatchHistoryItem(
       VideoProgressEntity videoProgress, double width) {
-    String assetPath = getAssetPath(videoProgress.channel.toUpperCase());
+    String assetPath = getAssetPath(videoProgress.channel!.toUpperCase());
     Widget rect =
         getWatchHistoryWidget(assetPath, videoProgress, width, 13, 11);
     return rect;

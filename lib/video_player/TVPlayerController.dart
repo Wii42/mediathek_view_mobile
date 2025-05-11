@@ -18,24 +18,24 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   DatabaseManager databaseManager;
 
   /// The URI to the video file.
-  final String dataSource;
+  final String? dataSource;
   final Video video;
   Duration startAt;
   static bool playRequestSend = false;
 
   // subscriptions
-  static StreamSubscription<dynamic> tvConnectionSubscription;
-  static StreamSubscription<dynamic> tvPlayerSubscription;
-  static StreamSubscription<dynamic> tvPlaybackPositionSubscription;
+  static StreamSubscription<dynamic>? tvConnectionSubscription;
+  static StreamSubscription<dynamic>? tvPlayerSubscription;
+  static StreamSubscription<dynamic>? tvPlaybackPositionSubscription;
 
-  static StreamSubscription<dynamic> foundTVsSubscription;
-  static StreamSubscription<dynamic> lostTVsSubscription;
+  static StreamSubscription<dynamic>? foundTVsSubscription;
+  static StreamSubscription<dynamic>? lostTVsSubscription;
 
   TvPlayerController(
     List<String> availableTvs,
     SamsungTVCastManager samsungTVCastManager,
     DatabaseManager databaseManager,
-    String dataSource,
+    String? dataSource,
     Video video,
     Duration startAt,
   )   : this.samsungTVCastManager = samsungTVCastManager,
@@ -133,7 +133,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   }
 
   // playOnTV is used to initially start the video on the TV (use resume after initial start)
-  Future<void> startPlayingOnTV({Duration startingPosition}) async {
+  Future<void> startPlayingOnTV({Duration? startingPosition}) async {
     if (_isDisposed) {
       return;
     }
@@ -195,7 +195,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   // listeners should react according to the connection update
   void listenToConnectionStream() {
     try {
-      var tvReadinessStream = samsungTVCastManager.getTvReadinessStream();
+      var tvReadinessStream = samsungTVCastManager.getTvReadinessStream()!;
       tvConnectionSubscription = tvReadinessStream.listen((raw) {
         String connectionStatus = raw['status'];
         String tvName = raw['name'];
@@ -228,7 +228,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         logger.info("Samsung TV connection status event channel is done.");
       }, cancelOnError: false);
 
-      if (tvConnectionSubscription.isPaused) {
+      if (tvConnectionSubscription!.isPaused) {
         logger.info("Samsung TV connection status is paused.");
       }
     } catch (MissingPluginException) {
@@ -239,7 +239,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToTVPlayerStream() {
     try {
-      var stream = samsungTVCastManager.getTvPlayerStream();
+      var stream = samsungTVCastManager.getTvPlayerStream()!;
       tvPlayerSubscription = stream.listen((raw) {
         String playerStatus = raw['status'];
         logger.info("Samsung TV: status: " + playerStatus);
@@ -278,7 +278,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         logger.info("Samsung TV connection status event channel is done.");
       }, cancelOnError: false);
 
-      if (tvPlayerSubscription.isPaused) {
+      if (tvPlayerSubscription!.isPaused) {
         logger.info("Samsung TV player event channel is paused.");
       }
     } catch (MissingPluginException) {
@@ -289,7 +289,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToTVPlaybackPosition() async {
     try {
-      var stream = samsungTVCastManager.getTvPlaybackPositionStream();
+      var stream = samsungTVCastManager.getTvPlaybackPositionStream()!;
       tvPlaybackPositionSubscription = stream.listen((raw) {
         int playbackPosition = raw['playbackPosition'];
         logger.info("Samsung TV video playback position " +
@@ -312,7 +312,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
             "Samsung TV video playback position status event channel is done.");
       }, cancelOnError: false);
 
-      if (tvPlaybackPositionSubscription.isPaused) {
+      if (tvPlaybackPositionSubscription!.isPaused) {
         logger.info(
             "Samsung TV video playback position event channel is paused.");
       }
@@ -325,7 +325,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToFoundTVStream() {
     try {
-      var stream = samsungTVCastManager.getFoundTVStream();
+      var stream = samsungTVCastManager.getFoundTVStream()!;
       foundTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
         logger.info("discovered TV with name " + tvName);
@@ -342,7 +342,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         logger.info("Samsung TV discovery (found) event channel is done.");
       }, cancelOnError: false);
 
-      if (foundTVsSubscription.isPaused) {
+      if (foundTVsSubscription!.isPaused) {
         logger.info("Samsung TV discovery (found) is paused.");
       }
     } catch (MissingPluginException) {
@@ -353,7 +353,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToLostTvStream() {
     try {
-      var stream = samsungTVCastManager.getLostTVStream();
+      var stream = samsungTVCastManager.getLostTVStream()!;
       lostTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
         logger.info("lost TV with name " + tvName);
@@ -370,7 +370,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         logger.info("Samsung TV discovery (lost) event channel is done.");
       }, cancelOnError: true);
 
-      if (lostTVsSubscription.isPaused) {
+      if (lostTVsSubscription!.isPaused) {
         logger.info("Samsung TV discovery (lost) is paused.");
       }
     } catch (MissingPluginException) {

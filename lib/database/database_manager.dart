@@ -13,7 +13,7 @@ const String columnDone = "done";
 
 class DatabaseManager {
   final Logger logger = Logger('DatabaseManager');
-  Database db;
+  Database? db;
 
   Future open(String path) async {
     db = await openDatabase(path, version: 1,
@@ -31,7 +31,7 @@ class DatabaseManager {
     });
   }
 
-  Future close() async => db.close();
+  Future close() async => db!.close();
   Future deleteDb(String path) async => deleteDatabase(path);
 
   String getVideoTableSQL() {
@@ -65,17 +65,17 @@ class DatabaseManager {
     map.update("timestamp_video_saved",
         (old) => DateTime.now().millisecondsSinceEpoch);
 
-    await db.insert(VideoEntity.TABLE_NAME, map);
+    await db!.insert(VideoEntity.TABLE_NAME, map);
   }
 
-  Future<int> deleteVideoEntity(String id) async {
-    return db.delete(VideoEntity.TABLE_NAME,
+  Future<int> deleteVideoEntity(String? id) async {
+    return db!.delete(VideoEntity.TABLE_NAME,
         where: "${VideoEntity.idColumn} = ?", whereArgs: [id]);
   }
 
   Future<Set<VideoEntity>> getAllDownloadedVideos() async {
     //Downloaded videos have a filename set when the download finished, otherwise they are current downloads
-    List<Map> result = await db.query(
+    List<Map> result = await db!.query(
       VideoEntity.TABLE_NAME,
       columns: getColums(),
       where: "${VideoEntity.fileNameColumn} != ?",
@@ -83,7 +83,7 @@ class DatabaseManager {
       whereArgs: [''],
     );
     if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoEntity.fromMap(raw)).toSet();
+      return result.map((raw) => VideoEntity.fromMap(raw as Map<String, dynamic>)).toSet();
     }
     return {};
   }
@@ -92,7 +92,7 @@ class DatabaseManager {
   Needs to have a task id assigned
    */
   Future<int> updateDownloadingVideoEntity(VideoEntity entity) async {
-    return await db.update(VideoEntity.TABLE_NAME, entity.toMap(),
+    return await db!.update(VideoEntity.TABLE_NAME, entity.toMap(),
         where: "${VideoEntity.task_idColumn} = ?", whereArgs: [entity.task_id]);
   }
 
@@ -100,32 +100,32 @@ class DatabaseManager {
   General Update on entity. eg to insert or update rating
    */
   Future<int> updateVideoEntity(VideoEntity entity) async {
-    return await db.update(VideoEntity.TABLE_NAME, entity.toMap(),
+    return await db!.update(VideoEntity.TABLE_NAME, entity.toMap(),
         where: "${VideoEntity.idColumn} = ?", whereArgs: [entity.id]);
   }
 
-  Future<VideoEntity> getVideoEntity(String id) async {
-    if (db == null || !db.isOpen) {
+  Future<VideoEntity?> getVideoEntity(String? id) async {
+    if (db == null || !db!.isOpen) {
       return null;
     }
 
-    List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
+    List<Map> maps = await db!.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
         where: "${VideoEntity.idColumn} = ?",
         whereArgs: [id]);
     if (maps.isNotEmpty) {
-      return VideoEntity.fromMap(maps.first);
+      return VideoEntity.fromMap(maps.first as Map<String, dynamic>);
     }
     return null;
   }
 
-  Future<VideoEntity> getVideoEntityForTaskId(String taskId) async {
-    List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
+  Future<VideoEntity?> getVideoEntityForTaskId(String? taskId) async {
+    List<Map> maps = await db!.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
         where: "${VideoEntity.task_idColumn} = ?",
         whereArgs: [taskId]);
     if (maps.isNotEmpty) {
-      return VideoEntity.fromMap(maps.first);
+      return VideoEntity.fromMap(maps.first as Map<String, dynamic>);
     }
     return null;
   }
@@ -133,7 +133,7 @@ class DatabaseManager {
   Future<Set<VideoEntity>> getVideoEntitiesForTaskIds(List<String> list) async {
     String whereClause = _getConcatinatedWhereClause(list);
     logger.fine("Build WHERE CLAUSE: $whereClause");
-    List<Map> resultList = await db.query(VideoEntity.TABLE_NAME,
+    List<Map> resultList = await db!.query(VideoEntity.TABLE_NAME,
         columns: getColums(), where: whereClause, whereArgs: list);
     if (list.length != resultList.length) {
       logger
@@ -143,7 +143,7 @@ class DatabaseManager {
       return {};
     }
 
-    return resultList.map((result) => VideoEntity.fromMap(result)).toSet();
+    return resultList.map((result) => VideoEntity.fromMap(result as Map<String, dynamic>)).toSet();
   }
 
   String _getConcatinatedWhereClause(List<String> list) {
@@ -166,17 +166,17 @@ class DatabaseManager {
     return where;
   }
 
-  Future<VideoEntity> getDownloadedVideo(id) async {
-    if (db == null || !db.isOpen) {
+  Future<VideoEntity?> getDownloadedVideo(id) async {
+    if (db == null || !db!.isOpen) {
       return null;
     }
 
-    List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
+    List<Map> maps = await db!.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
         where: "${VideoEntity.idColumn} = ? AND ${VideoEntity.fileNameColumn} != '' ",
         whereArgs: [id]);
     if (maps.isNotEmpty) {
-      return VideoEntity.fromMap(maps.first);
+      return VideoEntity.fromMap(maps.first as Map<String, dynamic>);
     }
     return null;
   }
@@ -209,7 +209,7 @@ class DatabaseManager {
 
   Future<Set<ChannelFavoriteEntity>> getAllChannelFavorites() async {
     List<Map> result =
-        await db.query(ChannelFavoriteEntity.TABLE_NAME, columns: [
+        await db!.query(ChannelFavoriteEntity.TABLE_NAME, columns: [
       ChannelFavoriteEntity.nameColumn,
       ChannelFavoriteEntity.groupnameColumn,
       ChannelFavoriteEntity.logoColumn,
@@ -217,7 +217,7 @@ class DatabaseManager {
     ]);
     if (result != null && result.isNotEmpty) {
       return result
-          .map((raw) => ChannelFavoriteEntity.fromMap(raw))
+          .map((raw) => ChannelFavoriteEntity.fromMap(raw as Map<String, dynamic>))
           .toSet();
     }
     return {};
@@ -234,12 +234,12 @@ class DatabaseManager {
   }
 
   Future deleteChannelFavorite(String id) async {
-    return await db.delete(ChannelFavoriteEntity.TABLE_NAME,
+    return await db!.delete(ChannelFavoriteEntity.TABLE_NAME,
         where: "${ChannelFavoriteEntity.nameColumn} = ?", whereArgs: [id]);
   }
 
   Future insertChannelFavorite(ChannelFavoriteEntity entity) async {
-    await db.insert(ChannelFavoriteEntity.TABLE_NAME, entity.toMap());
+    await db!.insert(ChannelFavoriteEntity.TABLE_NAME, entity.toMap());
   }
 
   // &&&&&&&&&&&&&&&&&&&&   VIDEO PROGRESS  &&&&&&&&&&&&&&&&&&&&&&&
@@ -269,17 +269,17 @@ class DatabaseManager {
     entity.timestampLastViewed = DateTime.now().millisecondsSinceEpoch;
     Map<String, dynamic> map = entity.toMap();
 
-    return await db.insert(VideoProgressEntity.TABLE_NAME, map);
+    return await db!.insert(VideoProgressEntity.TABLE_NAME, map);
   }
 
   Future<int> deleteVideoProgressEntity(String id) async {
-    return db.delete(VideoProgressEntity.TABLE_NAME,
+    return db!.delete(VideoProgressEntity.TABLE_NAME,
         where: "${VideoProgressEntity.idColumn} = ?", whereArgs: [id]);
   }
 
   Future<int> updateVideoProgressEntity(VideoProgressEntity entity) async {
     entity.timestampLastViewed = DateTime.now().millisecondsSinceEpoch;
-    return await db.update(
+    return await db!.update(
         VideoProgressEntity.TABLE_NAME,
         {
           'progress': entity.progress,
@@ -289,17 +289,17 @@ class DatabaseManager {
         whereArgs: [entity.id]);
   }
 
-  Future<VideoProgressEntity> getVideoProgressEntity(String id) async {
-    if (db == null || !db.isOpen) {
+  Future<VideoProgressEntity?> getVideoProgressEntity(String? id) async {
+    if (db == null || !db!.isOpen) {
       return null;
     }
 
-    List<Map> maps = await db.query(VideoProgressEntity.TABLE_NAME,
+    List<Map> maps = await db!.query(VideoProgressEntity.TABLE_NAME,
         columns: getVideoProgressColumns(),
         where: "${VideoProgressEntity.idColumn} = ?",
         whereArgs: [id]);
     if (maps.isNotEmpty) {
-      return VideoProgressEntity.fromMap(maps.first);
+      return VideoProgressEntity.fromMap(maps.first as Map<String, dynamic>);
     }
     return null;
   }
@@ -324,31 +324,31 @@ class DatabaseManager {
     ];
   }
 
-  Future<Set<VideoProgressEntity>> getLastViewedVideos(int amount) async {
-    if (db == null || !db.isOpen) {
+  Future<Set<VideoProgressEntity>?> getLastViewedVideos(int amount) async {
+    if (db == null || !db!.isOpen) {
       return null;
     }
 
-    List<Map> result = await db.query(VideoProgressEntity.TABLE_NAME,
+    List<Map> result = await db!.query(VideoProgressEntity.TABLE_NAME,
         orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns(),
         limit: amount);
     if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoProgressEntity.fromMap(raw)).toSet();
+      return result.map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>)).toSet();
     }
     return {};
   }
 
-  Future<Set<VideoProgressEntity>> getAllLastViewedVideos() async {
-    if (db == null || !db.isOpen) {
+  Future<Set<VideoProgressEntity>?> getAllLastViewedVideos() async {
+    if (db == null || !db!.isOpen) {
       return null;
     }
 
-    List<Map> result = await db.query(VideoProgressEntity.TABLE_NAME,
+    List<Map> result = await db!.query(VideoProgressEntity.TABLE_NAME,
         orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns());
     if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoProgressEntity.fromMap(raw)).toSet();
+      return result.map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>)).toSet();
     }
     return {};
   }
@@ -380,7 +380,7 @@ class DatabaseManager {
     });
   }
 
-  void _updateProgress(String videoId, int position) {
+  void _updateProgress(String? videoId, int position) {
     updateVideoProgressEntity(VideoProgressEntity(videoId, position))
         .then((rowsUpdated) {
       if (rowsUpdated < 1) {

@@ -1,8 +1,8 @@
 class QueryInfo {
-  int filmlisteTimestamp;
-  String searchEngineTime;
-  int resultCount;
-  int totalResults;
+  int? filmlisteTimestamp;
+  String? searchEngineTime;
+  int? resultCount;
+  int? totalResults;
 
   QueryInfo(this.filmlisteTimestamp, this.searchEngineTime, this.resultCount, this.totalResults);
 

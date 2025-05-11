@@ -8,7 +8,7 @@ class DownloadValue {
 
   DownloadValue.uninitialized() : this();
 
-  final String videoId;
+  final String? videoId;
 
   final double progress;
 
@@ -20,10 +20,10 @@ class DownloadValue {
   bool get isComplete => status == DownloadTaskStatus.complete;
 
   DownloadValue copyWith({
-    String videoId,
-    double progress,
-    DownloadTaskStatus status,
-    bool isDownloading,
+    String? videoId,
+    double? progress,
+    DownloadTaskStatus? status,
+    bool? isDownloading,
   }) {
     return DownloadValue(
       videoId: videoId ?? this.videoId,

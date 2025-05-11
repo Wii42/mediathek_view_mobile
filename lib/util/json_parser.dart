@@ -26,10 +26,10 @@ class JSONParser {
 
   static IndexingInfo parseIndexingEvent(String rawData) {
     Map parsedBody = jsonDecode(rawData);
-    IndexingInfo info = new IndexingInfo.fromJson(parsedBody);
+    IndexingInfo info = new IndexingInfo.fromJson(parsedBody as Map<String, dynamic>);
 
-    info.parsingProgress = (info.parserProgress * 100).round();
-    info.indexingProgress = (info.indexerProgress * 100).round();
+    info.parsingProgress = (info.parserProgress! * 100).round();
+    info.indexingProgress = (info.indexerProgress! * 100).round();
 
     return info;
   }

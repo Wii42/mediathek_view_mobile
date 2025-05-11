@@ -22,8 +22,8 @@ import 'custom_video_progress_bar.dart';
 
 class CustomVideoControls extends StatefulWidget {
   const CustomVideoControls({
-    @required this.backgroundColor,
-    @required this.iconColor,
+    required this.backgroundColor,
+    required this.iconColor,
   });
 
   final Color backgroundColor;
@@ -36,7 +36,7 @@ class CustomVideoControls extends StatefulWidget {
 }
 
 class _CustomVideoControlsState extends State<CustomVideoControls> {
-  AppSharedState _appWideState;
+  AppSharedState? _appWideState;
 
   bool isScrubbing = false;
   bool listeningToPlayerPosition = false;
@@ -44,31 +44,31 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   // needed to be able to show a loading spinner if the the video does not
   // progress over a certain amount of time
-  DateTime lastVideoPlayerPositionUpdateTime = new DateTime.now();
+  DateTime lastVideoPlayerPositionUpdateTime = DateTime.now();
   var LAGGING_THRESHOLD_IN_MILLISECONDS = 1000;
   bool isLagging = false;
 
   // Samsung TV cast
-  StreamSubscription<dynamic> tvConnectionSubscription;
-  StreamSubscription<dynamic> tvPlayerSubscription;
-  StreamSubscription<dynamic> tvPlaybackPositionSubscription;
+  StreamSubscription<dynamic>? tvConnectionSubscription;
+  StreamSubscription<dynamic>? tvPlayerSubscription;
+  StreamSubscription<dynamic>? tvPlaybackPositionSubscription;
   List<String> discoveredTvs = [];
 
-  final Logger logger = new Logger('CustomVideoControls');
-  VideoPlayerValue _latestFlutterPlayerValue;
-  TvVideoPlayerValue _latestTvPlayerValue;
+  final Logger logger = Logger('CustomVideoControls');
+  VideoPlayerValue? _latestFlutterPlayerValue;
+  TvVideoPlayerValue? _latestTvPlayerValue;
 
   // have Tv volume and flutter volume in sync
-  double _latestPlayerVolume;
+  double? _latestPlayerVolume;
   bool _hideStuff = true;
-  Timer _hideTimer;
+  Timer? _hideTimer;
   final marginSize = 5.0;
-  Timer _expandCollapseTimer;
-  Timer _initTimer;
+  Timer? _expandCollapseTimer;
+  Timer? _initTimer;
 
-  VideoPlayerController flutterPlayerController;
-  CustomChewieController chewieController;
-  TvPlayerController tvPlayerController;
+  VideoPlayerController? flutterPlayerController;
+  CustomChewieController? chewieController;
+  TvPlayerController? tvPlayerController;
 
   @override
   void initState() {
@@ -77,10 +77,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   Future<Null> _initialize() async {
     logger.info("custom_video_controls - initialize called");
-    flutterPlayerController.addListener(_updateFlutterPlayerState);
+    flutterPlayerController!.addListener(_updateFlutterPlayerState);
     _updateFlutterPlayerState();
 
-    tvPlayerController.addListener(_updateTvPlayerState);
+    tvPlayerController!.addListener(_updateTvPlayerState);
     _updateTvPlayerState();
 
     // show controls for a short time and then hide
@@ -89,10 +89,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _updateFlutterPlayerState() {
     if (_latestFlutterPlayerValue != null &&
-        _latestFlutterPlayerValue.position ==
-            flutterPlayerController.value.position &&
-        flutterPlayerController.value.isPlaying) {
-      DateTime now = new DateTime.now();
+        _latestFlutterPlayerValue!.position ==
+            flutterPlayerController!.value.position &&
+        flutterPlayerController!.value.isPlaying) {
+      DateTime now = DateTime.now();
       var lag =
           now.difference(lastVideoPlayerPositionUpdateTime).inMilliseconds;
       logger.info("Same position detected with lag: " + lag.toString());
@@ -111,10 +111,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       lastVideoPlayerPositionUpdateTime = DateTime.now();
     }
 
-    _latestFlutterPlayerValue = flutterPlayerController.value;
+    _latestFlutterPlayerValue = flutterPlayerController!.value;
 
     // update position
-    final int position = _latestFlutterPlayerValue.position.inMilliseconds;
+    final int position = _latestFlutterPlayerValue!.position.inMilliseconds;
     logger.info("video playback position:" + position.toString());
 
     if (mounted) {
@@ -123,37 +123,37 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     // if playing on TV, the position is already inserted into the database
     // avoid inserting the current position twice
-    if (tvPlayerController.value.playbackOnTvStarted) {
+    if (tvPlayerController!.value.playbackOnTvStarted) {
       return;
     }
 
     if (_appWideState != null) {
-      _appWideState.appState.databaseManager
-          .updatePlaybackPosition(chewieController.video, position);
+      _appWideState!.appState!.databaseManager
+          .updatePlaybackPosition(chewieController!.video!, position);
     }
   }
 
   void _updateTvPlayerState() {
     setState(() {
       if (_latestTvPlayerValue != null &&
-          _latestTvPlayerValue.isCurrentlyCheckingTV &&
-          tvPlayerController.value.isTvSupported) {
+          _latestTvPlayerValue!.isCurrentlyCheckingTV &&
+          tvPlayerController!.value.isTvSupported) {
         logger.info("VERBUNDEN");
 
-        flutterPlayerController.pause();
+        flutterPlayerController!.pause();
         isWaitingUntilTVPlaybackStarts = true;
-        tvPlayerController.startPlayingOnTV(
-            startingPosition: flutterPlayerController.value.position);
+        tvPlayerController!.startPlayingOnTV(
+            startingPosition: flutterPlayerController!.value.position);
       }
 
       // isPlaying is only true if the video has been successfully casted / isPlaying on the TV
       if (_appWideState != null &&
           _latestTvPlayerValue != null &&
-          !_appWideState.appState.isCurrentlyPlayingOnTV &&
-          chewieController.tvPlayerController.value.isPlaying) {
-        _appWideState.appState.isCurrentlyPlayingOnTV = true;
-        _appWideState.appState.tvCurrentlyPlayingVideo =
-            tvPlayerController.video;
+          !_appWideState!.appState!.isCurrentlyPlayingOnTV &&
+          chewieController!.tvPlayerController!.value.isPlaying) {
+        _appWideState!.appState!.isCurrentlyPlayingOnTV = true;
+        _appWideState!.appState!.tvCurrentlyPlayingVideo =
+            tvPlayerController!.video;
         SnackbarActions.showSuccess(context, "Verbunden");
 
         Map<String, Object> event = {"key": "PLAY_VIDEO_ON_TV", "count": 1};
@@ -163,29 +163,29 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _cancelAndRestartTimer();
       }
 
-      _latestTvPlayerValue = chewieController.tvPlayerController.value;
+      _latestTvPlayerValue = chewieController!.tvPlayerController!.value;
 
       // add available tvs to global state - needed when navigation out of the player screen
       if (_appWideState != null) {
-        _appWideState.appState.availableTvs = _latestTvPlayerValue.availableTvs;
+        _appWideState!.appState!.availableTvs = _latestTvPlayerValue!.availableTvs;
       }
 
       // case: playback on TV manually disconnected. Start playing locally again
-      if (tvPlayerController.value.isDisconnected && _appWideState != null) {
+      if (tvPlayerController!.value.isDisconnected && _appWideState != null) {
         logger.info("PLAY LOCALLY AGAIN");
-        _appWideState.appState.isCurrentlyPlayingOnTV = false;
-        tvPlayerController.value =
-            tvPlayerController.value.copyWith(isDisconnected: false);
-        flutterPlayerController
-            .seekTo(_latestTvPlayerValue.position)
-            .then((value) => flutterPlayerController.play());
+        _appWideState!.appState!.isCurrentlyPlayingOnTV = false;
+        tvPlayerController!.value =
+            tvPlayerController!.value.copyWith(isDisconnected: false);
+        flutterPlayerController!
+            .seekTo(_latestTvPlayerValue!.position)
+            .then((value) => flutterPlayerController!.play());
         // show controls for a short time and then hide
         _cancelAndRestartTimer();
       }
 
-      if (chewieController.tvPlayerController.value.isTvUnsupported &&
-          chewieController.tvPlayerController.value.errorDescription != null) {
-        _appWideState.appState.isCurrentlyPlayingOnTV = false;
+      if (chewieController!.tvPlayerController!.value.isTvUnsupported &&
+          chewieController!.tvPlayerController!.value.errorDescription != null) {
+        _appWideState!.appState!.isCurrentlyPlayingOnTV = false;
         SnackbarActions.showError(context, "Verbindung nicht möglich.");
 
         Map<String, Object> event = {
@@ -195,19 +195,19 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         Countly.recordEvent(event);
       }
 
-      if (_latestTvPlayerValue.isCurrentlyCheckingTV) {
+      if (_latestTvPlayerValue!.isCurrentlyCheckingTV) {
         SnackbarActions.showInfo(context, "Verbinde...",
-            duration: new Duration(seconds: 1));
+            duration: Duration(seconds: 1));
       }
 
-      if (_latestTvPlayerValue.playbackOnTvStarted &&
-          _latestTvPlayerValue.isPlaying) {
+      if (_latestTvPlayerValue!.playbackOnTvStarted &&
+          _latestTvPlayerValue!.isPlaying) {
         isWaitingUntilTVPlaybackStarts = false;
-        flutterPlayerController.pause();
+        flutterPlayerController!.pause();
         // also set the TV player positions to the flutter player to be able to continue playing
         // with the same position locally when disconnecting from TV
-        _latestFlutterPlayerValue = _latestFlutterPlayerValue.copyWith(
-            position: _latestTvPlayerValue.position);
+        _latestFlutterPlayerValue = _latestFlutterPlayerValue!.copyWith(
+            position: _latestTvPlayerValue!.position);
       }
     });
   }
@@ -220,8 +220,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _dispose() {
     logger.info("custom_video_controls - dispose called");
-    flutterPlayerController.removeListener(_updateFlutterPlayerState);
-    tvPlayerController.removeListener(_updateTvPlayerState);
+    flutterPlayerController!.removeListener(_updateFlutterPlayerState);
+    tvPlayerController!.removeListener(_updateTvPlayerState);
     _hideTimer?.cancel();
     _expandCollapseTimer?.cancel();
     _initTimer?.cancel();
@@ -232,8 +232,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     logger.info("didChangeDependencies called");
     final _oldController = chewieController;
     chewieController = CustomChewieController.of(context);
-    flutterPlayerController = chewieController.videoPlayerController;
-    tvPlayerController = chewieController.tvPlayerController;
+    flutterPlayerController = chewieController!.videoPlayerController;
+    tvPlayerController = chewieController!.tvPlayerController;
 
     // only initialize again / attach listeners - if chewie controller changed (contains videoPLayerController & tvPlayerController)
     if (_oldController != chewieController) {
@@ -250,11 +250,11 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     chewieController = CustomChewieController.of(context);
 
     if (_latestFlutterPlayerValue != null &&
-        _latestFlutterPlayerValue.hasError) {
-      return chewieController.errorBuilder != null
-          ? chewieController.errorBuilder(
+        _latestFlutterPlayerValue!.hasError) {
+      return chewieController!.errorBuilder != null
+          ? chewieController!.errorBuilder!(
               context,
-              chewieController.videoPlayerController.value.errorDescription,
+              chewieController!.videoPlayerController.value.errorDescription,
             )
           : Center(
               child: Icon(
@@ -267,8 +267,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     // set players from CustomChewieController
     chewieController = CustomChewieController.of(context);
-    flutterPlayerController = chewieController.videoPlayerController;
-    tvPlayerController = chewieController.tvPlayerController;
+    flutterPlayerController = chewieController!.videoPlayerController;
+    tvPlayerController = chewieController!.tvPlayerController;
 
     final backgroundColor = widget.backgroundColor;
     final iconColor = widget.iconColor;
@@ -278,10 +278,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     final isLoading = isScrubbing ||
         flutterPlayerController == null ||
-        flutterPlayerController.value == null ||
-        !flutterPlayerController.value.isInitialized ||
-        flutterPlayerController.value.isBuffering ||
-        tvPlayerController.value.isCurrentlyCheckingTV ||
+        flutterPlayerController!.value == null ||
+        !flutterPlayerController!.value.isInitialized ||
+        flutterPlayerController!.value.isBuffering ||
+        tvPlayerController!.value.isCurrentlyCheckingTV ||
         isWaitingUntilTVPlaybackStarts ||
         isLagging;
 
@@ -324,7 +324,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
             child: Container(
               height: barHeight,
               color: backgroundColor,
-              child: chewieController.isLive
+              child: chewieController!.isLive
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -371,15 +371,15 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   GestureDetector _buildPlayPause(bool showLoadingIndicator, double height) {
     Widget button;
     if (showLoadingIndicator) {
-      button = new CircularProgressIndicator(
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+      button = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         strokeWidth: 3.0,
       );
     } else {
       button = Icon(
         (_latestFlutterPlayerValue != null &&
-                    _latestFlutterPlayerValue.isPlaying ||
-                tvPlayerController.value.isPlaying)
+                    _latestFlutterPlayerValue!.isPlaying ||
+                tvPlayerController!.value.isPlaying)
             ? Icons.pause_circle_filled_outlined
             : Icons.play_circle_fill_outlined,
         color: Colors.white,
@@ -391,7 +391,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       onTap: () {
         _playPause();
       },
-      child: new Container(
+      child: Container(
         alignment: Alignment.center,
         child: button,
       ),
@@ -430,14 +430,14 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
             color: backgroundColor,
             child: Center(
               child: IconButton(
-                icon: new Icon(Icons.clear),
+                icon: Icon(Icons.clear),
                 color: iconColor,
                 iconSize: 20.0,
                 onPressed: () {
-                  flutterPlayerController.pause();
-                  flutterPlayerController
+                  flutterPlayerController!.pause();
+                  flutterPlayerController!
                       .removeListener(_updateFlutterPlayerState);
-                  tvPlayerController.removeListener(_updateTvPlayerState);
+                  tvPlayerController!.removeListener(_updateTvPlayerState);
 
                   //chewieController.toggleFullScreen();
                   Navigator.pop(context);
@@ -457,37 +457,37 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       child: _buildPlayerCenterControls(showLoadingIndicator),
     );
     // set static picture as background
-    if (tvPlayerController.value.playbackOnTvStarted) {
-      backGroundContainer = new Container(
-        child: new ClipRect(
-          child: new BackdropFilter(
-            filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: new Padding(
+    if (tvPlayerController!.value.playbackOnTvStarted) {
+      backGroundContainer = Container(
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            child: Padding(
               padding: const EdgeInsets.only(left: 30.0, right: 10.0, top: 10),
-              child: new Container(
-                decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.only(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(40.0),
                       bottomLeft: const Radius.circular(40.0),
                       bottomRight: const Radius.circular(40.0),
                       topRight: const Radius.circular(40.0)),
                   color: Colors.grey.withOpacity(0.4),
                 ),
-                child: new Padding(
+                child: Padding(
                   padding: const EdgeInsets.only(
                       left: 30.0, right: 30.0, top: 10.0, bottom: 20.0),
-                  child: new SingleChildScrollView(
-                    child: new Column(
+                  child: SingleChildScrollView(
+                    child: Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        new Container(
-                          child: new Image(
-                            image: new AssetImage(
+                        Container(
+                          child: Image(
+                            image: AssetImage(
                                 "assets/launcher/ic_launcher.png"),
                           ),
                         ),
-                        new Text(
+                        Text(
                           "Video wird auf dem TV abgespielt.",
                           style: TextStyle(
                               fontFamily: 'Poppins',
@@ -508,8 +508,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     GestureTapCallback gestureTapCallback;
     if (_latestFlutterPlayerValue != null &&
-            _latestFlutterPlayerValue.isPlaying ||
-        _latestTvPlayerValue.isPlaying) {
+            _latestFlutterPlayerValue!.isPlaying ||
+        _latestTvPlayerValue!.isPlaying) {
       if (_hideStuff) {
         gestureTapCallback = _cancelAndRestartTimer;
       } else {
@@ -547,23 +547,23 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     return GestureDetector(
       onTap: () {
         _cancelAndRestartTimer();
-        if (_latestFlutterPlayerValue.volume == 0) {
-          flutterPlayerController.setVolume(_latestPlayerVolume ?? 0.5);
-          if (_latestTvPlayerValue.playbackOnTvStarted) {
-            tvPlayerController.unmute(_latestTvPlayerValue.volume ?? 0.5);
+        if (_latestFlutterPlayerValue!.volume == 0) {
+          flutterPlayerController!.setVolume(_latestPlayerVolume ?? 0.5);
+          if (_latestTvPlayerValue!.playbackOnTvStarted) {
+            tvPlayerController!.unmute(_latestTvPlayerValue?.volume ?? 0.5);
           }
           return;
         }
 
-        _latestPlayerVolume = flutterPlayerController.value.volume;
-        flutterPlayerController.setVolume(0);
-        if (_latestTvPlayerValue.playbackOnTvStarted) {
-          tvPlayerController.mute();
+        _latestPlayerVolume = flutterPlayerController!.value.volume;
+        flutterPlayerController!.setVolume(0);
+        if (_latestTvPlayerValue!.playbackOnTvStarted) {
+          tvPlayerController!.mute();
         }
       },
       child: AnimatedOpacity(
         opacity: _hideStuff ? 0.0 : 1.0,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: BackdropFilter(
@@ -578,7 +578,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                 ),
                 child: Icon(
                   (_latestFlutterPlayerValue != null &&
-                          _latestFlutterPlayerValue.volume > 0)
+                          _latestFlutterPlayerValue!.volume > 0)
                       ? Icons.volume_up
                       : Icons.volume_off,
                   color: iconColor,
@@ -593,7 +593,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   GestureDetector _buildSamsungScreenCast(
-    VideoPlayerController controller,
+    VideoPlayerController? controller,
     Color backgroundColor,
     Color iconColor,
     double barHeight,
@@ -602,10 +602,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     String tvCastIcon;
 
     if (_latestTvPlayerValue != null &&
-        _latestTvPlayerValue.isCurrentlyCheckingTV) {
+        _latestTvPlayerValue!.isCurrentlyCheckingTV) {
       tvCastIcon = 'assets/cast/ic_cast0_white.png';
     } else if (_latestTvPlayerValue != null &&
-        _latestTvPlayerValue.playbackOnTvStarted) {
+        _latestTvPlayerValue!.playbackOnTvStarted) {
       tvCastIcon = 'assets/cast/ic_cast_connected_white.png';
       iconColor = Colors.red;
     } else {
@@ -614,10 +614,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     return GestureDetector(
       onTap: () {
-        flutterPlayerController.pause();
+        flutterPlayerController!.pause();
         showDialog(
             context: context,
-            builder: (ctxt) => new AvailableTVsDialog(tvPlayerController));
+            builder: (ctxt) => AvailableTVsDialog(tvPlayerController));
       },
       child: AnimatedOpacity(
         opacity: _hideStuff ? 0.0 : 1.0,
@@ -634,7 +634,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                     left: buttonPadding,
                     right: buttonPadding,
                   ),
-                  child: new Image.asset(tvCastIcon,
+                  child: Image.asset(tvCastIcon,
                       width: 16.0, height: 16.0, color: iconColor)),
             ),
           ),
@@ -645,7 +645,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   Widget _buildPosition(Color iconColor) {
     final position = _latestFlutterPlayerValue != null
-        ? _latestFlutterPlayerValue.position
+        ? _latestFlutterPlayerValue!.position
         : Duration(seconds: 0);
 
     return Padding(
@@ -663,9 +663,9 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   Widget _buildRemaining(Color iconColor) {
     final position = _latestFlutterPlayerValue != null &&
-            _latestFlutterPlayerValue.duration != null
-        ? _latestFlutterPlayerValue.duration -
-            _latestFlutterPlayerValue.position
+            _latestFlutterPlayerValue!.duration != null
+        ? _latestFlutterPlayerValue!.duration -
+            _latestFlutterPlayerValue!.position
         : Duration(seconds: 0);
 
     return Padding(
@@ -721,12 +721,12 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       ),
       child: Row(
         children: <Widget>[
-          chewieController.allowFullScreen
+          chewieController!.allowFullScreen
               ? _buildExitButton(
                   backgroundColor, iconColor, barHeight, buttonPadding)
               : Container(),
           Expanded(child: Container()),
-          chewieController.allowMuting
+          chewieController!.allowMuting
               ? _buildMuteButton(
                   backgroundColor, iconColor, barHeight, buttonPadding)
               : Container(),
@@ -737,7 +737,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     );
     if (MediaQuery.of(context).orientation == Orientation.landscape) {
       // stay clear of the top bar
-      return new SafeArea(child: topBar);
+      return SafeArea(child: topBar);
     }
     return topBar;
   }
@@ -758,7 +758,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
             _startHideTimer();
             isScrubbing = false;
           },
-          colors: chewieController.cupertinoProgressColors ??
+          colors: chewieController!.cupertinoProgressColors ??
               ChewieProgressColors(
                 playedColor: Color.fromARGB(
                   120,
@@ -793,27 +793,27 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   void _playPause() {
     setState(() {
       if (_latestFlutterPlayerValue != null &&
-          _latestFlutterPlayerValue.isPlaying) {
+          _latestFlutterPlayerValue!.isPlaying) {
         _hideStuff = false;
         _hideTimer?.cancel();
-        flutterPlayerController.pause();
-      } else if (tvPlayerController.value.isPlaying) {
+        flutterPlayerController!.pause();
+      } else if (tvPlayerController!.value.isPlaying) {
         _hideStuff = false;
         _hideTimer?.cancel();
-        tvPlayerController.pause();
+        tvPlayerController!.pause();
       } else {
         _cancelAndRestartTimer();
-        if (tvPlayerController.value.playbackOnTvStarted) {
-          tvPlayerController.resume();
+        if (tvPlayerController!.value.playbackOnTvStarted) {
+          tvPlayerController!.resume();
           return;
         }
 
-        if (!flutterPlayerController.value.isInitialized) {
-          flutterPlayerController.initialize().then((_) {
-            flutterPlayerController.play();
+        if (!flutterPlayerController!.value.isInitialized) {
+          flutterPlayerController!.initialize().then((_) {
+            flutterPlayerController!.play();
           });
         } else {
-          flutterPlayerController.play();
+          flutterPlayerController!.play();
         }
       }
     });
@@ -822,33 +822,33 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   void _skipBack() {
     _cancelAndRestartTimer();
     final beginning = Duration(seconds: 0).inMilliseconds;
-    final skip = (_latestFlutterPlayerValue.position - Duration(seconds: 15))
+    final skip = (_latestFlutterPlayerValue!.position - Duration(seconds: 15))
         .inMilliseconds;
 
     Duration position = Duration(milliseconds: math.max(skip, beginning));
     if (_latestTvPlayerValue != null &&
-        tvPlayerController.value.playbackOnTvStarted) {
-      tvPlayerController.seekTo(position);
+        tvPlayerController!.value.playbackOnTvStarted) {
+      tvPlayerController!.seekTo(position);
       return;
     }
 
-    flutterPlayerController.seekTo(position);
+    flutterPlayerController!.seekTo(position);
   }
 
   void _skipForward() {
     _cancelAndRestartTimer();
-    final end = _latestFlutterPlayerValue.duration.inMilliseconds;
-    final skip = (_latestFlutterPlayerValue.position + Duration(seconds: 15))
+    final end = _latestFlutterPlayerValue!.duration.inMilliseconds;
+    final skip = (_latestFlutterPlayerValue!.position + Duration(seconds: 15))
         .inMilliseconds;
     var position = Duration(milliseconds: math.min(skip, end));
 
     if (_latestTvPlayerValue != null &&
-        tvPlayerController.value.playbackOnTvStarted) {
-      tvPlayerController.seekTo(position);
+        tvPlayerController!.value.playbackOnTvStarted) {
+      tvPlayerController!.seekTo(position);
       return;
     }
 
-    flutterPlayerController.seekTo(position);
+    flutterPlayerController!.seekTo(position);
   }
 
   void _startHideTimer() {

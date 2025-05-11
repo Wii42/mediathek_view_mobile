@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 
 class VideoLengthSlider extends StatefulWidget {
-  var onFilterUpdated;
-  SearchFilter searchFilter;
-  double initialStart;
-  double initialEnd;
+  late var onFilterUpdated;
+  late SearchFilter searchFilter;
+  late double initialStart;
+  late double initialEnd;
 
   static const double MAXIMUM_FILTER_LENGTH = 60;
 
@@ -28,7 +28,7 @@ class VideoLengthSlider extends StatefulWidget {
 }
 
 class _RangeSliderState extends State<VideoLengthSlider> {
-  RangeValues _values;
+  late RangeValues _values;
 
   _RangeSliderState(RangeValues rangeValues) {
     _values = rangeValues;

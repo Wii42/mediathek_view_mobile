@@ -13,18 +13,18 @@ const ERROR_MSG_PLAY_FAILED = "Abspielen fehlgeschlagen.";
 // SamsungTVCastManager has the platform channels to talk to the native iOS implementation for casting videos to supported Samsung TVs
 class SamsungTVCastManager {
   final Logger logger = new Logger('SamsungTvCastManager');
-  EventChannel _tvFoundEventChannel;
-  EventChannel _tvLostEventChannel;
-  EventChannel _tvReadinessEventChannel;
-  EventChannel _tvPlayerEventChannel;
-  EventChannel _tvPlaybackPositionEventChannel;
+  late EventChannel _tvFoundEventChannel;
+  late EventChannel _tvLostEventChannel;
+  late EventChannel _tvReadinessEventChannel;
+  late EventChannel _tvPlayerEventChannel;
+  late EventChannel _tvPlaybackPositionEventChannel;
 
-  MethodChannel _methodChannel;
-  Stream<dynamic> _foundTvsStream;
-  Stream<dynamic> _lostTvsStream;
-  Stream<dynamic> _tvReadinessStream;
-  Stream<dynamic> _tvPlayerStream;
-  Stream<dynamic> _tvPlaybackPositionStream;
+  late MethodChannel _methodChannel;
+  Stream<dynamic>? _foundTvsStream;
+  Stream<dynamic>? _lostTvsStream;
+  Stream<dynamic>? _tvReadinessStream;
+  Stream<dynamic>? _tvPlayerStream;
+  Stream<dynamic>? _tvPlaybackPositionStream;
 
   SamsungTVCastManager(BuildContext context) {
     _methodChannel =
@@ -83,8 +83,8 @@ class SamsungTVCastManager {
     }
   }
 
-  Future play(String videoUrl, String title, Duration startingPosition) async {
-    Map<String, String> requestArguments = new Map();
+  Future play(String? videoUrl, String? title, Duration startingPosition) async {
+    Map<String, String?> requestArguments = new Map();
     // has to be url accessible from internet (do not support downloaded videos)
     requestArguments.putIfAbsent("url", () => videoUrl);
     requestArguments.putIfAbsent("title", () => title);
@@ -193,35 +193,35 @@ class SamsungTVCastManager {
     }
   }
 
-  Stream<dynamic> getFoundTVStream() {
+  Stream<dynamic>? getFoundTVStream() {
     if (_foundTvsStream == null) {
       _foundTvsStream = _tvFoundEventChannel.receiveBroadcastStream();
     }
     return _foundTvsStream;
   }
 
-  Stream<dynamic> getLostTVStream() {
+  Stream<dynamic>? getLostTVStream() {
     if (_lostTvsStream == null) {
       _lostTvsStream = _tvLostEventChannel.receiveBroadcastStream();
     }
     return _lostTvsStream;
   }
 
-  Stream<dynamic> getTvReadinessStream() {
+  Stream<dynamic>? getTvReadinessStream() {
     if (_tvReadinessStream == null) {
       _tvReadinessStream = _tvReadinessEventChannel.receiveBroadcastStream();
     }
     return _tvReadinessStream;
   }
 
-  Stream<dynamic> getTvPlayerStream() {
+  Stream<dynamic>? getTvPlayerStream() {
     if (_tvPlayerStream == null) {
       _tvPlayerStream = _tvPlayerEventChannel.receiveBroadcastStream();
     }
     return _tvPlayerStream;
   }
 
-  Stream<dynamic> getTvPlaybackPositionStream() {
+  Stream<dynamic>? getTvPlaybackPositionStream() {
     if (_tvPlaybackPositionStream == null) {
       _tvPlaybackPositionStream =
           _tvPlaybackPositionEventChannel.receiveBroadcastStream();

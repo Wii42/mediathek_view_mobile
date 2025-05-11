@@ -11,8 +11,8 @@ class RowAdapter {
     String assetPath = Channels.channelMap.entries
         .firstWhere(
             (entry) =>
-                video.channel.toUpperCase().contains(entry.key.toUpperCase()) ||
-                entry.key.toUpperCase().contains(video.channel.toUpperCase()),
+                video.channel!.toUpperCase().contains(entry.key.toUpperCase()) ||
+                entry.key.toUpperCase().contains(video.channel!.toUpperCase()),
             orElse: () => new MapEntry("", ""))
         .value;
 

@@ -14,14 +14,14 @@ import 'package:uuid/uuid.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
-  final Logger logger = new Logger('VideoWidget');
-  AppSharedState appWideState;
+  final Logger logger = Logger('VideoWidget');
+  AppSharedState? appWideState;
   Video video;
-  String mimeType;
-  String defaultImageAssetPath;
-  Image previewImage;
-  Size size;
-  double presetAspectRatio;
+  String? mimeType;
+  String? defaultImageAssetPath;
+  Image? previewImage;
+  Size? size;
+  double? presetAspectRatio;
 
   bool isDownloading;
   bool openDetailPage;
@@ -39,13 +39,13 @@ class VideoWidget extends StatefulWidget {
   });
 
   @override
-  VideoWidgetState createState() => new VideoWidgetState();
+  VideoWidgetState createState() => VideoWidgetState();
 }
 
 class VideoWidgetState extends State<VideoWidget> {
-  String heroUuid;
-  VideoProgressEntity videoProgressEntity;
-  VideoEntity entity;
+  String? heroUuid;
+  VideoProgressEntity? videoProgressEntity;
+  VideoEntity? entity;
 
   @override
   void dispose() {
@@ -55,31 +55,31 @@ class VideoWidgetState extends State<VideoWidget> {
   @override
   void initState() {
     super.initState();
-    heroUuid = new Uuid().v1().toString();
+    heroUuid = Uuid().v1().toString();
     checkPlaybackProgress();
     checkIfAlreadyDownloaded();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.logger.fine("Rendering Image for " + widget.video.id);
+    widget.logger.fine("Rendering Image for ${widget.video.id!}");
 
     //Always fill full width & calc height accordingly
     double totalWidth =
-        widget.size.width - 36.0; //Intendation: 28 left, 8 right
+        widget.size!.width - 36.0; //Intendation: 28 left, 8 right
     double height = calculateImageHeight(
         widget.previewImage, totalWidth, widget.presetAspectRatio);
 
-    Widget downloadProgressBar = new DownloadProgressBar(
+    Widget downloadProgressBar = DownloadProgressBar(
       widget.video.id,
       widget.video.title,
-      widget.appWideState.appState.downloadManager,
+      widget.appWideState!.appState!.downloadManager,
       false,
       checkIfAlreadyDownloaded,
     );
 
-    Image placeholderImage = new Image.asset(
-        'assets/img/' + widget.defaultImageAssetPath,
+    Image placeholderImage = Image.asset(
+        'assets/img/${widget.defaultImageAssetPath!}',
         width: totalWidth,
         height: height,
         alignment: Alignment.center,
@@ -87,53 +87,53 @@ class VideoWidgetState extends State<VideoWidget> {
 
     Hero previewImage;
     if (widget.previewImage != null) {
-      widget.logger.fine("Showing preview image for " + widget.video.title);
-      previewImage = Hero(tag: heroUuid, child: widget.previewImage);
+      widget.logger.fine("Showing preview image for ${widget.video.title!}");
+      previewImage = Hero(tag: heroUuid!, child: widget.previewImage!);
     } else {
-      widget.logger.fine("Showing placeholder for " + widget.video.title);
-      previewImage = Hero(tag: heroUuid, child: placeholderImage);
+      widget.logger.fine("Showing placeholder for ${widget.video.title!}");
+      previewImage = Hero(tag: heroUuid!, child: placeholderImage);
     }
 
-    return new GestureDetector(
-      child: new AspectRatio(
+    return GestureDetector(
+      child: AspectRatio(
         aspectRatio:
             totalWidth > height ? totalWidth / height : height / totalWidth,
-        child: new Container(
+        child: SizedBox(
           width: totalWidth,
-          child: new Stack(
+          child: Stack(
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              new AnimatedOpacity(
+              AnimatedOpacity(
                 opacity: widget.previewImage == null ? 1.0 : 0.0,
-                duration: new Duration(milliseconds: 750),
+                duration: const Duration(milliseconds: 750),
                 curve: Curves.easeInOut,
                 child: previewImage,
               ),
-              new AnimatedOpacity(
+              AnimatedOpacity(
                 opacity: widget.previewImage != null ? 1.0 : 0.0,
-                duration: new Duration(milliseconds: 750),
+                duration: const Duration(milliseconds: 750),
                 curve: Curves.easeInOut,
                 child: widget.previewImage,
               ),
               //Overlay Banner
-              new Positioned(
+              Positioned(
                 bottom: 0,
                 left: 0.0,
                 right: 0.0,
-                child: new Opacity(
+                child: Opacity(
                   opacity: 0.7,
                   child: getBottomBar(
                       context,
                       videoProgressEntity,
                       widget.video.id,
                       widget.video.duration.toString(),
-                      widget.video.title,
+                      widget.video.title!,
                       widget.video.timestamp,
-                      widget.defaultImageAssetPath),
+                      widget.defaultImageAssetPath!),
                 ),
               ),
-              new Positioned(
+              Positioned(
                   bottom: 0.0,
                   left: 0.0,
                   right: 0.0,
@@ -182,14 +182,14 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   static double calculateImageHeight(
-      Image image, double totalWidth, double presetAspectRatio) {
+      Image? image, double totalWidth, double? presetAspectRatio) {
     if (image != null && presetAspectRatio != null) {
       return totalWidth / presetAspectRatio;
     } else if (image == null && presetAspectRatio != null) {
       return totalWidth / presetAspectRatio;
     } else if (image != null) {
-      double originalWidth = image.width;
-      double originalHeight = image.height;
+      double originalWidth = image.width!;
+      double originalHeight = image.height!;
       double aspectRatioVideo = originalWidth / originalHeight;
 
       //calc height
@@ -203,20 +203,20 @@ class VideoWidgetState extends State<VideoWidget> {
 
   Container getBottomBar(
       BuildContext context,
-      VideoProgressEntity playbackProgress,
-      String id,
+      VideoProgressEntity? playbackProgress,
+      String? id,
       String duration,
       String title,
-      int timestamp,
+      int? timestamp,
       String assetPath) {
-    return new Container(
+    return Container(
       color: Colors.grey[800],
-      child: new Column(
+      child: Column(
         children: <Widget>[
           playbackProgress != null
               ? PlaybackProgressBar(
                   playbackProgress.progress, int.tryParse(duration), false)
-              : new Container(),
+              : Container(),
           MetaInfoListTile.getVideoMetaInformationListTile(
               context, duration, title, timestamp, assetPath, entity != null),
         ],
@@ -225,10 +225,10 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   void checkPlaybackProgress() async {
-    widget.appWideState.appState.databaseManager
+    widget.appWideState!.appState!.databaseManager
         .getVideoProgressEntity(widget.video.id)
         .then((entity) {
-      widget.logger.info("Video has playback progress: " + widget.video.title);
+      widget.logger.info("Video has playback progress: " + widget.video.title!);
       if (this.videoProgressEntity == null && mounted) {
         this.videoProgressEntity = entity;
         setState(() {});
@@ -237,7 +237,7 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   void checkIfAlreadyDownloaded() async {
-    widget.appWideState.appState.downloadManager
+    widget.appWideState!.appState!.downloadManager
         .isAlreadyDownloaded(widget.video.id)
         .then((entity) {
       if (this.entity == null && mounted) {

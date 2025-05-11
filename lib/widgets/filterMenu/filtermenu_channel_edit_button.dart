@@ -5,12 +5,12 @@ class FilterMenuChannelEditButton extends StatelessWidget {
   //E.g Thema/Titel
   final Icon icon;
   var handleTabCallback;
-  final String displayText;
+  final String? displayText;
 
   FilterMenuChannelEditButton(
-      {Key key,
-      @required this.icon,
-      @required this.handleTabCallback,
+      {Key? key,
+      required this.icon,
+      required this.handleTabCallback,
       this.displayText})
       : super(key: key);
 
@@ -35,7 +35,7 @@ class FilterMenuChannelEditButton extends StatelessWidget {
                 padding: new EdgeInsets.only(right: 5.0),
                 child: new Icon(Icons.edit, size: 25.0, color: Colors.white),
               ),
-              new Text(displayText,
+              new Text(displayText!,
                   style: Theme.of(context).textTheme.button,
                   textAlign: TextAlign.start,
                   maxLines: 1)

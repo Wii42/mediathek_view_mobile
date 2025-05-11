@@ -11,7 +11,7 @@ class VideoListItemBuilder {
   // called when the user pressed on the remove button
   var onRemoveVideo;
 
-  List<Video> videos = [];
+  List<Video>? videos = [];
 
   bool previewNotDownloadedVideos;
   bool showDeleteButton;
@@ -20,9 +20,9 @@ class VideoListItemBuilder {
   var queryEntries;
 
   // for mean video list
-  int amountOfVideosFetched;
-  int totalResultSize;
-  int currentQuerySkip;
+  int? amountOfVideosFetched;
+  int? totalResultSize;
+  int? currentQuerySkip;
   final int pageThreshold = 25;
 
   VideoListItemBuilder.name(this.videos, this.previewNotDownloadedVideos,
@@ -36,14 +36,14 @@ class VideoListItemBuilder {
   Widget itemBuilder(BuildContext context, int index) {
     // only required for the main video list to request more entries when reaching end of list
     if (queryEntries != null) {
-      if (index + pageThreshold > videos.length) {
+      if (index + pageThreshold > videos!.length) {
         queryEntries();
       }
 
-      if (currentQuerySkip + pageThreshold >= totalResultSize &&
-          videos.length == index + 1) {
+      if (currentQuerySkip! + pageThreshold >= totalResultSize! &&
+          videos!.length == index + 1) {
         logger.info("ResultList - reached last position of result list.");
-      } else if (videos.length == index + 1) {
+      } else if (videos!.length == index + 1) {
         logger.info("Reached last position in list for query");
         return new Container(
             alignment: Alignment.center,
@@ -54,12 +54,12 @@ class VideoListItemBuilder {
       }
     }
 
-    Video video = videos.elementAt(index);
+    Video video = videos!.elementAt(index);
 
     String assetPath = Channels.channelMap.entries.firstWhere((entry) {
       return video.channel != null &&
-              video.channel.toUpperCase().contains(entry.key.toUpperCase()) ||
-          entry.key.toUpperCase().contains(video.channel.toUpperCase());
+              video.channel!.toUpperCase().contains(entry.key.toUpperCase()) ||
+          entry.key.toUpperCase().contains(video.channel!.toUpperCase());
     }, orElse: () => new MapEntry("", "")).value;
 
     Widget deleteButton = new Container();
@@ -101,7 +101,7 @@ class VideoListItemBuilder {
   }
 
   ActionChip getRemoveButton(
-      int index, BuildContext context, String id, String filesize) {
+      int index, BuildContext context, String? id, String filesize) {
     return new ActionChip(
       avatar: new Icon(Icons.delete_forever, color: Colors.white),
       label: new Text(

@@ -1,10 +1,10 @@
 class ChannelFavoriteEntity {
   static const String TABLE_NAME = "channelfavorite";
 
-  String name;
-  String logo; //ARD
-  String groupname; //Tatort
-  String url; //details:  erst anzeigen wenn man drauf klickt
+  String? name;
+  String? logo; //ARD
+  String? groupname; //Tatort
+  String? url; //details:  erst anzeigen wenn man drauf klickt
 
   //column names
   static const String nameColumn = "name";

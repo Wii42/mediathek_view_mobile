@@ -9,9 +9,9 @@ class _InheritedStateContainer extends InheritedWidget {
   final StateContainerAppBarState data;
 
   const _InheritedStateContainer({
-    Key key,
-    @required this.data,
-    @required Widget child,
+    Key? key,
+    required this.data,
+    required Widget child,
   }) : super(key: key, child: child);
 
   @override
@@ -22,15 +22,15 @@ class _InheritedStateContainer extends InheritedWidget {
 
 class FilterBarSharedState extends StatefulWidget {
   final Widget child;
-  final FilterMenuState videoListState;
+  final FilterMenuState? videoListState;
 
-  const FilterBarSharedState({Key key,
-    @required this.child,
+  const FilterBarSharedState({Key? key,
+    required this.child,
     this.videoListState,
   }) : super(key: key);
 
   static StateContainerAppBarState of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType<_InheritedStateContainer>())
+    return context.dependOnInheritedWidgetOfExactType<_InheritedStateContainer>()!
         .data;
   }
 
@@ -39,7 +39,7 @@ class FilterBarSharedState extends StatefulWidget {
 }
 
 class StateContainerAppBarState extends State<FilterBarSharedState> {
-  FilterMenuState filterMenuState;
+  FilterMenuState? filterMenuState;
 
   void updateAppBarState() {
     if (filterMenuState == null) {
@@ -48,7 +48,7 @@ class StateContainerAppBarState extends State<FilterBarSharedState> {
       });
     } else {
       setState(() {
-        filterMenuState.isFilterMenuOpen = !filterMenuState.isFilterMenuOpen;
+        filterMenuState!.isFilterMenuOpen = !filterMenuState!.isFilterMenuOpen;
       });
     }
   }

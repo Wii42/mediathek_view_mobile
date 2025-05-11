@@ -10,7 +10,7 @@ class CountlyUtil {
   static bool countlySessionStarted = false;
 
   static Future<void> loadCountlyInformationFromGithub(
-      Logger logger, AppSharedState appWideState, bool consentGiven) async {
+      Logger logger, AppSharedState? appWideState, bool consentGiven) async {
     var response = await http.get(Uri.parse(HomePageState.COUNTLY_GITHUB));
     if (response == null || response.statusCode != 200) {
       logger.warning("failed to setup countly");
@@ -26,18 +26,18 @@ class CountlyUtil {
 
     logger.info("Loaded Countly data from Github");
 
-    appWideState.appState.sharedPreferences.setBool(
+    appWideState!.appState!.sharedPreferences.setBool(
         HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, consentGiven);
-    appWideState.appState.sharedPreferences
+    appWideState.appState!.sharedPreferences
         .setString(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
-    appWideState.appState.sharedPreferences.setString(
+    appWideState.appState!.sharedPreferences.setString(
         HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY, countlyAppKey);
 
     initializeCountly(logger, countlyAPI, countlyAppKey, consentGiven);
   }
 
-  static void initializeCountly(Logger logger, String countlyAPI,
-      String countlyAppKey, bool consentGiven) {
+  static void initializeCountly(Logger logger, String? countlyAPI,
+      String? countlyAppKey, bool consentGiven) {
     Countly.isInitialized().then((bool isInitialized) {
       Countly.setLoggingEnabled(true);
       Countly.enableCrashReporting();
@@ -56,7 +56,7 @@ class CountlyUtil {
 
       // Countly.enableParameterTamperingProtection(countlyTamperingProtection);
       // Features which is required before init should be call here
-      Countly.init(countlyAPI, countlyAppKey).then((value) {
+      Countly.init(countlyAPI!, countlyAppKey!).then((value) {
         if (!consentGiven) {
           countlyRejected(logger);
           return;

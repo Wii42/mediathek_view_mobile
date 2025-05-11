@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class VideoListState {
   VideoListState(this.extendetListTiles, this.previewImages);
-  Set<String> extendetListTiles;
+  Set<String?> extendetListTiles;
   Map<String, Image> previewImages;
 }
 
@@ -33,17 +33,17 @@ class AppState {
       this.availableTvs,
       this.favoriteChannels);
 
-  TargetPlatform targetPlatform;
-  Directory localDirectory;
+  TargetPlatform? targetPlatform;
+  Directory? localDirectory;
   DownloadManager downloadManager;
   DatabaseManager databaseManager;
   VideoPreviewManager videoPreviewManager;
   FilesystemPermissionManager filesystemPermissionManager;
-  SharedPreferences sharedPreferences;
+  late SharedPreferences sharedPreferences;
 
   // only relevant on Android, always true on other platforms
-  bool hasFilesystemPermission;
-  Map<String, ChannelFavoriteEntity> favoriteChannels;
+  late bool hasFilesystemPermission;
+  Map<String?, ChannelFavoriteEntity> favoriteChannels;
 
   // Samsung TV cast
   SamsungTVCastManager samsungTVCastManager;
@@ -55,11 +55,11 @@ class AppState {
     hasFilesystemPermission = permission;
   }
 
-  void setTargetPlatform(TargetPlatform platform) {
+  void setTargetPlatform(TargetPlatform? platform) {
     targetPlatform = platform;
   }
 
-  void setDirectory(Directory dir) {
+  void setDirectory(Directory? dir) {
     localDirectory = dir;
   }
 
@@ -72,9 +72,9 @@ class _InheritedWidget extends InheritedWidget {
   final AppSharedState data;
 
   const _InheritedWidget({
-    Key key,
-    @required this.data,
-    @required Widget child,
+    Key? key,
+    required this.data,
+    required Widget child,
   }) : super(key: key, child: child);
 
   @override
@@ -85,14 +85,14 @@ class _InheritedWidget extends InheritedWidget {
 
 class AppSharedStateContainer extends StatefulWidget {
   final Widget child;
-  final VideoListState videoListState;
-  final AppState appState;
+  final VideoListState? videoListState;
+  final AppState? appState;
 
   const AppSharedStateContainer(
-      {@required this.child, this.videoListState, this.appState});
+      {required this.child, this.videoListState, this.appState});
 
   static AppSharedState of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType<_InheritedWidget>())
+    return context.dependOnInheritedWidgetOfExactType<_InheritedWidget>()!
         .data;
   }
 
@@ -103,8 +103,8 @@ class AppSharedStateContainer extends StatefulWidget {
 class AppSharedState extends State<AppSharedStateContainer> {
   final Logger logger = Logger('VideoWidget');
 
-  VideoListState videoListState;
-  AppState appState;
+  VideoListState? videoListState;
+  AppState? appState;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +144,7 @@ class AppSharedState extends State<AppSharedStateContainer> {
 
     // async execution to concurrently open database
     DeviceInformation.getTargetPlatform().then((platform) async {
-      appState.setTargetPlatform(platform);
+      appState!.setTargetPlatform(platform);
 
       bool hasPermission = true;
       if (platform == TargetPlatform.android) {
@@ -152,19 +152,19 @@ class AppSharedState extends State<AppSharedStateContainer> {
             await filesystemPermissionManager.hasFilesystemPermission();
       }
 
-      appState.setHasFilesystemPermission(hasPermission);
+      appState!.setHasFilesystemPermission(hasPermission);
 
-      Directory directory;
+      Directory? directory;
       if (platform == TargetPlatform.iOS) {
         directory = await getApplicationDocumentsDirectory();
       } else {
         directory = await getExternalStorageDirectory();
       }
-      appState.setDirectory(directory);
+      appState!.setDirectory(directory);
 
       // create thumbnail directory
       final Directory thumbnailDirectory =
-          Directory('${directory.path}/MediathekView/thumbnails/');
+          Directory('${directory!.path}/MediathekView/thumbnails/');
 
       if (!await thumbnailDirectory.exists()) {
         //if folder already exists return path
@@ -190,10 +190,10 @@ class AppSharedState extends State<AppSharedStateContainer> {
 
   void prefillFavoritedChannels() async {
     Set<ChannelFavoriteEntity> channels =
-        await appState.databaseManager.getAllChannelFavorites();
+        await appState!.databaseManager.getAllChannelFavorites();
     logger.fine("There are ${channels.length} favorited channels in the database");
     for (var entity in channels) {
-      appState.favoriteChannels.putIfAbsent(entity.name, () => entity);
+      appState!.favoriteChannels.putIfAbsent(entity.name, () => entity);
     }
   }
 
@@ -203,7 +203,7 @@ class AppSharedState extends State<AppSharedStateContainer> {
     //Uncomment when having made changes to the DB Schema
     //appState.databaseManager.deleteDb(path);
     //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
-    return appState.databaseManager.open(path).then(
+    return appState!.databaseManager.open(path).then(
           (dynamic) => logger.info("Successfully opened database"),
           onError: (e) => logger.severe("Error when opening database"),
         );
@@ -215,12 +215,12 @@ class AppSharedState extends State<AppSharedStateContainer> {
 
   void addImagePreview(String videoId, Image preview) {
     logger.fine("Adding preview image to state for video with id $videoId");
-    videoListState.previewImages.putIfAbsent(videoId, () => preview);
+    videoListState!.previewImages.putIfAbsent(videoId, () => preview);
   }
 
-  void updateExtendetListTile(String videoId) {
-    videoListState.extendetListTiles.contains(videoId)
-        ? videoListState.extendetListTiles.remove(videoId)
-        : videoListState.extendetListTiles.add(videoId);
+  void updateExtendetListTile(String? videoId) {
+    videoListState!.extendetListTiles.contains(videoId)
+        ? videoListState!.extendetListTiles.remove(videoId)
+        : videoListState!.extendetListTiles.add(videoId);
   }
 }

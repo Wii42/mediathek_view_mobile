@@ -7,17 +7,19 @@ import 'package:flutter_ws/widgets/downloadSection/util.dart';
 import 'package:logging/logging.dart';
 
 class WatchHistory extends StatefulWidget {
-  final Logger logger = new Logger('WatchHistory');
+  final Logger logger = Logger('WatchHistory');
+
+  WatchHistory({Key? key}) : super(key: key);
 
   @override
   WatchHistoryState createState() {
-    return new WatchHistoryState();
+    return WatchHistoryState();
   }
 }
 
 class WatchHistoryState extends State<WatchHistory> {
-  Set<VideoProgressEntity> history;
-  AppState appState;
+  Set<VideoProgressEntity>? history;
+  AppState? appState;
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +30,12 @@ class WatchHistoryState extends State<WatchHistory> {
     loadWatchHistory();
 
     if (history == null) {
-      return new Container(
+      return SizedBox(
         width: size.width,
         height: size.width / 16 * 9,
-        child: new Center(
-          child: new CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
             strokeWidth: 2.0,
             backgroundColor: Colors.white,
           ),
@@ -50,11 +52,11 @@ class WatchHistoryState extends State<WatchHistory> {
           size.width, orientation == Orientation.portrait ? 1 : 2);
     }
 
-    var sliverAppBar = new SliverAppBar(
-      title: new Text('Watch History', style: sectionHeadingTextStyle),
-      backgroundColor: new Color(0xffffbf00),
-      leading: new IconButton(
-        icon: new Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
+    var sliverAppBar = SliverAppBar(
+      title: Text('Watch History', style: sectionHeadingTextStyle),
+      backgroundColor: const Color(0xffffbf00),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
         onPressed: () {
           //return channels when user pressed back
           return Navigator.pop(context);
@@ -65,9 +67,9 @@ class WatchHistoryState extends State<WatchHistory> {
     // add App bar on top
     watchHistoryWidgets.insert(0, sliverAppBar);
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new SafeArea(
+      body: SafeArea(
         child: CustomScrollView(slivers: watchHistoryWidgets),
       ),
     );
@@ -90,33 +92,29 @@ class WatchHistoryState extends State<WatchHistory> {
       String watchDay;
       String watchMonth;
       if (videoWatchDate.day < 10) {
-        watchDay = "0" + videoWatchDate.day.toString();
+        watchDay = "0${videoWatchDate.day}";
       } else {
         watchDay = videoWatchDate.day.toString();
       }
 
       if (videoWatchDate.month < 10) {
-        watchMonth = "0" + videoWatchDate.month.toString();
+        watchMonth = "0${videoWatchDate.month}";
       } else {
         watchMonth = videoWatchDate.month.toString();
       }
       if (daysPassedSinceVideoWatched < 365) {
-        return watchDay + "." + watchMonth;
+        return "$watchDay.$watchMonth";
       } else {
         //add year
-        return watchDay +
-            "." +
-            watchMonth +
-            "." +
-            videoWatchDate.year.toString();
+        return "$watchDay.$watchMonth.${videoWatchDate.year}";
       }
     }
   }
 
   Future loadWatchHistory() async {
     //check for playback progress
-    if (history == null || history.isEmpty) {
-      return appState.databaseManager.getAllLastViewedVideos().then((all) {
+    if (history == null || history!.isEmpty) {
+      return appState!.databaseManager.getAllLastViewedVideos().then((all) {
         if (all != null && all.isNotEmpty) {
           history = all;
           setState(() {});
@@ -130,38 +128,32 @@ class WatchHistoryState extends State<WatchHistory> {
     switch (weekday) {
       case 1:
         return "Montag";
-        break;
       case 2:
         return "Dienstag";
-        break;
       case 3:
         return "Mittwoch";
-        break;
       case 4:
         return "Donnerstag";
-        break;
       case 5:
         return "Freitag";
-        break;
       case 6:
         return "Samstag";
-        break;
       case 7:
         return "Sonntag";
-        break;
     }
+    throw ArgumentError("Illegal argument, weekday must be between 0 and 7");
   }
 
   List<Widget> getHistoryGridList(double width, int crossAxisCount) {
     Map<int, MapEntry<VideoProgressEntity, List<Widget>>> watchHistoryItems =
-        new Map();
-    for (int i = 0; i < history.length; i++) {
-      VideoProgressEntity progress = history.elementAt(i);
+        {};
+    for (int i = 0; i < history!.length; i++) {
+      VideoProgressEntity progress = history!.elementAt(i);
 
       int daysPassedSinceVideoWatched;
       try {
         daysPassedSinceVideoWatched =
-            getDaysSinceVideoWatched(progress.timestampLastViewed);
+            getDaysSinceVideoWatched(progress.timestampLastViewed!);
       } on Exception {
         continue;
       }
@@ -173,28 +165,28 @@ class WatchHistoryState extends State<WatchHistory> {
         itemList.add(historyItem);
 
         watchHistoryItems[daysPassedSinceVideoWatched] =
-            new MapEntry(progress, itemList);
+            MapEntry(progress, itemList);
       } else {
-        watchHistoryItems[daysPassedSinceVideoWatched].value.add(historyItem);
+        watchHistoryItems[daysPassedSinceVideoWatched]!.value.add(historyItem);
       }
     }
 
     // now for each day group create a grid
     List<Widget> resultList = [];
 
-    watchHistoryItems.entries.forEach((entry) {
+    for (var entry in watchHistoryItems.entries) {
       String heading = getWatchHistoryHeading(
           entry.key,
-          new DateTime.fromMillisecondsSinceEpoch(
-              entry.value.key.timestampLastViewed));
+          DateTime.fromMillisecondsSinceEpoch(
+              entry.value.key.timestampLastViewed!));
 
       resultList.add(
         SliverToBoxAdapter(
-          child: new Padding(
-            padding: EdgeInsets.only(left: 10.0, bottom: 10.0, top: 5),
-            child: new Text(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 10.0, top: 5),
+            child: Text(
               heading,
-              style: new TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 25.0,
                   fontWeight: FontWeight.w700),
@@ -203,8 +195,8 @@ class WatchHistoryState extends State<WatchHistory> {
         ),
       );
       resultList.add(
-        new SliverPadding(
-          padding: EdgeInsets.only(left: 10.0, right: 10.0),
+        SliverPadding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
           sliver: SliverGrid.count(
             crossAxisCount: crossAxisCount,
             childAspectRatio: 16 / 9,
@@ -214,18 +206,18 @@ class WatchHistoryState extends State<WatchHistory> {
           ),
         ),
       );
-    });
+    }
 
     return resultList;
   }
 
-  int getDaysSinceVideoWatched(int timestampLastViewed) {
-    DateTime videoWatchDate =
-        new DateTime.fromMillisecondsSinceEpoch(timestampLastViewed);
-    if (videoWatchDate == null) {
-      throw new Exception();
+  int getDaysSinceVideoWatched(int? timestampLastViewed) {
+    if (timestampLastViewed == null) {
+      throw Exception();
     }
-    Duration differenceToToday = new DateTime.now().difference(videoWatchDate);
+    DateTime videoWatchDate =
+        DateTime.fromMillisecondsSinceEpoch(timestampLastViewed);
+    Duration differenceToToday = DateTime.now().difference(videoWatchDate);
     return differenceToToday.inDays;
   }
 }

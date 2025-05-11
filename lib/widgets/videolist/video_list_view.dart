@@ -10,23 +10,23 @@ import 'package:meta/meta.dart';
 class VideoListView extends StatefulWidget {
   final Logger logger = new Logger('VideoListView');
 
-  List<Video> videos;
+  List<Video>? videos;
   var queryEntries;
   var refreshList;
-  int amountOfVideosFetched;
-  int totalResultSize;
+  int? amountOfVideosFetched;
+  int? totalResultSize;
   int currentQuerySkip;
   TickerProviderStateMixin mixin;
 
   VideoListView({
-    Key key,
-    @required this.queryEntries,
-    @required this.amountOfVideosFetched,
-    @required this.videos,
-    @required this.refreshList,
-    @required this.totalResultSize,
-    @required this.currentQuerySkip,
-    @required this.mixin,
+    Key? key,
+    required this.queryEntries,
+    required this.amountOfVideosFetched,
+    required this.videos,
+    required this.refreshList,
+    required this.totalResultSize,
+    required this.currentQuerySkip,
+    required this.mixin,
   }) : super(key: key);
 
   @override
@@ -34,7 +34,7 @@ class VideoListView extends StatefulWidget {
 }
 
 class _VideoListViewState extends State<VideoListView> {
-  ScrollController scrollController;
+  ScrollController? scrollController;
 
   @override
   void initState() {
@@ -44,12 +44,12 @@ class _VideoListViewState extends State<VideoListView> {
   @override
   Widget build(BuildContext context) {
     widget.logger.info("Rendering Main Video List with list length " +
-        widget.videos.length.toString());
+        widget.videos!.length.toString());
 
-    if (widget.videos.length == 0 && widget.amountOfVideosFetched == 0) {
+    if (widget.videos!.length == 0 && widget.amountOfVideosFetched == 0) {
       widget.logger.info("No Videos found");
       return new SliverToBoxAdapter(child: buildNoVideosFound());
-    } else if (widget.videos.length == 0) {
+    } else if (widget.videos!.length == 0) {
       widget.logger.info("Searching: video list legth : 0 & amountFetched: " +
           widget.amountOfVideosFetched.toString());
       return new SliverToBoxAdapter(child: LoadingListPage());
@@ -76,7 +76,7 @@ class _VideoListViewState extends State<VideoListView> {
         crossAxisSpacing: 5.0,
       ),
       delegate: SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
-          childCount: widget.videos.length),
+          childCount: widget.videos!.length),
     );
   }
 

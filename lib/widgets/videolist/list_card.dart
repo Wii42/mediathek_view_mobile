@@ -30,7 +30,7 @@ class ListCard extends StatefulWidget {
   final Video video;
 
   ListCard(
-      {Key key, @required this.channelPictureImagePath, @required this.video})
+      {Key? key, required this.channelPictureImagePath, required this.video})
       : super(key: key);
 
   @override
@@ -41,26 +41,26 @@ class ListCard extends StatefulWidget {
 
 class _ListCardState extends State<ListCard> {
   static const downloadManagerIdentifier = 0;
-  BuildContext context;
-  AppSharedState appWideState;
+  late BuildContext context;
+  AppSharedState? appWideState;
   bool modalBottomScreenIsShown = false;
   bool isDownloadedAlready = false;
-  VideoEntity entity;
+  VideoEntity? entity;
   bool isCurrentlyDownloading = false;
-  DownloadTaskStatus currentStatus;
-  double progress;
-  DownloadManager downloadManager;
-  DatabaseManager databaseManager;
-  GlobalKey _keyListRow;
-  VideoProgressEntity videoProgressEntity;
+  DownloadTaskStatus? currentStatus;
+  double? progress;
+  late DownloadManager downloadManager;
+  DatabaseManager? databaseManager;
+  GlobalKey? _keyListRow;
+  VideoProgressEntity? videoProgressEntity;
 
   @override
   void dispose() {
     super.dispose();
     widget.logger.fine("Disposing list-card for video with title " +
-        widget.video.title +
+        widget.video.title! +
         " and id " +
-        widget.video.id);
+        widget.video.id!);
 
     downloadManager.unsubscribe(widget.video.id, downloadManagerIdentifier);
   }
@@ -69,9 +69,9 @@ class _ListCardState extends State<ListCard> {
   Widget build(BuildContext context) {
     this.context = context;
     appWideState = AppSharedStateContainer.of(context);
-    downloadManager = appWideState.appState.downloadManager;
-    databaseManager = appWideState.appState.databaseManager;
-    VideoListState videoListState = appWideState.videoListState;
+    downloadManager = appWideState!.appState!.downloadManager;
+    databaseManager = appWideState!.appState!.databaseManager;
+    VideoListState? videoListState = appWideState!.videoListState;
     Orientation orientation = MediaQuery.of(context).orientation;
 
     subscribeToProgressChannel();
@@ -79,7 +79,7 @@ class _ListCardState extends State<ListCard> {
 
     bool isExtendet = false;
     if (videoListState != null) {
-      Set<String> extendetTiles = videoListState.extendetListTiles;
+      Set<String?> extendetTiles = videoListState.extendetListTiles;
       isExtendet = extendetTiles.contains(widget.video.id);
     }
 
@@ -97,12 +97,12 @@ class _ListCardState extends State<ListCard> {
             key: new Key(uuid.v1()),
             margin: new EdgeInsets.only(left: 40.0, right: 12.0),
             child: new Text(
-              widget.video.topic,
+              widget.video.topic!,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: Theme.of(context)
                   .textTheme
-                  .headline6
+                  .headline6!
                   .copyWith(color: Colors.black),
             ),
           ),
@@ -114,12 +114,12 @@ class _ListCardState extends State<ListCard> {
             key: new Key(uuid.v1()),
             margin: new EdgeInsets.only(left: 40.0, right: 12.0),
             child: new Text(
-              widget.video.title,
+              widget.video.title!,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               style: Theme.of(context)
                   .textTheme
-                  .subtitle1
+                  .subtitle1!
                   .copyWith(color: Colors.black),
             ),
           ),
@@ -156,7 +156,7 @@ class _ListCardState extends State<ListCard> {
                           // Playback Progress
                           videoProgressEntity != null
                               ? PlaybackProgressBar(
-                                  videoProgressEntity.progress,
+                                  videoProgressEntity!.progress,
                                   int.tryParse(
                                       widget.video.duration.toString()),
                                   true)
@@ -173,7 +173,7 @@ class _ListCardState extends State<ListCard> {
                 widget.video,
                 isCurrentlyDownloading,
                 isDownloadedAlready,
-                appWideState.appState.downloadManager,
+                appWideState!.appState!.downloadManager,
                 widget.video.size != null ? filesize(widget.video.size) : "",
                 DeviceInformation.isTablet(context)),
           ],
@@ -227,7 +227,7 @@ class _ListCardState extends State<ListCard> {
 
   void _handleTap() {
     widget.logger.info("handle tab on tile");
-    appWideState.updateExtendetListTile(widget.video.id);
+    appWideState!.updateExtendetListTile(widget.video.id);
     //only rerender this tile, not the whole app state!
     setState(() {});
   }
@@ -245,15 +245,15 @@ class _ListCardState extends State<ListCard> {
   }
 
   double determineDistanceOfRowToStart() {
-    final RenderBox renderBox = _keyListRow.currentContext.findRenderObject();
+    final RenderBox renderBox = _keyListRow!.currentContext!.findRenderObject() as RenderBox;
     final position = renderBox.localToGlobal(Offset.zero);
     return position.distance;
   }
 
-  void onDownloadStateChanged(String videoId, DownloadTaskStatus updatedStatus,
+  void onDownloadStateChanged(String? videoId, DownloadTaskStatus? updatedStatus,
       double updatedProgress) {
     widget.logger.info("Download: " +
-        widget.video.title +
+        widget.video.title! +
         " status: " +
         updatedStatus.toString() +
         " progress: " +
@@ -264,14 +264,14 @@ class _ListCardState extends State<ListCard> {
     updateStatus(updatedStatus, videoId);
   }
 
-  void updateStatus(DownloadTaskStatus updatedStatus, String videoId) {
+  void updateStatus(DownloadTaskStatus? updatedStatus, String? videoId) {
     if (mounted) {
       setState(() {
         currentStatus = updatedStatus;
       });
     } else {
       widget.logger.fine("Not updating status for Video  " +
-          videoId +
+          videoId! +
           " - downloadCardBody not mounted");
     }
   }
@@ -286,28 +286,28 @@ class _ListCardState extends State<ListCard> {
         downloadManagerIdentifier);
   }
 
-  void onDownloaderFailed(String videoId) {
+  void onDownloaderFailed(String? videoId) {
     widget.logger
-        .info("Download video: " + videoId + " received 'failed' signal");
+        .info("Download video: " + videoId! + " received 'failed' signal");
     // SnackbarActions.showError(context, ERROR_MSG_DOWNLOAD_FAILED);
     updateStatus(DownloadTaskStatus.failed, videoId);
   }
 
-  void onDownloaderComplete(String videoId) {
+  void onDownloaderComplete(String? videoId) {
     widget.logger
-        .info("Download video: " + videoId + " received 'complete' signal");
+        .info("Download video: " + videoId! + " received 'complete' signal");
     updateStatus(DownloadTaskStatus.complete, videoId);
   }
 
-  void onSubscriptionCanceled(String videoId) {
+  void onSubscriptionCanceled(String? videoId) {
     widget.logger
-        .info("Download video: " + videoId + " received 'cancled' signal");
+        .info("Download video: " + videoId! + " received 'cancled' signal");
     updateStatus(DownloadTaskStatus.canceled, videoId);
   }
 
-  void loadCurrentStatusFromDatabase(String videoId) async {
+  void loadCurrentStatusFromDatabase(String? videoId) async {
     if (videoProgressEntity == null) {
-      appWideState.appState.databaseManager
+      appWideState!.appState!.databaseManager
           .getVideoProgressEntity(videoId)
           .then((entity) {
         if (entity != null) {
@@ -319,13 +319,9 @@ class _ListCardState extends State<ListCard> {
       });
     }
 
-    VideoEntity entity = await downloadManager.isAlreadyDownloaded(videoId);
+    VideoEntity? entity = await downloadManager.isAlreadyDownloaded(videoId);
     if (entity != null) {
-      widget.logger.info("Video with name  " +
-          widget.video.title +
-          " and id " +
-          videoId +
-          " is downloaded already");
+      widget.logger.info("Video with name  ${widget.video.title!} and id ${videoId!} is downloaded already");
       this.entity = entity;
       if (!isDownloadedAlready) {
         isDownloadedAlready = true;
@@ -340,9 +336,9 @@ class _ListCardState extends State<ListCard> {
 
     if (await downloadManager.isCurrentlyDownloading(videoId) != null) {
       widget.logger.fine("Video with name  " +
-          widget.video.title +
+          widget.video.title! +
           " and id " +
-          videoId +
+          videoId! +
           " is currently downloading");
       if (!isCurrentlyDownloading) {
         isDownloadedAlready = false;
@@ -365,7 +361,7 @@ class _ListCardState extends State<ListCard> {
     }
 
     // also check if video url is accessible
-    final response = await http.head(Uri.parse(widget.video.url_video));
+    final response = await http.head(Uri.parse(widget.video.url_video!));
 
     if (response.statusCode >= 300) {
       widget.logger.info("Url is not accessible: " +
@@ -373,7 +369,7 @@ class _ListCardState extends State<ListCard> {
           ". Status code: " +
           response.statusCode.toString() +
           ". Reason: " +
-          response.reasonPhrase);
+          response.reasonPhrase!);
 
       SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);
       updateStatus(DownloadTaskStatus.failed, widget.video.id);
@@ -386,9 +382,9 @@ class _ListCardState extends State<ListCard> {
 
     // check for filesystem permissions
     // if user grants permission, start downloading right away
-    if (!appWideState.appState.hasFilesystemPermission) {
-      appWideState.appState.downloadManager
-          .checkAndRequestFilesystemPermissions(appWideState, widget.video);
+    if (!appWideState!.appState!.hasFilesystemPermission) {
+      appWideState!.appState!.downloadManager
+          .checkAndRequestFilesystemPermissions(appWideState!, widget.video);
       return;
     }
 
@@ -397,7 +393,7 @@ class _ListCardState extends State<ListCard> {
         .then((video) => widget.logger.info("Downloaded request successfull"),
             onError: (e) {
       widget.logger.severe("Error starting download: " +
-          widget.video.title +
+          widget.video.title! +
           ". Error:  " +
           e.toString());
     });
@@ -409,7 +405,7 @@ class _ListCardState extends State<ListCard> {
         .then((bool deletedSuccessfully) {
       if (!deletedSuccessfully) {
         widget.logger
-            .severe("Failed to delete video with title " + widget.video.title);
+            .severe("Failed to delete video with title " + widget.video.title!);
       }
       isDownloadedAlready = false;
       isCurrentlyDownloading = false;

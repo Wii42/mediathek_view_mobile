@@ -15,7 +15,7 @@ const ERROR_MSG_DOWNLOAD_FAILED = "Download fehlgeschlagen";
 
 class Util {
   static Future<bool> playVideoPreChecks(
-      BuildContext context, VideoEntity entity, Video video) async {
+      BuildContext context, VideoEntity? entity, Video video) async {
     if (entity == null) {
       var connectivityResult = await (Connectivity().checkConnectivity());
       if (connectivityResult == ConnectivityResult.none) {
@@ -26,7 +26,7 @@ class Util {
 
     //  video has been removed from the Mediathek already
     if (entity == null && video != null && video.url_video != null) {
-      final response = await http.head(Uri.parse(video.url_video));
+      final response = await http.head(Uri.parse(video.url_video!));
 
       if (response.statusCode >= 300) {
         SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);
@@ -43,10 +43,10 @@ class Util {
 
   static Future playVideoHandler(
       BuildContext context,
-      AppSharedState appState,
-      VideoEntity entity,
+      AppSharedState? appState,
+      VideoEntity? entity,
       Video video,
-      VideoProgressEntity videoProgressEntity) async {
+      VideoProgressEntity? videoProgressEntity) async {
     // only check for internet connection when video is not downloaded
     bool preChecksSuccessful =
         await Util.playVideoPreChecks(context, entity, video);
@@ -57,7 +57,7 @@ class Util {
     return Navigator.of(context).push(new MaterialPageRoute(
         builder: (BuildContext context) {
           return new FlutterVideoPlayer(
-              context, appState, video, entity, videoProgressEntity);
+              context, appState!, video, entity, videoProgressEntity);
         },
         settings: RouteSettings(name: "VideoPlayer"),
         fullscreenDialog: false));

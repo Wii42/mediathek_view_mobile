@@ -9,43 +9,47 @@ class APIQuery {
   final Logger logger = Logger('WebsocketController');
 
   //callbacks
-  var onDataReceived;
-  var onError;
+  void Function(String) onDataReceived;
+  Function onError;
 
   static int skip = 0;
-  static final int defaultQueryAmount = 60;
+  static const int defaultQueryAmount = 60;
 
-  static Timer continoousPingTimer;
+  static Timer? continoousPingTimer;
   ConnectionState connectionState = ConnectionState.none;
 
-  APIQuery({@required this.onDataReceived, @required this.onError});
+  APIQuery({required this.onDataReceived, required this.onError});
 
-  void search(String genericQuery, Map<String, SearchFilter> searchFilters) {
+  void search(String? genericQuery, Map<String, SearchFilter> searchFilters) {
     List<String> queryFilters = [];
 
     logger.info("Query skip: $skip");
 
     if (searchFilters.containsKey('Titel') &&
-        searchFilters['Titel'].filterValue.isNotEmpty)
-      queryFilters.add('{"fields":["title"],"query":"${searchFilters['Titel'].filterValue.toLowerCase()}"}');
+        searchFilters['Titel']!.filterValue.isNotEmpty) {
+      queryFilters.add('{"fields":["title"],"query":"${searchFilters['Titel']!.filterValue.toLowerCase()}"}');
+    }
 
     if (searchFilters.containsKey('Thema') &&
-        searchFilters['Thema'].filterValue.isNotEmpty &&
+        searchFilters['Thema']!.filterValue.isNotEmpty &&
         genericQuery != null &&
         genericQuery.isNotEmpty) {
       //generics -> title only
       queryFilters.add(
           '{"fields":["title"],"query":"${genericQuery.toLowerCase()}"}');
-    } else if (genericQuery != null && genericQuery.isNotEmpty)
+    } else if (genericQuery != null && genericQuery.isNotEmpty) {
       queryFilters.add('{"fields":["topic","title"],"query":"${genericQuery.toLowerCase()}"}');
+    }
 
     if (searchFilters.containsKey('Thema') &&
-        searchFilters['Thema'].filterValue.isNotEmpty)
-      queryFilters.add('{"fields":["topic"],"query":"${searchFilters['Thema'].filterValue.toLowerCase()}"}');
+        searchFilters['Thema']!.filterValue.isNotEmpty) {
+      queryFilters.add('{"fields":["topic"],"query":"${searchFilters['Thema']!.filterValue.toLowerCase()}"}');
+    }
 
-    if (searchFilters.containsKey('Sender'))
-      searchFilters['Sender'].filterValue.split(";").forEach((channel) =>
+    if (searchFilters.containsKey('Sender')) {
+      searchFilters['Sender']!.filterValue.split(";").forEach((channel) =>
           queryFilters.add('{"fields":["channel"],"query":"${channel.toLowerCase()}"}'));
+    }
 
     String request = '{"queries":[${queryFilters.join(',')}],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
 

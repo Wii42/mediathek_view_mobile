@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'TVPlayerController.dart';
 
 class AvailableTVsDialog extends StatefulWidget {
-  final TvPlayerController tvPlayerController;
+  final TvPlayerController? tvPlayerController;
 
   AvailableTVsDialog(this.tvPlayerController);
 
@@ -18,9 +18,9 @@ class AvailableTVsDialog extends StatefulWidget {
 }
 
 class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
-  AppSharedState _appWideState;
+  late AppSharedState _appWideState;
   final Logger logger = new Logger('_AvailableTVsDialog');
-  VoidCallback listener;
+  late VoidCallback listener;
 
   _AvailableTVsDialogState() {
     listener = () {
@@ -31,12 +31,12 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
   void initState() {
     super.initState();
     // react on value changes (e.g position) on both the flutter as well as the Tv player
-    tvPlayerController.addListener(listener);
+    tvPlayerController!.addListener(listener);
   }
 
   @override
   void deactivate() {
-    tvPlayerController.removeListener(listener);
+    tvPlayerController!.removeListener(listener);
     super.deactivate();
   }
 
@@ -44,7 +44,7 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
   Widget build(BuildContext context) {
     _appWideState = AppSharedStateContainer.of(context);
 
-    var availableTVs = tvPlayerController.value.availableTvs
+    var availableTVs = tvPlayerController!.value.availableTvs
         .map((tv) => new SimpleDialogOption(
               child: new Text(tv,
                   style: new TextStyle(color: Colors.white, fontSize: 18.0)),
@@ -52,25 +52,25 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
                 logger.info("Connecting to Samsung TV" + tv);
 
                 // initialize tvPlayer controller
-                if (!widget.tvPlayerController
+                if (!widget.tvPlayerController!
                     .isListeningToPlatformChannels()) {
-                  widget.tvPlayerController.initialize();
+                  widget.tvPlayerController!.initialize();
                 }
 
-                _appWideState.appState.samsungTVCastManager
+                _appWideState.appState!.samsungTVCastManager
                     .checkIfTvIsSupported(tv);
                 Navigator.pop(context, true);
               },
             ))
         .toList();
-    if (tvPlayerController.value.playbackOnTvStarted) {
+    if (tvPlayerController!.value.playbackOnTvStarted) {
       availableTVs.add(new SimpleDialogOption(
         child: new ElevatedButton(
           child: new Text("Verbindung trennen",
               style: new TextStyle(color: Colors.white, fontSize: 20.0)),
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xffffbf00))),
           onPressed: () {
-            tvPlayerController.disconnect();
+            tvPlayerController!.disconnect();
             Navigator.pop(context, true);
           },
         ),
@@ -97,5 +97,5 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
     );
   }
 
-  TvPlayerController get tvPlayerController => widget.tvPlayerController;
+  TvPlayerController? get tvPlayerController => widget.tvPlayerController;
 }

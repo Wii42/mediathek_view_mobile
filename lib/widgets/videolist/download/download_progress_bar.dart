@@ -5,23 +5,23 @@ import 'package:logging/logging.dart';
 import 'DownloadController.dart';
 import 'DownloadValue.dart';
 
-typedef void TriggerParentStateReload();
+typedef TriggerParentStateReload = void Function();
 
 class DownloadProgressBar extends StatefulWidget {
-  final Logger logger = new Logger('DownloadProgressBar');
+  final Logger logger = Logger('DownloadProgressBar');
   int downloadManagerIdentifier = 1;
-  String videoId;
-  String videoTitle;
+  String? videoId;
+  String? videoTitle;
   bool isOnDetailScreen;
   DownloadManager downloadManager;
 
   // this is an optional function that is called by the progress bar
   // indicating that a download has complete. This is a workaround so that the parent
   // widget does not have to subscribe video downloads separately
-  TriggerParentStateReload triggerParentStateReload;
+  TriggerParentStateReload? triggerParentStateReload;
 
   DownloadProgressBar(this.videoId, this.videoTitle, this.downloadManager,
-      this.isOnDetailScreen, this.triggerParentStateReload);
+      this.isOnDetailScreen, this.triggerParentStateReload, {Key? key}) : super(key: key);
 
   @override
   _DownloadProgressBarState createState() => _DownloadProgressBarState();
@@ -29,15 +29,15 @@ class DownloadProgressBar extends StatefulWidget {
 
 class _DownloadProgressBarState extends State<DownloadProgressBar> {
   double downloadProgress = -1;
-  DownloadValue _latestDownloadValue;
-  DownloadController downloadController;
+  DownloadValue? _latestDownloadValue;
+  DownloadController? downloadController;
 
   @override
   Future<void> dispose() async {
     super.dispose();
     if (downloadController != null) {
-      downloadController.removeListener(updateDownloadState);
-      downloadController.dispose();
+      downloadController!.removeListener(updateDownloadState);
+      downloadController!.dispose();
     }
   }
 
@@ -54,10 +54,10 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
       return new Container();
     }
 
-    if (_latestDownloadValue.isDownloading ||
-        _latestDownloadValue.isPaused ||
-        _latestDownloadValue.isEnqueued) {
-      return getProgressIndicator(_latestDownloadValue.progress);
+    if (_latestDownloadValue!.isDownloading ||
+        _latestDownloadValue!.isPaused ||
+        _latestDownloadValue!.isEnqueued) {
+      return getProgressIndicator(_latestDownloadValue!.progress);
     }
 
     return new Container();
@@ -69,12 +69,12 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
         child: progress == null || progress == -1
             ? new LinearProgressIndicator(
                 valueColor:
-                    new AlwaysStoppedAnimation<Color>(Colors.green[700]),
+                    new AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100])
             : new LinearProgressIndicator(
                 value: (progress / 100),
                 valueColor:
-                    new AlwaysStoppedAnimation<Color>(Colors.green[700]),
+                    new AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100]));
   }
 
@@ -101,24 +101,24 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
   }
 
   void subscribeToDownloadUpdates(
-      String videoId, String videoTitle, DownloadManager downloadManager) {
+      String? videoId, String? videoTitle, DownloadManager downloadManager) {
     downloadController =
         new DownloadController(videoId, videoTitle, downloadManager);
-    _latestDownloadValue = downloadController.value;
-    downloadController.addListener(updateDownloadState);
-    downloadController.initialize();
+    _latestDownloadValue = downloadController!.value;
+    downloadController!.addListener(updateDownloadState);
+    downloadController!.initialize();
     updateIfCurrentlyDownloading();
   }
 
   void updateDownloadState() {
-    _latestDownloadValue = downloadController.value;
+    _latestDownloadValue = downloadController!.value;
     widget.logger.info(
-        "DownloadProgressBar status " + _latestDownloadValue.status.toString());
+        "DownloadProgressBar status " + _latestDownloadValue!.status.toString());
 
     if (widget.triggerParentStateReload != null &&
-        _latestDownloadValue.isComplete) {
+        _latestDownloadValue!.isComplete) {
       widget.logger.info("trigger parent state reload");
-      widget.triggerParentStateReload();
+      widget.triggerParentStateReload!();
       return;
     }
 

@@ -25,7 +25,7 @@ class ChannelListTileState extends State<ChannelListTile> {
     return new ListTile(
         onTap: () {
           setState(() {
-            channel.isCheck = !channel.isCheck;
+            channel.isCheck = !channel.isCheck!;
           });
         },
         leading: new CircleAvatar(
@@ -42,7 +42,7 @@ class ChannelListTileState extends State<ChannelListTile> {
             new Checkbox(
                 value: channel.isCheck,
                 activeColor: Colors.grey[800],
-                onChanged: (bool value) {
+                onChanged: (bool? value) {
                   setState(() {
                     channel.isCheck = value;
                   });

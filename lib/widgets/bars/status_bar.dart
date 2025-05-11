@@ -7,16 +7,16 @@ import 'package:meta/meta.dart';
 class StatusBar extends StatelessWidget {
   final Logger logger = new Logger('VideoWidget');
   final bool videoListIsEmpty;
-  final bool apiError;
+  final bool? apiError;
   final bool firstAppStartup;
-  final int lastAmountOfVideosRetrieved;
+  final int? lastAmountOfVideosRetrieved;
 
   StatusBar(
-      {Key key,
-      @required this.apiError,
-      @required this.firstAppStartup,
-      @required this.videoListIsEmpty,
-      @required this.lastAmountOfVideosRetrieved})
+      {Key? key,
+      required this.apiError,
+      required this.firstAppStartup,
+      required this.videoListIsEmpty,
+      required this.lastAmountOfVideosRetrieved})
       : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class StatusBar extends StatelessWidget {
         " lastAmountOfVideosRetrieved: " +
         lastAmountOfVideosRetrieved.toString());
 
-    if (apiError) {
+    if (apiError!) {
       return new CircularProgressWithText(
         new Text("Keine Verbindung", style: connectionLostTextStyle),
         new Color(0xffffbf00),

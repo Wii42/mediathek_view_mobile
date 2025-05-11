@@ -11,15 +11,15 @@ import 'package:uuid/uuid.dart';
 class VideoPreviewAdapter extends StatefulWidget {
   final Logger logger = new Logger('VideoPreviewAdapter');
   final Video video;
-  final String defaultImageAssetPath;
+  final String? defaultImageAssetPath;
   bool previewNotDownloadedVideos;
   bool isVisible;
   bool openDetailPage;
   // if width not set, set to full width
-  Size size;
+  Size? size;
   // force to this specific aspect ratio
-  double presetAspectRatio;
-  Image previewImage;
+  double? presetAspectRatio;
+  Image? previewImage;
 
   VideoPreviewAdapter(
     // always hand over video. Download section needs to convert to video.
@@ -38,9 +38,9 @@ class VideoPreviewAdapter extends StatefulWidget {
 }
 
 class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
-  VideoEntity videoEntity;
-  VideoProgressEntity videoProgressEntity;
-  AppSharedState appWideState;
+  VideoEntity? videoEntity;
+  VideoProgressEntity? videoProgressEntity;
+  AppSharedState? appWideState;
   bool isCurrentlyDownloading = false;
 
   @override
@@ -52,28 +52,28 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
       return new Container();
     }
 
-    if (appWideState.videoListState != null &&
-        appWideState.videoListState.previewImages
+    if (appWideState!.videoListState != null &&
+        appWideState!.videoListState!.previewImages
             .containsKey(widget.video.id)) {
       widget.logger
-          .info("Getting preview image from memory for: " + widget.video.title);
+          .info("Getting preview image from memory for: " + widget.video.title!);
       widget.previewImage =
-          appWideState.videoListState.previewImages[widget.video.id];
+          appWideState!.videoListState!.previewImages[widget.video.id];
     }
 
     if (widget.previewImage != null) {
-      widget.logger.info("Preview for video is set: " + widget.video.title);
+      widget.logger.info("Preview for video is set: " + widget.video.title!);
     } else {
-      widget.logger.info("Preview for video is NOT set: " + widget.video.title);
+      widget.logger.info("Preview for video is NOT set: " + widget.video.title!);
     }
 
     // check if video is currently downloading
-    appWideState.appState.downloadManager
+    appWideState!.appState!.downloadManager
         .isCurrentlyDownloading(widget.video.id)
         .then((value) {
       if (value != null) {
         if (isCurrentlyDownloading) {
-          widget.logger.info("Video is downloading:  " + widget.video.title);
+          widget.logger.info("Video is downloading:  " + widget.video.title!);
           isCurrentlyDownloading = true;
           if (mounted) {
             setState(() {});
@@ -83,12 +83,12 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     });
 
     if (widget.previewImage == null) {
-      appWideState.appState.videoPreviewManager
-          .getImagePreview(widget.video.id)
+      appWideState!.appState!.videoPreviewManager
+          .getImagePreview(widget.video.id!)
           .then((image) {
         if (image != null) {
           widget.logger
-              .info("Thumbnail found  for video: " + widget.video.title);
+              .info("Thumbnail found  for video: " + widget.video.title!);
           widget.previewImage = image;
           if (mounted) {
             setState(() {});
@@ -125,7 +125,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
   }
 
   void requestPreview(BuildContext context) {
-    appWideState.appState.databaseManager
+    appWideState!.appState!.databaseManager
         .getDownloadedVideo(widget.video.id)
         .then((entity) {
       if (entity == null && !widget.previewNotDownloadedVideos) {
@@ -136,10 +136,10 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
   }
 
   void requestThumbnailPicture(
-      BuildContext context, VideoEntity entity, Video video) {
-    String url = VideoUtil.getVideoPath(appWideState, entity, video);
+      BuildContext context, VideoEntity? entity, Video video) {
+    String? url = VideoUtil.getVideoPath(appWideState, entity, video);
 
-    appWideState.appState.videoPreviewManager.startPreviewGeneration(
+    appWideState!.appState!.videoPreviewManager.startPreviewGeneration(
         context,
         widget.video.id,
         widget.video.title,
@@ -147,14 +147,14 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
         triggerStateReloadOnPreviewReceived);
   }
 
-  void triggerStateReloadOnPreviewReceived(String filepath) {
+  void triggerStateReloadOnPreviewReceived(String? filepath) {
     if (filepath == null) {
       return;
     }
-    widget.logger.info("Preview received for video: " + widget.video.title);
+    widget.logger.info("Preview received for video: " + widget.video.title!);
     // get preview from file
-    appWideState.appState.videoPreviewManager
-        .getImagePreview(widget.video.id)
+    appWideState!.appState!.videoPreviewManager
+        .getImagePreview(widget.video.id!)
         .then((image) {
       widget.previewImage = image;
       if (mounted) {

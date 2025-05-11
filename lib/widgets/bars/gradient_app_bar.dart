@@ -9,13 +9,13 @@ import 'package:logging/logging.dart';
 
 class GradientAppBar extends StatelessWidget {
   final Logger logger = new Logger('GradientAppBar');
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool isFilterMenuOpen;
   final int currentAmountOfVideosInList;
-  final int totalAmountOfVideosForSelection;
+  final int? totalAmountOfVideosForSelection;
   final FilterMenu filterMenu;
-  List<SearchFilter> searchFilters;
-  StateContainerAppBarState state;
+  List<SearchFilter>? searchFilters;
+  late StateContainerAppBarState state;
   TickerProviderStateMixin mixin;
 
   GradientAppBar(
@@ -31,7 +31,7 @@ class GradientAppBar extends StatelessWidget {
     logger.fine("Rendering App Bar");
 
     state = FilterBarSharedState.of(context);
-    searchFilters = filterMenu.searchFilters.values.toList();
+    searchFilters = filterMenu.searchFilters!.values.toList();
 
     bool isFilterMenuOpen = getFilterMenuState(context);
 
@@ -64,11 +64,11 @@ class GradientAppBar extends StatelessWidget {
                             color: Colors.white,
                             fontStyle: FontStyle.italic),
                         suffixIcon: new IconButton(
-                            color: controller.text.isNotEmpty
+                            color: controller!.text.isNotEmpty
                                 ? Colors.red
                                 : Colors.transparent,
                             onPressed: () {
-                              controller.text = "";
+                              controller!.text = "";
                             },
                             icon: new Icon(
                               Icons.clear,
@@ -96,7 +96,7 @@ class GradientAppBar extends StatelessWidget {
             ),
           ),
           //show filters if there are some in the list
-          searchFilters != null && searchFilters.isNotEmpty
+          searchFilters != null && searchFilters!.isNotEmpty
               ? new Padding(
                   padding: new EdgeInsets.only(bottom: 5.0),
                   child: new Row(
@@ -105,20 +105,20 @@ class GradientAppBar extends StatelessWidget {
                     children: <Widget>[
                       new Text('Filter: ', style: filterRowTextStyle),
                       !DeviceInformation.isTablet(context) &&
-                              searchFilters.length > 3
+                              searchFilters!.length > 3
                           ? new Column(
                               children: <Widget>[
                                 new Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
-                                    children: searchFilters.sublist(0, 2)),
+                                    children: searchFilters!.sublist(0, 2)),
                                 new Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
-                                    children: searchFilters.sublist(2)),
+                                    children: searchFilters!.sublist(2)),
                               ],
                             )
-                          : new Row(children: searchFilters),
+                          : new Row(children: searchFilters!),
                     ],
                   ),
                 )
@@ -139,7 +139,7 @@ class GradientAppBar extends StatelessWidget {
   }
 
   bool getFilterMenuState(BuildContext context) {
-    FilterMenuState videoListState = state.filterMenuState;
+    FilterMenuState? videoListState = state.filterMenuState;
     return videoListState != null && videoListState.isFilterMenuOpen;
   }
 }

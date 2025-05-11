@@ -3,30 +3,30 @@ import 'package:flutter_ws/model/video.dart';
 class VideoEntity {
   static const String TABLE_NAME = "videos";
 
-  String id;
-  String task_id;
-  String channel;
-  String topic;
-  String description;
-  String title;
-  int timestamp;
-  int timestamp_video_saved;
+  String? id;
+  String? task_id;
+  String? channel;
+  String? topic;
+  String? description;
+  String? title;
+  int? timestamp;
+  int? timestamp_video_saved;
   var duration;
-  int size;
-  String url_website;
-  String url_video_low;
-  String url_video_hd;
-  String filmlisteTimestamp;
-  String url_video;
-  String url_subtitle;
+  int? size;
+  String? url_website;
+  String? url_video_low;
+  String? url_video_hd;
+  String? filmlisteTimestamp;
+  String? url_video;
+  String? url_subtitle;
 
   //for the db entity
-  String filePath;
-  String fileName;
-  String mimeType;
+  String? filePath;
+  String? fileName;
+  String? mimeType;
 
   //local rating
-  double rating;
+  double? rating;
 
   //column names
   static const String idColumn = "id";
@@ -72,7 +72,7 @@ class VideoEntity {
       this.mimeType,
       this.rating});
 
-  static VideoEntity fromVideo(Video video) {
+  factory VideoEntity.fromVideo(Video video) {
     return VideoEntity(
         video.id,
         "", //task Id is added by download manager

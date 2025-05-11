@@ -9,18 +9,18 @@ import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-typedef void TriggerStateReloadOnPreviewReceived(String trigger);
+typedef void TriggerStateReloadOnPreviewReceived(String? trigger);
 
 class VideoPreviewManager {
   final Logger logger = new Logger('VideoPreviewManager');
-  AppSharedState _appWideState;
+  late AppSharedState _appWideState;
 
   //Map<String, bool> requestedVideoPreview = new Map();
   // Maps a video id to a function that reloads the state of the widget that requested the preview
   // THis is needed because, although a video id is unique, there can be multiple widgets requesting previews for the same video id
   // this is the case when the user just watched the video (visible in recently viewed) and also downloads it at the same time
   // the preview should not be requested twice & when the preview is received, both widget should be updated with the preview
-  Map<String, List<TriggerStateReloadOnPreviewReceived>>
+  Map<String?, List<TriggerStateReloadOnPreviewReceived>>
       videoIdToPreviewReceived = new Map();
 
   var setStateNecessary;
@@ -29,9 +29,9 @@ class VideoPreviewManager {
     _appWideState = AppSharedStateContainer.of(context);
   }
 
-  Future<Image> getImagePreview(String videoId) async {
+  Future<Image?> getImagePreview(String videoId) async {
     String thumbnailPath =
-        getThumbnailPath(_appWideState.appState.localDirectory, videoId);
+        getThumbnailPath(_appWideState.appState!.localDirectory!, videoId);
 
     var file = io.File(thumbnailPath);
     if (!await file.exists()) {
@@ -46,19 +46,19 @@ class VideoPreviewManager {
 
   void startPreviewGeneration(
       BuildContext context,
-      String videoId,
-      String title,
-      String url,
+      String? videoId,
+      String? title,
+      String? url,
       TriggerStateReloadOnPreviewReceived triggerStateReload) async {
-    if (_appWideState.videoListState.previewImages.containsKey(videoId)) {
+    if (_appWideState.videoListState!.previewImages.containsKey(videoId)) {
       return null;
     }
 
     if (videoIdToPreviewReceived.containsKey(videoId)) {
-      logger.info("Preview requested again for " + title);
+      logger.info("Preview requested again for " + title!);
       videoIdToPreviewReceived.update(videoId, (value) {
         List<TriggerStateReloadOnPreviewReceived> list =
-            videoIdToPreviewReceived[videoId];
+            videoIdToPreviewReceived[videoId]!;
         list.add(triggerStateReload);
         return list;
       });
@@ -71,21 +71,21 @@ class VideoPreviewManager {
       return list;
     });
 
-    logger.info("Request preview for: " + title);
-    _createAndPersistThumbnail(context, videoId, url).then((filepath) {
+    logger.info("Request preview for: " + title!);
+    _createAndPersistThumbnail(context, videoId!, url).then((filepath) {
       // update each widget that waited for the preview
-      videoIdToPreviewReceived[videoId].forEach((triggerReload) {
+      videoIdToPreviewReceived[videoId]!.forEach((triggerReload) {
         triggerReload(filepath);
       });
       videoIdToPreviewReceived.remove(videoId);
     });
   }
 
-  Future<String> _createAndPersistThumbnail(
-      BuildContext context, String videoId, String url) async {
-    Uint8List uint8list;
+  Future<String?> _createAndPersistThumbnail(
+      BuildContext context, String videoId, String? url) async {
+    Uint8List? uint8list;
 
-    io.Directory directory = _appWideState.appState.localDirectory;
+    io.Directory directory = _appWideState.appState!.localDirectory!;
 
     String thumbnailPath = getThumbnailPath(directory, videoId);
 
@@ -95,7 +95,7 @@ class VideoPreviewManager {
 
     try {
       uint8list = await VideoThumbnail.thumbnailData(
-        video: url,
+        video: url!,
         imageFormat: ImageFormat.JPEG,
         quality: 10,
       );
@@ -104,7 +104,7 @@ class VideoPreviewManager {
       return null;
     } on MissingPluginException catch (e) {
       logger.severe("Creating preview failed faile for: " +
-          url +
+          url! +
           ". Missing Plugin: " +
           e.toString());
       return null;

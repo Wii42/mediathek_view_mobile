@@ -1,22 +1,22 @@
 class VideoProgressEntity {
   static const String TABLE_NAME = "video_progress";
 
-  String id;
-  int progress;
-  String channel;
-  String topic;
-  String description;
-  String title;
-  int timestamp;
-  int timestampLastViewed;
+  String? id;
+  int? progress;
+  String? channel;
+  String? topic;
+  String? description;
+  String? title;
+  int? timestamp;
+  int? timestampLastViewed;
   var duration;
-  int size;
-  String url_website;
-  String url_video_low;
-  String url_video_hd;
-  String filmlisteTimestamp;
-  String url_video;
-  String url_subtitle;
+  int? size;
+  String? url_website;
+  String? url_video_low;
+  String? url_video_hd;
+  String? filmlisteTimestamp;
+  String? url_video;
+  String? url_subtitle;
 
   //column names
   static const String idColumn = "id";

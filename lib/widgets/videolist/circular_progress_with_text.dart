@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CircularProgressWithText extends StatelessWidget {
   final Text text;
-  final Color containerColor;
+  final Color? containerColor;
   final Color indicatorColor;
-  final double height;
+  final double? height;
 
   CircularProgressWithText(this.text, this.containerColor, this.indicatorColor,
       {this.height});

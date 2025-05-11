@@ -20,14 +20,14 @@ import 'meta_info_list_tile.dart';
 class VideoDetailScreen extends StatefulWidget {
   final Logger logger = new Logger('VideoDetailScreen');
 
-  AppSharedState appWideState;
-  Image image;
+  AppSharedState? appWideState;
+  Image? image;
   Video video;
-  VideoEntity entity;
+  VideoEntity? entity;
   bool isDownloading;
   bool isDownloaded;
-  String heroUuid;
-  String defaultImageAssetPath;
+  String? heroUuid;
+  String? defaultImageAssetPath;
 
   VideoDetailScreen(
       this.appWideState,
@@ -44,8 +44,8 @@ class VideoDetailScreen extends StatefulWidget {
 }
 
 class _VideoDetailScreenState extends State<VideoDetailScreen> {
-  VideoProgressEntity videoProgressEntity;
-  bool isTablet;
+  VideoProgressEntity? videoProgressEntity;
+  bool? isTablet;
 
   @override
   void initState() {
@@ -74,7 +74,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     Widget downloadProgressBar = new DownloadProgressBar(
         widget.video.id,
         widget.video.title,
-        widget.appWideState.appState.downloadManager,
+        widget.appWideState!.appState!.downloadManager,
         true,
         null);
 
@@ -170,7 +170,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               widget.video,
               widget.isDownloading,
               widget.isDownloaded,
-              widget.appWideState.appState.downloadManager,
+              widget.appWideState!.appState!.downloadManager,
               widget.video.size != null ? filesize(widget.video.size) : "",
               isTablet),
         ),
@@ -183,7 +183,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     Widget sideBar = Container();
 
     if (widget.video.description != null &&
-        widget.video.description.length > 0) {
+        widget.video.description!.length > 0) {
       sideBar = new SingleChildScrollView(
         child: new Container(
           margin: EdgeInsets.only(left: 35, top: 10),
@@ -193,7 +193,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               new Text("Description",
                   style: headerTextStyle.copyWith(fontSize: 30)),
               new Container(height: 10),
-              new Text(widget.video.description,
+              new Text(widget.video.description!,
                   style: subHeaderTextStyle.copyWith(fontSize: 20)),
             ],
           ),
@@ -221,9 +221,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                       child: MetaInfoListTile.getVideoMetaInformationListTile(
                           context,
                           widget.video.duration.toString(),
-                          widget.video.title,
+                          widget.video.title!,
                           widget.video.timestamp,
-                          widget.defaultImageAssetPath,
+                          widget.defaultImageAssetPath!,
                           widget.entity != null),
                     ),
                   ),
@@ -239,7 +239,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               widget.video,
               widget.isDownloading,
               widget.isDownloaded,
-              widget.appWideState.appState.downloadManager,
+              widget.appWideState!.appState!.downloadManager,
               widget.video.size != null ? filesize(widget.video.size) : "",
               isTablet),
           sideBar,
@@ -250,14 +250,14 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     var container = new Container();
 
     if (widget.video.description != null &&
-        widget.video.description.length > 0) {
+        widget.video.description!.length > 0) {
       container = new Container(
         margin: EdgeInsets.only(left: 5),
         child: new Column(
           children: <Widget>[
             new Text("Description",
                 style: headerTextStyle.copyWith(fontSize: 30)),
-            new Text(widget.video.description,
+            new Text(widget.video.description!,
                 style: subHeaderTextStyle.copyWith(fontSize: 20)),
           ],
         ),
@@ -272,7 +272,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   GestureDetector getImageSurface(double totalImageWidth, double height) {
     Widget videoProgressBar = new Container();
     if (videoProgressEntity != null) {
-      videoProgressBar = new PlaybackProgressBar(videoProgressEntity.progress,
+      videoProgressBar = new PlaybackProgressBar(videoProgressEntity!.progress,
           int.tryParse(widget.video.duration.toString()), false);
     }
 
@@ -287,7 +287,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              new Hero(tag: widget.heroUuid, child: widget.image),
+              new Hero(tag: widget.heroUuid!, child: widget.image!),
               new Positioned(
                 bottom: 0,
                 left: 0.0,
@@ -340,10 +340,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   void checkPlaybackProgress() async {
-    widget.appWideState.appState.databaseManager
+    widget.appWideState!.appState!.databaseManager
         .getVideoProgressEntity(widget.video.id)
         .then((entity) {
-      widget.logger.fine("Video has playback progress: " + widget.video.title);
+      widget.logger.fine("Video has playback progress: " + widget.video.title!);
       videoProgressEntity = entity;
       if (mounted) {
         setState(() {});
@@ -364,11 +364,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       title: new Text(
         title,
         style:
-            Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white),
+            Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white),
       ),
       subtitle: new Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
-        style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white),
+        style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
       ),
     );
   }

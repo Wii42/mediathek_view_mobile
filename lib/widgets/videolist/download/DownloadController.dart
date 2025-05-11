@@ -9,19 +9,19 @@ import 'DownloadValue.dart';
 
 class DownloadController extends ValueNotifier<DownloadValue> {
   final Logger logger = new Logger('DownloadController');
-  int downloadManagerIdentifier;
+  int? downloadManagerIdentifier;
 
-  final String videoTitle;
+  final String? videoTitle;
   DownloadManager downloadManager;
 
   DownloadController(
-      String videoId, String videoTitle, DownloadManager downloadManager)
+      String? videoId, String? videoTitle, DownloadManager downloadManager)
       : this.videoTitle = videoTitle,
         this.downloadManager = downloadManager,
         super(DownloadValue(videoId: videoId));
 
   void initialize() {
-    logger.fine("DownloadController listening for video: " + videoTitle);
+    logger.fine("DownloadController listening for video: " + videoTitle!);
     subscribeToProgressChannel(value.videoId);
   }
 
@@ -39,11 +39,11 @@ class DownloadController extends ValueNotifier<DownloadValue> {
 
   void unsubscribe() async {
     logger.fine(
-        "DownloadController unsubscribe from updates for video " + videoTitle);
+        "DownloadController unsubscribe from updates for video " + videoTitle!);
     downloadManager.unsubscribe(value.videoId, downloadManagerIdentifier);
   }
 
-  void subscribeToProgressChannel(String videoId) {
+  void subscribeToProgressChannel(String? videoId) {
     downloadManagerIdentifier = getIdentifier();
     downloadManager.subscribe(
         videoId,
@@ -54,28 +54,28 @@ class DownloadController extends ValueNotifier<DownloadValue> {
         downloadManagerIdentifier);
   }
 
-  void onDownloaderFailed(String videoId) {
-    logger.info("Download video: " + videoId + " received 'failed' signal");
+  void onDownloaderFailed(String? videoId) {
+    logger.info("Download video: " + videoId! + " received 'failed' signal");
     value =
         value.copyWith(isDownloading: false, status: DownloadTaskStatus.failed);
   }
 
-  void onDownloaderComplete(String videoId) {
-    logger.info("Download video: " + videoId + " received 'complete' signal");
+  void onDownloaderComplete(String? videoId) {
+    logger.info("Download video: " + videoId! + " received 'complete' signal");
     value = value.copyWith(
         isDownloading: false, status: DownloadTaskStatus.complete);
   }
 
-  void onSubscriptionCanceled(String videoId) {
-    logger.info("Download video: " + videoId + " received 'canceled' signal");
+  void onSubscriptionCanceled(String? videoId) {
+    logger.info("Download video: " + videoId! + " received 'canceled' signal");
     value = value.copyWith(
         isDownloading: false, status: DownloadTaskStatus.canceled);
   }
 
-  void onDownloadStateChanged(String videoId, DownloadTaskStatus updatedStatus,
+  void onDownloadStateChanged(String? videoId, DownloadTaskStatus? updatedStatus,
       double updatedProgress) {
     logger.info("Download: " +
-        videoId +
+        videoId! +
         " status: " +
         updatedStatus.toString() +
         " progress: " +

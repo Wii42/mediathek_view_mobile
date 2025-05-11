@@ -18,8 +18,8 @@ import 'TVPlayerController.dart';
 /// make it easy to use!
 class CustomChewie extends StatefulWidget {
   CustomChewie({
-    Key key,
-    this.controller,
+    Key? key,
+    required this.controller,
   })  : assert(controller != null, 'You must provide a chewie controller'),
         super(key: key);
 
@@ -70,7 +70,7 @@ class CustomChewieState extends State<CustomChewie> {
 class CustomChewieController extends ChangeNotifier {
   CustomChewieController({
     this.context,
-    this.videoPlayerController,
+    required this.videoPlayerController,
     this.tvPlayerController,
     this.aspectRatio,
     this.startAt,
@@ -103,19 +103,19 @@ class CustomChewieController extends ChangeNotifier {
 
   final Logger logger = new Logger('SamsungTvCastManager');
 
-  final BuildContext context;
+  final BuildContext? context;
 
   /// The controller for the video you want to play
   final VideoPlayerController videoPlayerController;
 
   // Controller for playing the video on the Tv
-  final TvPlayerController tvPlayerController;
+  final TvPlayerController? tvPlayerController;
 
   // The video for playing
-  final Video video;
+  final Video? video;
 
   /// Start video at a certain position
-  final Duration startAt;
+  final Duration? startAt;
 
   /// Whether or not the video should loop
   final bool looping;
@@ -125,32 +125,32 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Defines customised controls. Check [MaterialControls] or
   /// [CupertinoControls] for reference.
-  final Widget customControls;
+  final Widget? customControls;
 
   /// When the video playback runs  into an error, you can build a custom
   /// error message.
-  final Widget Function(BuildContext context, String errorMessage) errorBuilder;
+  final Widget Function(BuildContext context, String? errorMessage)? errorBuilder;
 
   /// The Aspect Ratio of the Video. Important to get the correct size of the
   /// video!
   ///
   /// Will fallback to fitting within the space allowed.
-  final double aspectRatio;
+  final double? aspectRatio;
 
   /// The colors to use for controls on iOS. By default, the iOS player uses
   /// colors sampled from the original iOS 11 designs.
-  final ChewieProgressColors cupertinoProgressColors;
+  final ChewieProgressColors? cupertinoProgressColors;
 
   /// The colors to use for the Material Progress Bar. By default, the Material
   /// player uses the colors from your Theme.
-  final ChewieProgressColors materialProgressColors;
+  final ChewieProgressColors? materialProgressColors;
 
   /// The placeholder is displayed underneath the Video before it is initialized
   /// or played.
-  final Widget placeholder;
+  final Widget? placeholder;
 
   /// A widget which is placed between the video and the controls
-  final Widget overlay;
+  final Widget? overlay;
 
   /// Defines if the player will start in fullscreen when play is pressed
   final bool fullScreenByDefault;
@@ -175,11 +175,11 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Start playing on TV when connected to it
   /// only used for init as this can change later
-  final bool isCurrentlyPlayingOnTV;
+  final bool? isCurrentlyPlayingOnTV;
 
   static CustomChewieController of(BuildContext context) {
     final chewieControllerProvider =
-        context.dependOnInheritedWidgetOfExactType<_ChewieControllerProvider>();
+        context.dependOnInheritedWidgetOfExactType<_ChewieControllerProvider>()!;
 
     return chewieControllerProvider.controller;
   }
@@ -204,12 +204,12 @@ class CustomChewieController extends ChangeNotifier {
     }
 
     // if is already playing on TV, do nothing
-    if (isCurrentlyPlayingOnTV) {
+    if (isCurrentlyPlayingOnTV!) {
       return;
     }
 
     await videoPlayerController.play();
-    await videoPlayerController.seekTo(startAt);
+    await videoPlayerController.seekTo(startAt!);
   }
 
   void enterFullScreen() {
@@ -225,9 +225,9 @@ class CustomChewieController extends ChangeNotifier {
 
 class _ChewieControllerProvider extends InheritedWidget {
   const _ChewieControllerProvider({
-    Key key,
-    @required this.controller,
-    @required Widget child,
+    Key? key,
+    required this.controller,
+    required Widget child,
   })  : assert(controller != null),
         assert(child != null),
         super(key: key, child: child);

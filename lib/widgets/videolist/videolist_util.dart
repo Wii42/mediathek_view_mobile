@@ -25,9 +25,9 @@ class VideoListUtil {
       Video currentVideo = newVideos[i];
 
       logger.info("Video ID : " +
-          currentVideo.id +
+          currentVideo.id! +
           " URL: " +
-          currentVideo.url_video +
+          currentVideo.url_video! +
           " Duration: " +
           currentVideo.duration.toString() +
           " Size: " +
@@ -64,9 +64,9 @@ class VideoListUtil {
   }
 
   static Video httpUrlToHttps(Video video) {
-    if (video.url_video.startsWith('http://srfvodhd-vh.akamaihd.net') ||
-        video.url_video.startsWith('http://hdvodsrforigin-f.akamaihd.net')) {
-      video.url_video = 'https' + video.url_video.substring(4);
+    if (video.url_video!.startsWith('http://srfvodhd-vh.akamaihd.net') ||
+        video.url_video!.startsWith('http://hdvodsrforigin-f.akamaihd.net')) {
+      video.url_video = 'https' + video.url_video!.substring(4);
     }
     return video;
   }

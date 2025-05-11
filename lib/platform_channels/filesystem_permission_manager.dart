@@ -6,10 +6,10 @@ import 'package:logging/logging.dart';
 
 class FilesystemPermissionManager {
   final Logger logger = new Logger('FilesystemPermissionManager');
-  EventChannel _eventChannel;
-  MethodChannel _methodChannel;
-  Stream<dynamic> _updateStream;
-  StreamSubscription<dynamic> streamSubscription;
+  late EventChannel _eventChannel;
+  late MethodChannel _methodChannel;
+  Stream<dynamic>? _updateStream;
+  StreamSubscription<dynamic>? streamSubscription;
 
   FilesystemPermissionManager(BuildContext context) {
     _eventChannel =
@@ -17,7 +17,7 @@ class FilesystemPermissionManager {
     _methodChannel = const MethodChannel('com.mediathekview.mobile/permission');
   }
 
-  Stream<dynamic> getBroadcastStream() {
+  Stream<dynamic>? getBroadcastStream() {
     if (_updateStream == null) {
       _updateStream = _eventChannel.receiveBroadcastStream();
     }

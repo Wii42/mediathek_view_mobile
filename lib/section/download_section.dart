@@ -24,7 +24,7 @@ const recentlyWatchedVideosLimit = 5;
 
 class DownloadSection extends StatefulWidget {
   final Logger logger = new Logger('DownloadSection');
-  final AppSharedState appWideState;
+  final AppSharedState? appWideState;
 
   DownloadSection(this.appWideState);
 
@@ -40,7 +40,7 @@ class DownloadSectionState extends State<DownloadSection> {
   Set<String> userDeletedAppId; //used for fade out animation
   int milliseconds = 1500;
   Map<String, double> progress = new Map();
-  Map<String, VideoProgressEntity> videosWithPlaybackProgress = new Map();
+  Map<String?, VideoProgressEntity> videosWithPlaybackProgress = new Map();
 
   DownloadSectionState(this.userDeletedAppId);
 
@@ -52,7 +52,7 @@ class DownloadSectionState extends State<DownloadSection> {
   @override
   void initState() {
     super.initState();
-    widget.appWideState.appState.downloadManager.syncCompletedDownloads();
+    widget.appWideState!.appState!.downloadManager.syncCompletedDownloads();
     loadAlreadyDownloadedVideosFromDb();
     loadVideosWithPlaybackProgress();
   }
@@ -71,7 +71,7 @@ class DownloadSectionState extends State<DownloadSection> {
     if (currentDownloads.length == 1) {
       return CircularProgressWithText(
           new Text(
-            "Downloading: '" + currentDownloads.elementAt(0).title + "'",
+            "Downloading: '" + currentDownloads.elementAt(0).title! + "'",
             style: connectionLostTextStyle,
             softWrap: true,
             maxLines: 3,
@@ -95,7 +95,7 @@ class DownloadSectionState extends State<DownloadSection> {
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void deleteDownload(BuildContext context, String id) {
     widget.logger.info("Deleting video with title id: " + id);
-    widget.appWideState.appState.downloadManager
+    widget.appWideState!.appState!.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
       loadAlreadyDownloadedVideosFromDb();
@@ -104,13 +104,13 @@ class DownloadSectionState extends State<DownloadSection> {
         return;
       }
       SnackbarActions.showErrorWithTryAgain(context, ERROR_MSG, TRY_AGAIN_MSG,
-          widget.appWideState.appState.downloadManager.deleteVideo, id);
+          widget.appWideState!.appState!.downloadManager.deleteVideo, id);
     });
   }
 
   void loadAlreadyDownloadedVideosFromDb() async {
     Set<VideoEntity> downloads = await widget
-        .appWideState.appState.databaseManager
+        .appWideState!.appState!.databaseManager
         .getAllDownloadedVideos();
 
     if (downloads != null && this.downloadedVideos.length != downloads.length) {
@@ -126,7 +126,7 @@ class DownloadSectionState extends State<DownloadSection> {
   Future loadVideosWithPlaybackProgress() async {
     //check for playback progress
     if (videosWithPlaybackProgress.isEmpty) {
-      return widget.appWideState.appState.databaseManager
+      return widget.appWideState!.appState!.databaseManager
           .getLastViewedVideos(recentlyWatchedVideosLimit)
           .then((all) {
         if (all != null && all.isNotEmpty) {
@@ -181,7 +181,7 @@ class DownloadSectionState extends State<DownloadSection> {
   }
 
   Widget _buildLayout(
-      Map<String, VideoProgressEntity> videosWithPlaybackProgress,
+      Map<String?, VideoProgressEntity> videosWithPlaybackProgress,
       Size size,
       BuildContext context,
       Widget currentDownloadsTopBar) {

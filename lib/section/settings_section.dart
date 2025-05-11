@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsSection extends StatelessWidget {
-  static final Logger logger = new Logger('SettingsSection');
+  static final Logger logger = Logger('SettingsSection');
 
   static const githubUrl =
       'https://github.com/Mediathekview/MediathekViewMobile';
@@ -16,45 +16,45 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new SafeArea(
+      body: SafeArea(
         child: ListView(
           children: <Widget>[
-            new Card(
-              child: new Column(
+            Card(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  new ListTile(
+                  ListTile(
                     leading: const Icon(Icons.info_outline),
-                    title: new Text('About', style: aboutSectionTitle),
-                    subtitle: new Text(
+                    title: Text('About', style: aboutSectionTitle),
+                    subtitle: Text(
                         'Dies ist ein Open-Source Projekt (Apache 2.0-Lizenz) basierend auf der API von MediathekViewWeb. Es werden die Mediatheken der öffentlich-rechtliche TV Sender unterstützt.'),
                   ),
                 ],
               ),
             ),
-            new SettingsState(),
-            new Card(
-              child: new Column(
+            SettingsState(),
+            Card(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  new ListTile(
+                  ListTile(
                     leading: const Icon(Icons.attach_money),
                     title:
-                        new Text('Spenden / Donate', style: aboutSectionTitle),
+                        Text('Spenden / Donate', style: aboutSectionTitle),
                     subtitle: const Text(
                         'Dir gefällt die App? Ich würde mich über eine Spende freuen.'),
                   ),
-                  new ButtonTheme(
+                  ButtonTheme(
                     // make buttons use the appropriate styles for cards
-                    child: new ButtonBar(
+                    child: ButtonBar(
                       children: <Widget>[
-                        new TextButton(
+                        TextButton(
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   Colors.blue)),
-                          child: new Text('Paypal', style: body2TextStyle),
+                          child: Text('Paypal', style: body2TextStyle),
                           onPressed: () {
                             _launchURL(payPal);
                           },
@@ -65,25 +65,25 @@ class SettingsSection extends StatelessWidget {
                 ],
               ),
             ),
-            new Card(
-              child: new Column(
+            Card(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  new ListTile(
+                  ListTile(
                     leading: const Icon(Icons.feedback),
-                    title: new Text('Feedback', style: aboutSectionTitle),
-                    subtitle: new Text(
+                    title: Text('Feedback', style: aboutSectionTitle),
+                    subtitle: Text(
                         'Anregungen, Wünsche oder Bugs? Gib Feedback auf Github. Danke für deinen Beitrag!'),
                   ),
-                  new ButtonTheme(
+                  ButtonTheme(
                     // make buttons use the appropriate styles for cards
-                    child: new ButtonBar(
+                    child: ButtonBar(
                       children: <Widget>[
-                        new TextButton(
+                        TextButton(
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
+                              backgroundColor: MaterialStateProperty.all<Color?>(
                                   Colors.grey[800])),
-                          child: new Text('Github', style: body2TextStyle),
+                          child: Text('Github', style: body2TextStyle),
                           onPressed: () => _launchURL(githubUrl),
                         ),
                       ],
@@ -108,7 +108,7 @@ class SettingsSection extends StatelessWidget {
 }
 
 class SettingsState extends StatefulWidget {
-  final Logger logger = new Logger('SettingsState');
+  final Logger logger = Logger('SettingsState');
 
   @override
   _SettingsStateState createState() => _SettingsStateState();
@@ -116,22 +116,22 @@ class SettingsState extends StatefulWidget {
 
 class _SettingsStateState extends State<SettingsState> {
   //global state
-  AppSharedState appWideState;
+  AppSharedState? appWideState;
 
   @override
   Widget build(BuildContext context) {
     appWideState = AppSharedStateContainer.of(context);
-    bool hasCountlyConsent = appWideState.appState.sharedPreferences
-        .getBool(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT);
+    bool hasCountlyConsent = appWideState!.appState!.sharedPreferences
+        .getBool(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT)?? false;
 
-    return new Card(
-      child: new Column(
+    return Card(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.pan_tool),
-            title: new Text('GDPR', style: aboutSectionTitle),
+            title: Text('GDPR', style: aboutSectionTitle),
             subtitle: const Text(
                 'Darf MediathekView anonymisierte Crash und Nutzungsdaten sammeln? Das hilft uns die App zu verbessern.'),
           ),
@@ -143,21 +143,21 @@ class _SettingsStateState extends State<SettingsState> {
                 value: hasCountlyConsent,
                 onChanged: (value) {
                   setState(() {
-                    appWideState.appState.sharedPreferences.setBool(
+                    appWideState!.appState!.sharedPreferences.setBool(
                         HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT,
                         value);
 
-                    if (appWideState.appState.sharedPreferences.containsKey(
+                    if (appWideState!.appState!.sharedPreferences.containsKey(
                             HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
-                        appWideState.appState.sharedPreferences.containsKey(
+                        appWideState!.appState!.sharedPreferences.containsKey(
                             HomePageState
                                 .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
-                      String countlyAppKey = appWideState
-                          .appState.sharedPreferences
+                      String? countlyAppKey = appWideState!
+                          .appState!.sharedPreferences
                           .getString(HomePageState
                               .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
-                      String countlyAPI =
-                          appWideState.appState.sharedPreferences.getString(
+                      String? countlyAPI =
+                          appWideState!.appState!.sharedPreferences.getString(
                               HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API);
                       return CountlyUtil.initializeCountly(
                           widget.logger, countlyAPI, countlyAppKey, value);

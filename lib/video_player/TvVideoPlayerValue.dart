@@ -42,7 +42,7 @@ class TvVideoPlayerValue {
   /// A description of the error if present.
   ///
   /// If [hasError] is false this is [null].
-  final String errorDescription;
+  final String? errorDescription;
 
   // List of discovered TVs
   final List<String> availableTvs;
@@ -62,16 +62,16 @@ class TvVideoPlayerValue {
   /// Returns a new instance that has the same values as this current instance,
   /// except for any overrides passed in as arguments to [copyWidth].
   TvVideoPlayerValue copyWith({
-    Duration duration,
-    Duration position,
-    bool playbackOnTvStarted,
-    bool isPlaying,
-    bool isStopped,
-    bool isDisconnected,
-    String tvStatus,
-    double volume,
-    String errorDescription,
-    List<String> availableTvs,
+    Duration? duration,
+    Duration? position,
+    bool? playbackOnTvStarted,
+    bool? isPlaying,
+    bool? isStopped,
+    bool? isDisconnected,
+    String? tvStatus,
+    double? volume,
+    String? errorDescription,
+    List<String>? availableTvs,
   }) {
     return TvVideoPlayerValue(
       position: position ?? this.position,

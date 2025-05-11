@@ -11,7 +11,7 @@ class VideoDescription extends StatelessWidget {
   Video video;
   String channelPictureImagePath;
   double verticalOffset;
-  BuildContext context;
+  late BuildContext context;
 
   VideoDescription(
       this.video, this.channelPictureImagePath, this.verticalOffset);
@@ -62,20 +62,20 @@ class VideoDescription extends StatelessWidget {
                     getVerticalDividerLine(bottom: 15.0),
                     getCaption("Titel"),
                     Text(
-                      video.title,
+                      video.title!,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     //getSpacedContentRow(video.title),
                     getDivider(),
                     getCaption("Thema"),
                     Text(
-                      video.topic,
+                      video.topic!,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
@@ -84,28 +84,28 @@ class VideoDescription extends StatelessWidget {
                       Calculator.calculateDuration(video.duration),
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
                     getCaption("Ausgestrahlt"),
                     Text(
-                      Calculator.calculateTimestamp(video.timestamp),
+                      Calculator.calculateTimestamp(video.timestamp!),
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black, fontSize: 15.0),
                     ),
-                    video.description != null && video.description.isNotEmpty
+                    video.description != null && video.description!.isNotEmpty
                         ? getDivider()
                         : Container(),
-                    video.description != null && video.description.isNotEmpty
+                    video.description != null && video.description!.isNotEmpty
                         ? getCaption("Beschreibung")
                         : Container(),
-                    video.description != null && video.description.isNotEmpty
+                    video.description != null && video.description!.isNotEmpty
                         ? Text('"${video.description}"',
                             textAlign: TextAlign.left,
-                            style: Theme.of(context).textTheme.headline6.copyWith(
+                            style: Theme.of(context).textTheme.headline6!.copyWith(
                                 color: Colors.black,
                                 fontSize: 15.0,
                                 fontStyle: FontStyle.italic))
@@ -115,7 +115,7 @@ class VideoDescription extends StatelessWidget {
                         ? TextButton(
                       style: TextButton.styleFrom(backgroundColor: Colors.grey[800]),
                             child: Text('Website', style: body2TextStyle),
-                            onPressed: () => _launchURL(video.url_website),
+                            onPressed: () => _launchURL(video.url_website!),
                           )
                         : Container(),
                     getVerticalDividerLine(top: 15.0),
@@ -138,18 +138,18 @@ class VideoDescription extends StatelessWidget {
   Text getCaption(String caption) {
     return Text(
       caption,
-      style: Theme.of(context).textTheme.headline6.copyWith(
+      style: Theme.of(context).textTheme.headline6!.copyWith(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
     );
   }
 
-  Container getVerticalDividerLine({double bottom, double top}) {
+  Container getVerticalDividerLine({double? bottom, double? top}) {
     return Container(
       height: 2.0,
       color: Colors.grey,
       margin: bottom != null
           ? EdgeInsets.only(left: 20, right: 20.0, bottom: bottom)
-          : EdgeInsets.only(left: 20, right: 20.0, top: top),
+          : EdgeInsets.only(left: 20, right: 20.0, top: top!),
     );
   }
 

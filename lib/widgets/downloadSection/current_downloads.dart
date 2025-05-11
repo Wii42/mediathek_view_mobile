@@ -13,12 +13,12 @@ import 'package:flutter_ws/widgets/videolist/download/DownloadValue.dart';
 import 'package:logging/logging.dart';
 
 class CurrentDownloads extends StatefulWidget {
-  final Logger logger = new Logger('CurrentDownloads');
-  final AppSharedState appWideState;
+  final Logger logger = Logger('CurrentDownloads');
+  final AppSharedState? appWideState;
   var setStateNecessary;
   int downloadManagerIdentifier = 1;
 
-  CurrentDownloads(this.appWideState, this.setStateNecessary);
+  CurrentDownloads(this.appWideState, this.setStateNecessary, {Key? key}) : super(key: key);
 
   @override
   _CurrentDownloadsState createState() => _CurrentDownloadsState();
@@ -27,13 +27,13 @@ class CurrentDownloads extends StatefulWidget {
 class _CurrentDownloadsState extends State<CurrentDownloads> {
   List<Video> currentDownloads = [];
   Map<DownloadController, Function> downloadControllerToListener =
-      new Map<DownloadController, Function>();
-  BuildContext context;
+      <DownloadController, Function>{};
+  late BuildContext context;
 
   @override
   void dispose() {
     downloadControllerToListener.forEach((controller, listener) {
-      controller.removeListener(listener);
+      controller.removeListener(listener as void Function());
       controller.dispose();
     });
     super.dispose();
@@ -42,10 +42,10 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   @override
   void initState() {
     updateCurrentDownloads().then((List<Video> videos) {
-      videos.forEach((video) {
+      for (var video in videos) {
         subscribeToDownloadUpdates(video.id, video.title,
-            widget.appWideState.appState.downloadManager);
-      });
+            widget.appWideState!.appState!.downloadManager);
+      }
 
       if (videos.isNotEmpty && mounted) {
         widget.logger.fine("There are current downloads, setting state");
@@ -60,10 +60,10 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   Widget build(BuildContext context) {
     this.context = context;
     if (currentDownloads.isEmpty) {
-      return new SliverToBoxAdapter(child: new Container());
+      return SliverToBoxAdapter(child: Container());
     }
 
-    var videoListItemBuilder = new VideoListItemBuilder.name(
+    var videoListItemBuilder = VideoListItemBuilder.name(
         currentDownloads.toList(), true, true, true,
         onRemoveVideo: cancelCurrentDownload);
 
@@ -84,23 +84,21 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   }
 
   void subscribeToDownloadUpdates(
-      String videoId, String videoTitle, DownloadManager downloadManager) {
+      String? videoId, String? videoTitle, DownloadManager downloadManager) {
     DownloadController downloadController =
-        new DownloadController(videoId, videoTitle, downloadManager);
+        DownloadController(videoId, videoTitle, downloadManager);
 
-    var listener = () async {
+    listener() async {
       DownloadValue value = downloadController.value;
 
-      widget.logger.info("Current download status for video: " +
-          videoId +
-          value.status.toString());
+      widget.logger.info("Current download status for video: ${videoId!}${value.status}");
 
       if (value.status == DownloadTaskStatus.complete ||
           value.status == DownloadTaskStatus.failed ||
           value.status == DownloadTaskStatus.canceled) {
         updateCurrentDownloads();
       }
-    };
+    }
 
     downloadController.addListener(listener);
     downloadController.initialize();
@@ -109,7 +107,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
 
   Future<List<Video>> updateCurrentDownloads() async {
     Set<VideoEntity> downloads = await widget
-        .appWideState.appState.downloadManager
+        .appWideState!.appState!.downloadManager
         .getCurrentDownloads();
 
     List<Video> currentDownloads = [];
@@ -117,7 +115,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
       var video = Video.fromMap(entity.toMap());
       currentDownloads.add(video);
       widget.logger
-          .info("Current download: " + video.id + ". Title: " + video.title);
+          .info("Current download: ${video.id!}. Title: ${video.title!}");
     });
 
     widget.setStateNecessary(currentDownloads);
@@ -128,8 +126,8 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
 
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void cancelCurrentDownload(BuildContext context, String id) {
-    widget.logger.info("Canceling download for: " + id);
-    widget.appWideState.appState.downloadManager
+    widget.logger.info("Canceling download for: $id");
+    widget.appWideState!.appState!.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
       if (deletedSuccessfully) {
@@ -146,7 +144,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
           this.context,
           ERROR_MSG,
           TRY_AGAIN_MSG,
-          widget.appWideState.appState.downloadManager.deleteVideo,
+          widget.appWideState!.appState!.downloadManager.deleteVideo,
           id);
     });
   }

@@ -8,13 +8,13 @@ class SearchFilter extends StatelessWidget {
   //Der Wert nachdem gefiltert wird
   String filterValue;
   var handleTabCallback;
-  String displayText;
+  String? displayText;
 
   SearchFilter(
-      {Key key,
-      @required this.filterId,
-      @required this.filterValue,
-      @required this.handleTabCallback,
+      {Key? key,
+      required this.filterId,
+      required this.filterValue,
+      required this.handleTabCallback,
       this.displayText})
       : super(key: key);
 
@@ -43,9 +43,9 @@ class SearchFilter extends StatelessWidget {
                   child: new Icon(Icons.clear, size: 22.0, color: Colors.red),
                 ),
                 new Text(
-                    displayText == null || displayText.isEmpty
+                    displayText == null || displayText!.isEmpty
                         ? filterId
-                        : displayText,
+                        : displayText!,
                     style: new TextStyle(
                         fontSize: 12.0,
                         color: Colors.white,

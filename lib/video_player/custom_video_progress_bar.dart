@@ -11,18 +11,18 @@ class CustomCupertinoVideoProgressBar extends StatefulWidget {
   CustomCupertinoVideoProgressBar(
     this.flutterPlayerController,
     this.tvPlayerController, {
-    ChewieProgressColors colors,
+    ChewieProgressColors? colors,
     this.onDragEnd,
     this.onDragStart,
     this.onDragUpdate,
   }) : colors = colors ?? ChewieProgressColors();
 
-  final VideoPlayerController flutterPlayerController;
-  final TvPlayerController tvPlayerController;
+  final VideoPlayerController? flutterPlayerController;
+  final TvPlayerController? tvPlayerController;
   final ChewieProgressColors colors;
-  final Function() onDragStart;
-  final Function() onDragEnd;
-  final Function() onDragUpdate;
+  final Function()? onDragStart;
+  final Function()? onDragEnd;
+  final Function()? onDragUpdate;
 
   @override
   _VideoProgressBarState createState() {
@@ -32,7 +32,7 @@ class CustomCupertinoVideoProgressBar extends StatefulWidget {
 
 class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
   final Logger logger = new Logger('VideoProgressBar');
-  CustomChewieController chewieController;
+  CustomChewieController? chewieController;
   // used to determine which value to consider for the progress bar painting
   // use the flutter player position when scrubbing while being connected to the TV
   bool isScrubbing = false;
@@ -43,26 +43,26 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
     };
   }
 
-  VoidCallback listener;
+  late VoidCallback listener;
   bool _controllerWasPlaying = false;
 
-  VideoPlayerController get flutterPlayerController =>
+  VideoPlayerController? get flutterPlayerController =>
       widget.flutterPlayerController;
 
-  TvPlayerController get tvPlayerController => widget.tvPlayerController;
+  TvPlayerController? get tvPlayerController => widget.tvPlayerController;
 
   @override
   void initState() {
     super.initState();
     // react on value changes (e.g position) on both the flutter as well as the Tv player
-    flutterPlayerController.addListener(listener);
-    tvPlayerController.addListener(listener);
+    flutterPlayerController!.addListener(listener);
+    tvPlayerController!.addListener(listener);
   }
 
   @override
   void deactivate() {
-    flutterPlayerController.removeListener(listener);
-    tvPlayerController.removeListener(listener);
+    flutterPlayerController!.removeListener(listener);
+    tvPlayerController!.removeListener(listener);
     super.deactivate();
   }
 
@@ -76,26 +76,26 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
       final double relative = tapPos.dx / box.size.width;
       // TV controller does not store the duration itself
       final Duration position =
-          flutterPlayerController.value.duration * relative;
+          flutterPlayerController!.value.duration * relative;
 
-      flutterPlayerController.seekTo(position);
+      flutterPlayerController!.seekTo(position);
     }
 
     _ProgressBarPainter painter;
-    if (tvPlayerController.value.playbackOnTvStarted && !isScrubbing) {
+    if (tvPlayerController!.value.playbackOnTvStarted && !isScrubbing) {
       painter = _ProgressBarPainter(
-        flutterPlayerController.value.isInitialized,
-        tvPlayerController.value.position,
+        flutterPlayerController!.value.isInitialized,
+        tvPlayerController!.value.position,
         [],
-        flutterPlayerController.value.duration,
+        flutterPlayerController!.value.duration,
         widget.colors,
       );
     } else {
       painter = _ProgressBarPainter(
-        flutterPlayerController.value.isInitialized,
-        flutterPlayerController.value.position,
-        flutterPlayerController.value.buffered,
-        flutterPlayerController.value.duration,
+        flutterPlayerController!.value.isInitialized,
+        flutterPlayerController!.value.position,
+        flutterPlayerController!.value.buffered,
+        flutterPlayerController!.value.duration,
         widget.colors,
       );
     }
@@ -115,31 +115,31 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
         logger.info("On Drag start");
         isScrubbing = true;
 
-        if (!flutterPlayerController.value.isInitialized) {
+        if (!flutterPlayerController!.value.isInitialized) {
           return;
         }
-        _controllerWasPlaying = tvPlayerController.value.isPlaying ||
-            flutterPlayerController.value.isPlaying;
+        _controllerWasPlaying = tvPlayerController!.value.isPlaying ||
+            flutterPlayerController!.value.isPlaying;
 
         // pause the player when scrubbing
-        if (tvPlayerController.value.isPlaying) {
-          tvPlayerController.pause();
-        } else if (flutterPlayerController.value.isPlaying) {
-          flutterPlayerController.pause();
+        if (tvPlayerController!.value.isPlaying) {
+          tvPlayerController!.pause();
+        } else if (flutterPlayerController!.value.isPlaying) {
+          flutterPlayerController!.pause();
         }
 
         if (widget.onDragStart != null) {
-          widget.onDragStart();
+          widget.onDragStart!();
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!flutterPlayerController.value.isInitialized) {
+        if (!flutterPlayerController!.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
 
         if (widget.onDragUpdate != null) {
-          widget.onDragUpdate();
+          widget.onDragUpdate!();
         }
       },
       onHorizontalDragEnd: (DragEndDetails details) {
@@ -148,25 +148,25 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
         logger.info("On Drag end");
         if (_controllerWasPlaying) {
           logger.info("On Drag end - was playing");
-          if (tvPlayerController.value.playbackOnTvStarted) {
+          if (tvPlayerController!.value.playbackOnTvStarted) {
             logger.info("On Drag end - play tv");
-            tvPlayerController.resume();
-          } else if (!flutterPlayerController.value.isPlaying) {
+            tvPlayerController!.resume();
+          } else if (!flutterPlayerController!.value.isPlaying) {
             logger.info("On Drag end - play flutter");
-            flutterPlayerController.play();
+            flutterPlayerController!.play();
           }
         }
 
-        if (tvPlayerController.value.playbackOnTvStarted) {
-          tvPlayerController.seekTo(flutterPlayerController.value.position);
+        if (tvPlayerController!.value.playbackOnTvStarted) {
+          tvPlayerController!.seekTo(flutterPlayerController!.value.position);
         }
 
         if (widget.onDragEnd != null) {
-          widget.onDragEnd();
+          widget.onDragEnd!();
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!flutterPlayerController.value.isInitialized) {
+        if (!flutterPlayerController!.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);

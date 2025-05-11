@@ -4,7 +4,7 @@ import 'package:intro_slider/slide_object.dart';
 
 class IntroScreen extends StatefulWidget {
   var onDonePressed;
-  IntroScreen({Key key, this.onDonePressed}) : super(key: key);
+  IntroScreen({Key? key, this.onDonePressed}) : super(key: key);
 
   @override
   IntroScreenState createState() => new IntroScreenState();

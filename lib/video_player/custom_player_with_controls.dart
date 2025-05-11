@@ -7,7 +7,7 @@ import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerWithControls extends StatelessWidget {
-  PlayerWithControls({Key key}) : super(key: key);
+  PlayerWithControls({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +40,13 @@ class PlayerWithControls extends StatelessWidget {
             ),
           ),
           chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController),
+          _buildControls(context, chewieController)!,
         ],
       ),
     );
   }
 
-  Widget _buildControls(
+  Widget? _buildControls(
     BuildContext context,
     CustomChewieController chewieController,
   ) {

@@ -13,30 +13,30 @@ class FilterMenu extends StatelessWidget {
   var onFilterUpdated;
   var onSingleFilterTapped;
   var onChannelsSelected;
-  Map<String, SearchFilter> searchFilters;
-  ThemeData theme;
+  Map<String, SearchFilter>? searchFilters;
+  late ThemeData theme;
 
   FilterMenu(
-      {Key key,
-      @required this.onFilterUpdated,
-      @required this.searchFilters,
-      @required this.onSingleFilterTapped,
-      @required this.onChannelsSelected})
+      {Key? key,
+      required this.onFilterUpdated,
+      required this.searchFilters,
+      required this.onSingleFilterTapped,
+      required this.onChannelsSelected})
       : super(key: key);
 
-  TextEditingController _titleFieldController;
-  TextEditingController _themaFieldController;
+  TextEditingController? _titleFieldController;
+  TextEditingController? _themaFieldController;
 
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
     logger.fine("Rendering filter Menu");
-    _titleFieldController = searchFilters.containsKey('Titel')
-        ? new TextEditingController(text: searchFilters['Titel'].filterValue)
+    _titleFieldController = searchFilters!.containsKey('Titel')
+        ? new TextEditingController(text: searchFilters!['Titel']!.filterValue)
         : new TextEditingController();
 
-    _themaFieldController = searchFilters.containsKey('Thema')
-        ? new TextEditingController(text: searchFilters['Thema'].filterValue)
+    _themaFieldController = searchFilters!.containsKey('Thema')
+        ? new TextEditingController(text: searchFilters!['Thema']!.filterValue)
         : new TextEditingController();
 
     return new Container(
@@ -74,8 +74,8 @@ class FilterMenu extends StatelessWidget {
                       fontWeight: FontWeight.w700),
                   textAlign: TextAlign.start,
                 ))),
-        searchFilters["Sender"] == null ||
-                searchFilters["Sender"].filterValue.isEmpty
+        searchFilters!["Sender"] == null ||
+                searchFilters!["Sender"]!.filterValue.isEmpty
             ? new Switch(
                 value: false,
                 onChanged: (bool isEnabled) {
@@ -98,7 +98,7 @@ class FilterMenu extends StatelessWidget {
   }
 
   Widget getFilterMenuRow(
-      String filterId, String displayText, TextEditingController controller) {
+      String filterId, String displayText, TextEditingController? controller) {
     var _filterTextFocus = new FocusNode();
 
     Row row = new Row(
@@ -154,7 +154,7 @@ class FilterMenu extends StatelessWidget {
 
     _filterTextFocus.addListener(() {
       if (!_filterTextFocus.hasFocus) {
-        String currentValueOfFilter = controller.text;
+        String currentValueOfFilter = controller!.text;
         onFilterUpdated(
           new SearchFilter(
               filterId: filterId,
@@ -169,12 +169,12 @@ class FilterMenu extends StatelessWidget {
 
   Future _openAddEntryDialog(BuildContext context) async {
     Set<String> channelSelection =
-        await Navigator.of(context).push(new MaterialPageRoute<Set<String>>(
+        (await Navigator.of(context).push(new MaterialPageRoute<Set<String>>(
             builder: (BuildContext context) {
-              return new ChannelPickerDialog(searchFilters["Sender"]);
+              return new ChannelPickerDialog(searchFilters!["Sender"]);
             },
             fullscreenDialog: true,
-            settings: RouteSettings(name: "ChannelPicker")));
+            settings: RouteSettings(name: "ChannelPicker"))))!;
 
     logger.fine("Channel selection received");
 
@@ -199,14 +199,14 @@ class FilterMenu extends StatelessWidget {
 
   getRangeSliderRow() {
     SearchFilter lengthFilter;
-    if (searchFilters["Länge"] != null) {
+    if (searchFilters!["Länge"] != null) {
       lengthFilter = new SearchFilter(
           filterId: "Länge",
-          filterValue: searchFilters["Länge"].filterValue,
+          filterValue: searchFilters!["Länge"]!.filterValue,
           handleTabCallback: handleTapOnFilter);
     } else {
       lengthFilter = new SearchFilter(
-          filterId: "Länge", handleTabCallback: handleTapOnFilter);
+          filterId: "Länge", handleTabCallback: handleTapOnFilter, filterValue: "",);
     }
 
     return new Row(

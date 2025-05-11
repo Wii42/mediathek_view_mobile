@@ -9,7 +9,7 @@ class MetaInfoListTile {
       BuildContext context,
       String duration,
       String title,
-      int timestamp,
+      int? timestamp,
       String assetPath,
       bool isDownloaded) {
     return new ListTile(
@@ -23,11 +23,11 @@ class MetaInfoListTile {
       title: new Text(
         title,
         style:
-            Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white),
+            Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white),
       ),
       subtitle: new Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
-        style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white),
+        style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
       ),
     );
   }

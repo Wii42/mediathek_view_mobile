@@ -1,18 +1,18 @@
 class Video {
-  String id;
-  String channel;
-  String topic;
-  String description;
-  String title;
-  int timestamp;
+  String? id;
+  String? channel;
+  String? topic;
+  String? description;
+  String? title;
+  int? timestamp;
   var duration;
-  int size;
-  String url_website;
-  String url_video_low;
-  String url_video_hd;
-  String filmlisteTimestamp;
-  String url_video;
-  String url_subtitle;
+  int? size;
+  String? url_website;
+  String? url_video_low;
+  String? url_video_hd;
+  String? filmlisteTimestamp;
+  String? url_video;
+  String? url_subtitle;
 
 
   Video(this.id);

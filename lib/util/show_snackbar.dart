@@ -25,10 +25,10 @@ class SnackbarActions {
     );
   }
 
-  static void showInfo(BuildContext context, String msg, {Duration duration}) {
+  static void showInfo(BuildContext context, String msg, {Duration? duration}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      new SnackBar(
-        duration: duration != null ? duration : null,
+      SnackBar(
+        duration: duration ?? Duration(seconds: 4),
         backgroundColor: Colors.grey,
         content: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
