@@ -324,10 +324,10 @@ packages:
     dependency: "direct main"
     description:
       name: intro_slider
-      sha256: cfbaf3c2dc02aaa50067a2a51f144b5bd697a744243f30269eca0f3596ca675f
+      sha256: eb43fefa27b0655edebc3e7fe7ff320cb5996a4e64649d79969c7099105fe52f
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.10"
+    version: "4.2.1"
   json_annotation:
     dependency: transitive
     description:

@@ -2,55 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 
 class IntroScreen extends StatefulWidget {
-  var onDonePressed;
-  IntroScreen({Key? key, this.onDonePressed}) : super(key: key);
+  final void Function()? onDonePressed;
+  const IntroScreen({super.key, this.onDonePressed});
 
   @override
   IntroScreenState createState() => IntroScreenState();
 }
 
 class IntroScreenState extends State<IntroScreen> {
-  List<Slide> slides = [];
+  List<ContentConfig> slides = [];
 
   @override
   void initState() {
     super.initState();
 
     slides.add(
-      Slide(
+      ContentConfig(
         title: "Suchen und Downloaden",
         maxLineTitle: 2,
         marginTitle: EdgeInsets.only(top: 20.0, bottom: 20.0),
         description: "Durchsuchen von öffentlich-rechtlichen Mediatheken.",
         centerWidget: Container(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Image(
-                image: AssetImage("assets/intro/intro_slider_1.png"))),
+            child: Image(image: AssetImage("assets/intro/intro_slider_1.png"))),
         backgroundColor: Color(0xfff5a623),
       ),
     );
     slides.add(
-      Slide(
+      ContentConfig(
         title: "Filtern",
         description: "Filtern nach Thema, Titel, Länge und Fernsehsender",
         centerWidget: Container(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Image(
-                image: AssetImage("assets/intro/intro_slider_2.png"))),
+            child: Image(image: AssetImage("assets/intro/intro_slider_2.png"))),
         backgroundColor: Color(0xff203152),
       ),
     );
   }
 
-  void onDonePress() {
-    widget.onDonePressed();
-  }
-
   @override
   Widget build(BuildContext context) {
     return IntroSlider(
-      slides: this.slides,
-      onDonePress: this.onDonePress,
+      listContentConfig: slides,
+      onDonePress: widget.onDonePressed,
     );
   }
 }
