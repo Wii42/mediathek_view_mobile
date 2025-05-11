@@ -6,7 +6,7 @@ publish_to: 'none'
 
 environment:
   sdk: '>=2.10.0 <3.0.0'
-  flutter: 2.0.0
+  flutter: 3.0.0
 
 dependencies:
   http: 0.12.2
@@ -33,7 +33,7 @@ dependencies:
   shared_preferences: ^0.5.3+4
   intro_slider: ^2.2.9
   connectivity: ^0.4.8+2
-  video_thumbnail: ^0.2.5+1
+  video_thumbnail: ^0.5.5
   countly_flutter: ^20.4.2
   giffy_dialog: ^1.8.0
   filesize: ^1.0.4
