@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 class FilterMenuState {
   bool isFilterMenuOpen;
@@ -9,7 +8,7 @@ class FilterMenuState {
 class _InheritedStateContainer extends InheritedWidget {
   final StateContainerAppBarState data;
 
-  _InheritedStateContainer({
+  const _InheritedStateContainer({
     Key key,
     @required this.data,
     @required Widget child,
@@ -25,10 +24,10 @@ class FilterBarSharedState extends StatefulWidget {
   final Widget child;
   final FilterMenuState videoListState;
 
-  FilterBarSharedState({
+  const FilterBarSharedState({Key key,
     @required this.child,
     this.videoListState,
-  });
+  }) : super(key: key);
 
   static StateContainerAppBarState of(BuildContext context) {
     return (context.dependOnInheritedWidgetOfExactType<_InheritedStateContainer>())
@@ -36,7 +35,7 @@ class FilterBarSharedState extends StatefulWidget {
   }
 
   @override
-  StateContainerAppBarState createState() => new StateContainerAppBarState();
+  StateContainerAppBarState createState() => StateContainerAppBarState();
 }
 
 class StateContainerAppBarState extends State<FilterBarSharedState> {
@@ -45,7 +44,7 @@ class StateContainerAppBarState extends State<FilterBarSharedState> {
   void updateAppBarState() {
     if (filterMenuState == null) {
       setState(() {
-        filterMenuState = new FilterMenuState(true);
+        filterMenuState = FilterMenuState(true);
       });
     } else {
       setState(() {
@@ -56,7 +55,7 @@ class StateContainerAppBarState extends State<FilterBarSharedState> {
 
   @override
   Widget build(BuildContext context) {
-    return new _InheritedStateContainer(
+    return _InheritedStateContainer(
       data: this,
       child: widget.child,
     );

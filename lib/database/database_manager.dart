@@ -7,12 +7,12 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
 
-final String columnId = "_id";
-final String columnTitle = "title";
-final String columnDone = "done";
+const String columnId = "_id";
+const String columnTitle = "title";
+const String columnDone = "done";
 
 class DatabaseManager {
-  final Logger logger = new Logger('DatabaseManager');
+  final Logger logger = Logger('DatabaseManager');
   Database db;
 
   Future open(String path) async {
@@ -22,11 +22,11 @@ class DatabaseManager {
       String createFavoriteLiveTVChannelsTable = getChannelFavoriteSQL();
       String videoProgressCreateTableSQL = getProgressTableSQL();
 
-      logger.fine("DB MANAGER: Executing " + createVideoTableSQL);
+      logger.fine("DB MANAGER: Executing $createVideoTableSQL");
       await db.execute(createVideoTableSQL);
-      logger.fine("DB MANAGER: Executing " + createFavoriteLiveTVChannelsTable);
+      logger.fine("DB MANAGER: Executing $createFavoriteLiveTVChannelsTable");
       await db.execute(createFavoriteLiveTVChannelsTable);
-      logger.fine("DB MANAGER: Executing " + videoProgressCreateTableSQL);
+      logger.fine("DB MANAGER: Executing $videoProgressCreateTableSQL");
       await db.execute(videoProgressCreateTableSQL);
     });
   }
@@ -35,70 +35,27 @@ class DatabaseManager {
   Future deleteDb(String path) async => deleteDatabase(path);
 
   String getVideoTableSQL() {
-    var sql = '''
-create table ''' +
-        VideoEntity.TABLE_NAME +
-        ''' ( 
-       ''' +
-        VideoEntity.idColumn +
-        ''' text primary key, 
-         ''' +
-        VideoEntity.task_idColumn +
-        ''' VARCHAR ( 256 ) not null,
-       ''' +
-        VideoEntity.channelColumn +
-        ''' text not null,
-       ''' +
-        VideoEntity.topicColumn +
-        ''' text not null,
-       ''' +
-        VideoEntity.descriptionColumn +
-        ''' text,
-       ''' +
-        VideoEntity.titleColumn +
-        ''' text not null,
-       ''' +
-        VideoEntity.timestampColumn +
-        ''' integer,
-       ''' +
-        VideoEntity.timestamp_video_savedColumn +
-        ''' integer,
-       ''' +
-        VideoEntity.durationColumn +
-        ''' text,
-       ''' +
-        VideoEntity.sizeColumn +
-        ''' integer,
-       ''' +
-        VideoEntity.url_websiteColumn +
-        ''' text,
-       ''' +
-        VideoEntity.url_video_lowColumn +
-        ''' text,
-       ''' +
-        VideoEntity.url_video_hdColumn +
-        ''' text,
-       ''' +
-        VideoEntity.filmlisteTimestampColumn +
-        ''' text,
-       ''' +
-        VideoEntity.url_videoColumn +
-        ''' text not null,
-       ''' +
-        VideoEntity.url_subtitleColumn +
-        ''' text,
-       ''' +
-        VideoEntity.filePathColumn +
-        ''' text DEFAULT '',
-       ''' +
-        VideoEntity.fileNameColumn +
-        ''' text DEFAULT '',
-       ''' +
-        VideoEntity.mimeTypeColumn +
-        ''' text,
-       ''' +
-        VideoEntity.ratingColumn +
-        ''' REAL)
+    var sql = '''create table ${VideoEntity.TABLE_NAME} ( 
+       ${VideoEntity.idColumn} text primary key, 
+         ${VideoEntity.task_idColumn} VARCHAR ( 256 ) not null,
+       ${VideoEntity.channelColumn} text not null,
+       ${VideoEntity.topicColumn} text not null,
+       ${VideoEntity.descriptionColumn} text,
+       ${VideoEntity.titleColumn} text not null,
+       ${VideoEntity.timestampColumn} integer,
+       ${VideoEntity.timestamp_video_savedColumn} integer,
+       ${VideoEntity.durationColumn} text,
+       ${VideoEntity.sizeColumn} integer,
+       ${VideoEntity.url_websiteColumn} text,
+       ${VideoEntity.url_video_lowColumn} text,
+       ${VideoEntity.url_video_hdColumn} text,
+       ${VideoEntity.filmlisteTimestampColumn} text,
+       ${VideoEntity.url_videoColumn} text not null,
+       ${VideoEntity.url_subtitleColumn} text,
+       ${VideoEntity.filePathColumn} text DEFAULT '',
+       ${VideoEntity.fileNameColumn} text DEFAULT '',
+       ${VideoEntity.mimeTypeColumn} text,
+       ${VideoEntity.ratingColumn} REAL)
      ''';
     return sql;
   }
@@ -106,14 +63,14 @@ create table ''' +
   Future insert(VideoEntity video) async {
     Map<String, dynamic> map = video.toMap();
     map.update("timestamp_video_saved",
-        (old) => new DateTime.now().millisecondsSinceEpoch);
+        (old) => DateTime.now().millisecondsSinceEpoch);
 
     await db.insert(VideoEntity.TABLE_NAME, map);
   }
 
   Future<int> deleteVideoEntity(String id) async {
     return db.delete(VideoEntity.TABLE_NAME,
-        where: VideoEntity.idColumn + " = ?", whereArgs: [id]);
+        where: "${VideoEntity.idColumn} = ?", whereArgs: [id]);
   }
 
   Future<Set<VideoEntity>> getAllDownloadedVideos() async {
@@ -121,14 +78,14 @@ create table ''' +
     List<Map> result = await db.query(
       VideoEntity.TABLE_NAME,
       columns: getColums(),
-      where: VideoEntity.fileNameColumn + " != ?",
-      orderBy: VideoEntity.timestamp_video_savedColumn + " DESC",
+      where: "${VideoEntity.fileNameColumn} != ?",
+      orderBy: "${VideoEntity.timestamp_video_savedColumn} DESC",
       whereArgs: [''],
     );
-    if (result != null && result.length > 0) {
-      return result.map((raw) => new VideoEntity.fromMap(raw)).toSet();
+    if (result != null && result.isNotEmpty) {
+      return result.map((raw) => VideoEntity.fromMap(raw)).toSet();
     }
-    return new Set();
+    return {};
   }
 
   /*
@@ -136,7 +93,7 @@ create table ''' +
    */
   Future<int> updateDownloadingVideoEntity(VideoEntity entity) async {
     return await db.update(VideoEntity.TABLE_NAME, entity.toMap(),
-        where: VideoEntity.task_idColumn + " = ?", whereArgs: [entity.task_id]);
+        where: "${VideoEntity.task_idColumn} = ?", whereArgs: [entity.task_id]);
   }
 
   /*
@@ -144,7 +101,7 @@ create table ''' +
    */
   Future<int> updateVideoEntity(VideoEntity entity) async {
     return await db.update(VideoEntity.TABLE_NAME, entity.toMap(),
-        where: VideoEntity.idColumn + " = ?", whereArgs: [entity.id]);
+        where: "${VideoEntity.idColumn} = ?", whereArgs: [entity.id]);
   }
 
   Future<VideoEntity> getVideoEntity(String id) async {
@@ -154,10 +111,10 @@ create table ''' +
 
     List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
-        where: VideoEntity.idColumn + " = ?",
+        where: "${VideoEntity.idColumn} = ?",
         whereArgs: [id]);
-    if (maps.length > 0) {
-      return new VideoEntity.fromMap(maps.first);
+    if (maps.isNotEmpty) {
+      return VideoEntity.fromMap(maps.first);
     }
     return null;
   }
@@ -165,17 +122,17 @@ create table ''' +
   Future<VideoEntity> getVideoEntityForTaskId(String taskId) async {
     List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
-        where: VideoEntity.task_idColumn + " = ?",
+        where: "${VideoEntity.task_idColumn} = ?",
         whereArgs: [taskId]);
-    if (maps.length > 0) {
-      return new VideoEntity.fromMap(maps.first);
+    if (maps.isNotEmpty) {
+      return VideoEntity.fromMap(maps.first);
     }
     return null;
   }
 
   Future<Set<VideoEntity>> getVideoEntitiesForTaskIds(List<String> list) async {
     String whereClause = _getConcatinatedWhereClause(list);
-    logger.fine("Build WHERE CLAUSE: " + whereClause);
+    logger.fine("Build WHERE CLAUSE: $whereClause");
     List<Map> resultList = await db.query(VideoEntity.TABLE_NAME,
         columns: getColums(), where: whereClause, whereArgs: list);
     if (list.length != resultList.length) {
@@ -183,7 +140,7 @@ create table ''' +
           .severe("Download running that we do not have in the Video database");
     }
     if (resultList.isEmpty) {
-      return new Set();
+      return {};
     }
 
     return resultList.map((result) => VideoEntity.fromMap(result)).toSet();
@@ -192,18 +149,18 @@ create table ''' +
   String _getConcatinatedWhereClause(List<String> list) {
     String where = "";
 
-    if (list.length == 0) {
+    if (list.isEmpty) {
       return where;
     } else if (list.length == 1) {
-      return VideoEntity.task_idColumn + " = ? ";
+      return "${VideoEntity.task_idColumn} = ? ";
     }
 
     for (int i = 0; i < list.length; i++) {
       if (i == list.length - 1) {
-        where = where + VideoEntity.task_idColumn + " = ?";
+        where = "$where${VideoEntity.task_idColumn} = ?";
         break;
       }
-      where = where + VideoEntity.task_idColumn + " = ? OR ";
+      where = "$where${VideoEntity.task_idColumn} = ? OR ";
     }
 
     return where;
@@ -216,13 +173,10 @@ create table ''' +
 
     List<Map> maps = await db.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
-        where: VideoEntity.idColumn +
-            " = ? AND " +
-            VideoEntity.fileNameColumn +
-            " != '' ",
+        where: "${VideoEntity.idColumn} = ? AND ${VideoEntity.fileNameColumn} != '' ",
         whereArgs: [id]);
-    if (maps.length > 0) {
-      return new VideoEntity.fromMap(maps.first);
+    if (maps.isNotEmpty) {
+      return VideoEntity.fromMap(maps.first);
     }
     return null;
   }
@@ -261,38 +215,27 @@ create table ''' +
       ChannelFavoriteEntity.logoColumn,
       ChannelFavoriteEntity.urlColumn
     ]);
-    if (result != null && result.length > 0) {
+    if (result != null && result.isNotEmpty) {
       return result
-          .map((raw) => new ChannelFavoriteEntity.fromMap(raw))
+          .map((raw) => ChannelFavoriteEntity.fromMap(raw))
           .toSet();
     }
-    return new Set();
+    return {};
   }
 
   String getChannelFavoriteSQL() {
-    var sql = '''
-create table ''' +
-        ChannelFavoriteEntity.TABLE_NAME +
-        ''' ( 
-       ''' +
-        ChannelFavoriteEntity.nameColumn +
-        ''' text primary key, 
-       ''' +
-        ChannelFavoriteEntity.groupnameColumn +
-        ''' text not null,
-       ''' +
-        ChannelFavoriteEntity.logoColumn +
-        ''' text not null,
-       ''' +
-        ChannelFavoriteEntity.urlColumn +
-        ''' text not null)
+    var sql = '''create table ${ChannelFavoriteEntity.TABLE_NAME} ( 
+       ${ChannelFavoriteEntity.nameColumn} text primary key, 
+       ${ChannelFavoriteEntity.groupnameColumn} text not null,
+       ${ChannelFavoriteEntity.logoColumn} text not null,
+       ${ChannelFavoriteEntity.urlColumn} text not null)
      ''';
     return sql;
   }
 
   Future deleteChannelFavorite(String id) async {
     return await db.delete(ChannelFavoriteEntity.TABLE_NAME,
-        where: ChannelFavoriteEntity.nameColumn + " = ?", whereArgs: [id]);
+        where: "${ChannelFavoriteEntity.nameColumn} = ?", whereArgs: [id]);
   }
 
   Future insertChannelFavorite(ChannelFavoriteEntity entity) async {
@@ -301,64 +244,29 @@ create table ''' +
 
   // &&&&&&&&&&&&&&&&&&&&   VIDEO PROGRESS  &&&&&&&&&&&&&&&&&&&&&&&
   String getProgressTableSQL() {
-    var sql = '''
-        create table ''' +
-        VideoProgressEntity.TABLE_NAME +
-        ''' ( 
-       ''' +
-        VideoProgressEntity.idColumn +
-        ''' text primary key, 
-         ''' +
-        VideoProgressEntity.progressColumn +
-        ''' integer,
-       ''' +
-        VideoProgressEntity.channelColumn +
-        ''' text not null,
-       ''' +
-        VideoProgressEntity.topicColumn +
-        ''' text not null,
-       ''' +
-        VideoProgressEntity.descriptionColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.titleColumn +
-        ''' text not null,
-       ''' +
-        VideoProgressEntity.timestampColumn +
-        ''' integer,
-       ''' +
-        VideoProgressEntity.timestampLastViewedColumn +
-        ''' integer,
-       ''' +
-        VideoProgressEntity.durationColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.sizeColumn +
-        ''' integer,
-       ''' +
-        VideoProgressEntity.url_websiteColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.url_video_lowColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.url_video_hdColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.filmlisteTimestampColumn +
-        ''' text,
-       ''' +
-        VideoProgressEntity.url_videoColumn +
-        ''' text not null,
-       ''' +
-        VideoProgressEntity.url_subtitleColumn +
-        ''' text)
+    var sql = '''        create table ${VideoProgressEntity.TABLE_NAME} ( 
+       ${VideoProgressEntity.idColumn} text primary key, 
+         ${VideoProgressEntity.progressColumn} integer,
+       ${VideoProgressEntity.channelColumn} text not null,
+       ${VideoProgressEntity.topicColumn} text not null,
+       ${VideoProgressEntity.descriptionColumn} text,
+       ${VideoProgressEntity.titleColumn} text not null,
+       ${VideoProgressEntity.timestampColumn} integer,
+       ${VideoProgressEntity.timestampLastViewedColumn} integer,
+       ${VideoProgressEntity.durationColumn} text,
+       ${VideoProgressEntity.sizeColumn} integer,
+       ${VideoProgressEntity.url_websiteColumn} text,
+       ${VideoProgressEntity.url_video_lowColumn} text,
+       ${VideoProgressEntity.url_video_hdColumn} text,
+       ${VideoProgressEntity.filmlisteTimestampColumn} text,
+       ${VideoProgressEntity.url_videoColumn} text not null,
+       ${VideoProgressEntity.url_subtitleColumn} text)
      ''';
     return sql;
   }
 
   Future<int> insertVideoProgress(VideoProgressEntity entity) async {
-    entity.timestampLastViewed = new DateTime.now().millisecondsSinceEpoch;
+    entity.timestampLastViewed = DateTime.now().millisecondsSinceEpoch;
     Map<String, dynamic> map = entity.toMap();
 
     return await db.insert(VideoProgressEntity.TABLE_NAME, map);
@@ -366,18 +274,18 @@ create table ''' +
 
   Future<int> deleteVideoProgressEntity(String id) async {
     return db.delete(VideoProgressEntity.TABLE_NAME,
-        where: VideoProgressEntity.idColumn + " = ?", whereArgs: [id]);
+        where: "${VideoProgressEntity.idColumn} = ?", whereArgs: [id]);
   }
 
   Future<int> updateVideoProgressEntity(VideoProgressEntity entity) async {
-    entity.timestampLastViewed = new DateTime.now().millisecondsSinceEpoch;
+    entity.timestampLastViewed = DateTime.now().millisecondsSinceEpoch;
     return await db.update(
         VideoProgressEntity.TABLE_NAME,
         {
           'progress': entity.progress,
           'timestampLastViewed': entity.timestampLastViewed
         },
-        where: VideoProgressEntity.idColumn + " = ?",
+        where: "${VideoProgressEntity.idColumn} = ?",
         whereArgs: [entity.id]);
   }
 
@@ -388,10 +296,10 @@ create table ''' +
 
     List<Map> maps = await db.query(VideoProgressEntity.TABLE_NAME,
         columns: getVideoProgressColumns(),
-        where: VideoProgressEntity.idColumn + " = ?",
+        where: "${VideoProgressEntity.idColumn} = ?",
         whereArgs: [id]);
-    if (maps.length > 0) {
-      return new VideoProgressEntity.fromMap(maps.first);
+    if (maps.isNotEmpty) {
+      return VideoProgressEntity.fromMap(maps.first);
     }
     return null;
   }
@@ -422,13 +330,13 @@ create table ''' +
     }
 
     List<Map> result = await db.query(VideoProgressEntity.TABLE_NAME,
-        orderBy: VideoProgressEntity.timestampLastViewedColumn + " DESC",
+        orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns(),
         limit: amount);
-    if (result != null && result.length > 0) {
-      return result.map((raw) => new VideoProgressEntity.fromMap(raw)).toSet();
+    if (result != null && result.isNotEmpty) {
+      return result.map((raw) => VideoProgressEntity.fromMap(raw)).toSet();
     }
-    return new Set();
+    return {};
   }
 
   Future<Set<VideoProgressEntity>> getAllLastViewedVideos() async {
@@ -437,16 +345,16 @@ create table ''' +
     }
 
     List<Map> result = await db.query(VideoProgressEntity.TABLE_NAME,
-        orderBy: VideoProgressEntity.timestampLastViewedColumn + " DESC",
+        orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns());
-    if (result != null && result.length > 0) {
-      return result.map((raw) => new VideoProgressEntity.fromMap(raw)).toSet();
+    if (result != null && result.isNotEmpty) {
+      return result.map((raw) => VideoProgressEntity.fromMap(raw)).toSet();
     }
-    return new Set();
+    return {};
   }
 
   void updatePlaybackPosition(Video video, int position) {
-    this.getVideoProgressEntity(video.id).then((entity) {
+    getVideoProgressEntity(video.id).then((entity) {
       if (entity == null) {
         // initial insert into database
         _insertPlaybackPosition(video, position);
@@ -463,25 +371,24 @@ create table ''' +
         VideoProgressEntity.fromMap(video.toMap());
 
     videoProgress.progress = position;
-    this.insertVideoProgress(videoProgress).then((value) {
+    insertVideoProgress(videoProgress).then((value) {
       logger
-          .info("Successfully inserted progress entity for video " + video.id);
+          .info("Successfully inserted progress entity for video ${video.id}");
     }, onError: (err, stackTrace) {
       logger
-          .warning("Could not insert video progress " + stackTrace.toString());
+          .warning("Could not insert video progress $stackTrace");
     });
   }
 
   void _updateProgress(String videoId, int position) {
-    this
-        .updateVideoProgressEntity(new VideoProgressEntity(videoId, position))
+    updateVideoProgressEntity(VideoProgressEntity(videoId, position))
         .then((rowsUpdated) {
       if (rowsUpdated < 1) {
         logger.warning("Could not update video progress. Rows Updated < 1");
       }
     }, onError: (err, stackTrace) {
       logger
-          .warning("Could not update video progress " + stackTrace.toString());
+          .warning("Could not update video progress $stackTrace");
     });
   }
 }

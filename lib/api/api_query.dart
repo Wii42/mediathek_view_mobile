@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 
 class APIQuery {
-  final Logger logger = new Logger('WebsocketController');
+  final Logger logger = Logger('WebsocketController');
 
   //callbacks
   var onDataReceived;
@@ -24,13 +23,11 @@ class APIQuery {
   void search(String genericQuery, Map<String, SearchFilter> searchFilters) {
     List<String> queryFilters = [];
 
-    logger.info("Query skip: " + skip.toString());
+    logger.info("Query skip: $skip");
 
     if (searchFilters.containsKey('Titel') &&
         searchFilters['Titel'].filterValue.isNotEmpty)
-      queryFilters.add('{"fields":["title"],"query":"' +
-          searchFilters['Titel'].filterValue.toLowerCase() +
-          '"}');
+      queryFilters.add('{"fields":["title"],"query":"${searchFilters['Titel'].filterValue.toLowerCase()}"}');
 
     if (searchFilters.containsKey('Thema') &&
         searchFilters['Thema'].filterValue.isNotEmpty &&
@@ -38,33 +35,21 @@ class APIQuery {
         genericQuery.isNotEmpty) {
       //generics -> title only
       queryFilters.add(
-          '{"fields":["title"],"query":"' + genericQuery.toLowerCase() + '"}');
+          '{"fields":["title"],"query":"${genericQuery.toLowerCase()}"}');
     } else if (genericQuery != null && genericQuery.isNotEmpty)
-      queryFilters.add('{"fields":["topic","title"],"query":"' +
-          genericQuery.toLowerCase() +
-          '"}');
+      queryFilters.add('{"fields":["topic","title"],"query":"${genericQuery.toLowerCase()}"}');
 
     if (searchFilters.containsKey('Thema') &&
         searchFilters['Thema'].filterValue.isNotEmpty)
-      queryFilters.add('{"fields":["topic"],"query":"' +
-          searchFilters['Thema'].filterValue.toLowerCase() +
-          '"}');
+      queryFilters.add('{"fields":["topic"],"query":"${searchFilters['Thema'].filterValue.toLowerCase()}"}');
 
     if (searchFilters.containsKey('Sender'))
       searchFilters['Sender'].filterValue.split(";").forEach((channel) =>
-          queryFilters.add('{"fields":["channel"],"query":"' +
-              channel.toLowerCase() +
-              '"}'));
+          queryFilters.add('{"fields":["channel"],"query":"${channel.toLowerCase()}"}'));
 
-    String request = '{"queries":[' +
-        queryFilters.join(',') +
-        '],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":' +
-        skip.toString() +
-        ',"size":' +
-        defaultQueryAmount.toString() +
-        '}';
+    String request = '{"queries":[${queryFilters.join(',')}],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
 
-    logger.info("Firing request: " + request);
+    logger.info("Firing request: $request");
 
     execute(request);
 

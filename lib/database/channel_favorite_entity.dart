@@ -1,5 +1,5 @@
 class ChannelFavoriteEntity {
-  static final String TABLE_NAME = "channelfavorite";
+  static const String TABLE_NAME = "channelfavorite";
 
   String name;
   String logo; //ARD
@@ -7,10 +7,10 @@ class ChannelFavoriteEntity {
   String url; //details:  erst anzeigen wenn man drauf klickt
 
   //column names
-  static final String nameColumn = "name";
-  static final String logoColumn = "logo";
-  static final String groupnameColumn = "groupname";
-  static final String urlColumn = "url";
+  static const String nameColumn = "name";
+  static const String logoColumn = "logo";
+  static const String groupnameColumn = "groupname";
+  static const String urlColumn = "url";
 
   ChannelFavoriteEntity(this.name, this.logo, this.groupname, this.url);
 

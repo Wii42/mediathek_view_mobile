@@ -11,7 +11,6 @@ import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:flutter_ws/platform_channels/video_preview_manager.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,7 +71,7 @@ class AppState {
 class _InheritedWidget extends InheritedWidget {
   final AppSharedState data;
 
-  _InheritedWidget({
+  const _InheritedWidget({
     Key key,
     @required this.data,
     @required Widget child,
@@ -89,7 +88,7 @@ class AppSharedStateContainer extends StatefulWidget {
   final VideoListState videoListState;
   final AppState appState;
 
-  AppSharedStateContainer(
+  const AppSharedStateContainer(
       {@required this.child, this.videoListState, this.appState});
 
   static AppSharedState of(BuildContext context) {
@@ -98,11 +97,11 @@ class AppSharedStateContainer extends StatefulWidget {
   }
 
   @override
-  AppSharedState createState() => new AppSharedState();
+  AppSharedState createState() => AppSharedState();
 }
 
 class AppSharedState extends State<AppSharedStateContainer> {
-  final Logger logger = new Logger('VideoWidget');
+  final Logger logger = Logger('VideoWidget');
 
   VideoListState videoListState;
   AppState appState;
@@ -110,7 +109,7 @@ class AppSharedState extends State<AppSharedStateContainer> {
   @override
   Widget build(BuildContext context) {
     logger.fine("Rendering StateContainerState");
-    return new _InheritedWidget(
+    return _InheritedWidget(
       data: this,
       child: widget.child,
     );
@@ -125,23 +124,23 @@ class AppSharedState extends State<AppSharedStateContainer> {
       return;
     }
 
-    DownloadManager downloadManager = new DownloadManager(context);
+    DownloadManager downloadManager = DownloadManager(context);
     WidgetsFlutterBinding.ensureInitialized();
     FlutterDownloader.initialize();
 
-    DatabaseManager databaseManager = new DatabaseManager();
-    var filesystemPermissionManager = new FilesystemPermissionManager(context);
+    DatabaseManager databaseManager = DatabaseManager();
+    var filesystemPermissionManager = FilesystemPermissionManager(context);
 
-    appState = new AppState(
+    appState = AppState(
         downloadManager,
         databaseManager,
-        new VideoPreviewManager(context),
+        VideoPreviewManager(context),
         filesystemPermissionManager,
-        new SamsungTVCastManager(context),
+        SamsungTVCastManager(context),
         false,
-        new Video(""),
+        Video(""),
         [],
-        new Map());
+        {});
 
     // async execution to concurrently open database
     DeviceInformation.getTargetPlatform().then((platform) async {
@@ -171,7 +170,7 @@ class AppSharedState extends State<AppSharedStateContainer> {
         //if folder already exists return path
         await thumbnailDirectory.create(recursive: true).catchError((error) =>
             logger.info(
-                "Failed to create thumbnail directory " + error.toString()));
+                "Failed to create thumbnail directory $error"));
       }
     });
 
@@ -192,11 +191,10 @@ class AppSharedState extends State<AppSharedStateContainer> {
   void prefillFavoritedChannels() async {
     Set<ChannelFavoriteEntity> channels =
         await appState.databaseManager.getAllChannelFavorites();
-    logger.fine("There are " +
-        channels.length.toString() +
-        " favorited channels in the database");
-    channels.forEach((entity) =>
-        appState.favoriteChannels.putIfAbsent(entity.name, () => entity));
+    logger.fine("There are ${channels.length} favorited channels in the database");
+    for (var entity in channels) {
+      appState.favoriteChannels.putIfAbsent(entity.name, () => entity);
+    }
   }
 
   Future initializeDatabase() async {
@@ -212,11 +210,11 @@ class AppSharedState extends State<AppSharedStateContainer> {
   }
 
   void _initializeListState() {
-    videoListState = new VideoListState(new Set(), new Map());
+    videoListState = VideoListState({}, {});
   }
 
   void addImagePreview(String videoId, Image preview) {
-    logger.fine("Adding preview image to state for video with id " + videoId);
+    logger.fine("Adding preview image to state for video with id $videoId");
     videoListState.previewImages.putIfAbsent(videoId, () => preview);
   }
 

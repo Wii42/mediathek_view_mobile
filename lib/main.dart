@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:countly_flutter/countly_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ws/api/api_query.dart';
@@ -30,19 +29,20 @@ import 'global_state/appBar_state_container.dart';
 
 void main() {
   runZonedGuarded<Future<void>>(() async {
-    runApp(new AppSharedStateContainer(child: new MyApp()));
+    runApp(AppSharedStateContainer(child: MyApp()));
   }, Countly.recordDartError);
 }
 
 class MyApp extends StatelessWidget {
-  final TextEditingController textEditingController =
-      new TextEditingController();
+  final TextEditingController textEditingController = TextEditingController();
+
+  MyApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     AppSharedStateContainer.of(context).initializeState(context);
 
-    final title = 'MediathekViewMobile';
+    const title = 'MediathekViewMobile';
 
     //Setup global log levels
     Logger.root.level = Level.INFO;
@@ -50,27 +50,27 @@ class MyApp extends StatelessWidget {
       print('${rec.level.name}: ${rec.time}: ${rec.message}');
     });
 
-    Uuid uuid = new Uuid();
+    Uuid uuid = Uuid();
 
-    return new MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
-        textTheme: new TextTheme(
+      theme: ThemeData(
+        textTheme: TextTheme(
             subtitle1: subHeaderTextStyle,
             headline6: headerTextStyle,
             bodyText2: body1TextStyle,
             bodyText1: body2TextStyle,
             headline4: hintTextStyle,
             button: buttonTextStyle),
-        chipTheme: new ChipThemeData.fromDefaults(
+        chipTheme: ChipThemeData.fromDefaults(
             secondaryColor: Colors.black,
             labelStyle: subHeaderTextStyle,
             brightness: Brightness.dark),
         brightness: Brightness.light,
       ),
       title: title,
-      home: new MyHomePage(
-        key: new Key(uuid.v1()),
+      home: MyHomePage(
+        key: Key(uuid.v1()),
         title: title,
         textEditingController: textEditingController,
       ),
@@ -82,7 +82,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
   final TextEditingController textEditingController;
   final PageController pageController;
-  final Logger logger = new Logger('Main');
+  final Logger logger = Logger('Main');
 
   MyHomePage(
       {Key key,
@@ -93,7 +93,7 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new HomePageState(this.textEditingController, this.logger);
+    return HomePageState(textEditingController, logger);
   }
 }
 
@@ -182,7 +182,7 @@ class HomePageState extends State<MyHomePage>
   @override
   void initState() {
     videos = [];
-    searchFilters = new Map();
+    searchFilters = {};
     filterMenuOpen = false;
     filterMenuChannelFilterIsOpen = false;
     apiError = false;
@@ -191,26 +191,26 @@ class HomePageState extends State<MyHomePage>
     refreshOperationRunning = false;
     scrolledToEndOfList = false;
     currentUserQueryInput = "";
-    var inputListener = () => handleSearchInput();
+    inputListener() => handleSearchInput();
     searchFieldController.addListener(inputListener);
 
     //register Observer to react to android/ios lifecycle events
     WidgetsBinding.instance.addObserver(this);
 
-    _controller = new TabController(length: 3, vsync: this);
+    _controller = TabController(length: 3, vsync: this);
     _controller.addListener(() => onUISectionChange());
 
     //Init tabs
     //liveTVSection = new LiveTVSection();
-    aboutSection = new SettingsSection();
+    aboutSection = SettingsSection();
 
     //keys
-    Uuid uuid = new Uuid();
-    videoListKey = new Key(uuid.v1());
-    statusBarKey = new Key(uuid.v1());
-    indexingBarKey = new Key(uuid.v1());
+    Uuid uuid = Uuid();
+    videoListKey = Key(uuid.v1());
+    statusBarKey = Key(uuid.v1());
+    indexingBarKey = Key(uuid.v1());
 
-    api = new APIQuery(
+    api = APIQuery(
         onDataReceived: onSearchResponse, onError: onAPISearchError);
     api.search(currentUserQueryInput, searchFilters);
 
@@ -226,7 +226,7 @@ class HomePageState extends State<MyHomePage>
     appWideState = AppSharedStateContainer.of(context);
 
     if (isFirstStart) {
-      return new IntroScreen(onDonePressed: () {
+      return IntroScreen(onDonePressed: () {
         setState(() {
           isFirstStart = false;
           prefs.setBool('firstStart', false);
@@ -239,35 +239,33 @@ class HomePageState extends State<MyHomePage>
       return _showGDPRDialog(context);
     }
 
-    if (downloadSection == null) {
-      downloadSection = new DownloadSection(appWideState);
-    }
+    downloadSection ??= DownloadSection(appWideState);
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new TabBarView(
+      body: TabBarView(
         controller: _controller,
         children: <Widget>[
           getVideoSearchListWidget(),
           downloadSection,
-          aboutSection == null ? new SettingsSection() : aboutSection
+          aboutSection ?? SettingsSection()
         ],
       ),
-      bottomNavigationBar: new Theme(
+      bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
             // sets the background color of the `BottomNavigationBar`
             canvasColor: Colors.black,
             // sets the active color of the `BottomNavigationBar` if `Brightness` is light
             primaryColor: Colors.red,
             textTheme: Theme.of(context).textTheme.copyWith(
-                caption: new TextStyle(
+                caption: const TextStyle(
                     color: Colors
                         .yellow))), // sets the inactive color of the `BottomNavigationBar`
-        child: new BottomNavigationBar(
+        child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _page,
           onTap: navigationTapped,
-          items: [
+          items: const [
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.live_tv,
@@ -307,19 +305,19 @@ class HomePageState extends State<MyHomePage>
   Widget getVideoSearchListWidget() {
     logger.fine("Rendering Video Search list");
 
-    Widget videoSearchList = new SafeArea(
-      child: new RefreshIndicator(
+    Widget videoSearchList = SafeArea(
+      child: RefreshIndicator(
         onRefresh: _handleListRefresh,
-        child: new Container(
+        child: Container(
           color: Colors.grey[800],
-          child: new CustomScrollView(
+          child: CustomScrollView(
             slivers: <Widget>[
-              new SliverToBoxAdapter(
-                child: new FilterBarSharedState(
-                  child: new GradientAppBar(
+              SliverToBoxAdapter(
+                child: FilterBarSharedState(
+                  child: GradientAppBar(
                       this,
                       searchFieldController,
-                      new FilterMenu(
+                      FilterMenu(
                           searchFilters: searchFilters,
                           onFilterUpdated: _filterMenuUpdatedCallback,
                           onSingleFilterTapped: _singleFilterTappedCallback),
@@ -328,7 +326,7 @@ class HomePageState extends State<MyHomePage>
                       totalQueryResults),
                 ),
               ),
-              new VideoListView(
+              VideoListView(
                   key: videoListKey,
                   videos: videos,
                   amountOfVideosFetched: lastAmountOfVideosRetrieved,
@@ -336,8 +334,8 @@ class HomePageState extends State<MyHomePage>
                   currentQuerySkip: api.getCurrentSkip(),
                   totalResultSize: totalQueryResults,
                   mixin: this),
-              new SliverToBoxAdapter(
-                child: new StatusBar(
+              SliverToBoxAdapter(
+                child: StatusBar(
                     key: statusBarKey,
                     apiError: apiError,
                     videoListIsEmpty: videos.isEmpty,
@@ -354,12 +352,12 @@ class HomePageState extends State<MyHomePage>
 
   // Called when the user presses on of the BottomNavigationBarItems. Does not get triggered by a users swipe.
   void navigationTapped(int page) {
-    logger.info("New Navigation Tapped: ---> Page " + page.toString());
+    logger.info("New Navigation Tapped: ---> Page $page");
     _controller.animateTo(page,
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
 
     setState(() {
-      this._page = page;
+      _page = page;
     });
   }
 
@@ -368,9 +366,9 @@ class HomePageState extends State<MyHomePage>
     This can be due to a user's swipe or via tab on the BottomNavigationBar
    */
   onUISectionChange() {
-    if (this._page != _controller.index) {
+    if (_page != _controller.index) {
       logger
-          .info("UI Section Change: ---> Page " + _controller.index.toString());
+          .info("UI Section Change: ---> Page ${_controller.index}");
 
       Countly.isInitialized().then((initialized) {
         if (initialized) {
@@ -390,7 +388,7 @@ class HomePageState extends State<MyHomePage>
       });
 
       setState(() {
-        this._page = _controller.index;
+        _page = _controller.index;
       });
     }
   }
@@ -399,7 +397,7 @@ class HomePageState extends State<MyHomePage>
     logger.fine("Refreshing video list ...");
     refreshOperationRunning = true;
     //the completer will be completed when there are results & the flag == true
-    refreshCompleter = new Completer<Null>();
+    refreshCompleter = Completer<Null>();
     _createQueryWithClearedVideoList();
 
     return refreshCompleter.future;
@@ -408,7 +406,7 @@ class HomePageState extends State<MyHomePage>
   // ----------CALLBACKS: WebsocketController----------------
 
   void onAPISearchError(Error error) {
-    logger.info("Received an error from thr API." + error.toString());
+    logger.info("Received an error from thr API.$error");
 
     // TODO show status bar with error
 
@@ -438,15 +436,15 @@ class HomePageState extends State<MyHomePage>
     List<Video> newVideosFromQuery = queryResult.videos;
     totalQueryResults = queryResult.queryInfo.totalResults;
     lastAmountOfVideosRetrieved = newVideosFromQuery.length;
-    logger.info("received videos: " + lastAmountOfVideosRetrieved.toString());
+    logger.info("received videos: $lastAmountOfVideosRetrieved");
 
     int videoListLengthOld = videos.length;
     videos = VideoListUtil.sanitizeVideos(newVideosFromQuery, videos);
     int newVideosCount = videos.length - videoListLengthOld;
-    logger.info("received new videos: " + newVideosCount.toString());
+    logger.info("received new videos: $newVideosCount");
 
     if (newVideosCount == 0 && scrolledToEndOfList == false) {
-      logger.info("Scrolled to end of list & mounted: " + mounted.toString());
+      logger.info("Scrolled to end of list & mounted: $mounted");
       scrolledToEndOfList = true;
       if (mounted) {
         setState(() {});
@@ -460,10 +458,7 @@ class HomePageState extends State<MyHomePage>
       }
       int newVideosCount = videos.length - videoListLengthOld;
 
-      logger.info('Received ' +
-          newVideosCount.toString() +
-          ' new video(s). Amount of videos in list ' +
-          videos.length.toString());
+      logger.info('Received $newVideosCount new video(s). Amount of videos in list ${videos.length}');
 
       lastAmountOfVideosRetrieved = newVideosCount;
       scrolledToEndOfList == false;
@@ -508,33 +503,25 @@ class HomePageState extends State<MyHomePage>
 
   _filterMenuUpdatedCallback(SearchFilter newFilter) {
     //called whenever a filter in the menu gets a value
-    if (this.searchFilters[newFilter.filterId] != null) {
-      if (this.searchFilters[newFilter.filterId].filterValue !=
+    if (searchFilters[newFilter.filterId] != null) {
+      if (searchFilters[newFilter.filterId].filterValue !=
           newFilter.filterValue) {
-        logger.fine("Changed filter text for filter with id " +
-            newFilter.filterId.toString() +
-            " detected. Old Value: " +
-            this.searchFilters[newFilter.filterId].filterValue +
-            " New : " +
-            newFilter.filterValue);
+        logger.fine("Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters[newFilter.filterId].filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
         searchFilters.remove(newFilter.filterId);
         if (newFilter.filterValue.isNotEmpty)
-          this.searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+          searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
         //updates state internally
         _createQueryWithClearedVideoList();
       }
     } else if (newFilter.filterValue.isNotEmpty) {
-      logger.fine("New filter with id " +
-          newFilter.filterId.toString() +
-          " detected with value " +
-          newFilter.filterValue);
+      logger.fine("New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
 
       HapticFeedback.mediumImpact();
 
-      this.searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+      searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
       _createQueryWithClearedVideoList();
     }
   }
@@ -608,12 +595,12 @@ class HomePageState extends State<MyHomePage>
         fit: BoxFit.cover,
       ),
       entryAnimation: EntryAnimation.TOP_LEFT,
-      title: Text(
+      title: const Text(
         'Vielen Dank',
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
       ),
-      description: Text(
+      description: const Text(
         'Darf MediathekView anonymisierte Crash und Nutzungsdaten sammeln? Das hilft uns die App zu verbessern.',
         textAlign: TextAlign.center,
       ),
@@ -631,11 +618,11 @@ class HomePageState extends State<MyHomePage>
           showCountlyGDPRDialog = false;
         });
       },
-      buttonCancelText: Text(
+      buttonCancelText: const Text(
         "Nein",
-        style: new TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white),
       ),
-      buttonOkText: Text("Ja"),
+      buttonOkText: const Text("Ja"),
     );
   }
 }

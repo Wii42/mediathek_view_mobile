@@ -1,5 +1,5 @@
 class VideoProgressEntity {
-  static final String TABLE_NAME = "video_progress";
+  static const String TABLE_NAME = "video_progress";
 
   String id;
   int progress;
@@ -19,22 +19,22 @@ class VideoProgressEntity {
   String url_subtitle;
 
   //column names
-  static final String idColumn = "id";
-  static final String progressColumn = "progress";
-  static final String channelColumn = "channel";
-  static final String topicColumn = "topic";
-  static final String descriptionColumn = "description";
-  static final String titleColumn = "title";
-  static final String timestampColumn = "timestamp";
-  static final String timestampLastViewedColumn = "timestampLastViewed";
-  static final String durationColumn = "duration";
-  static final String sizeColumn = "size";
-  static final String url_websiteColumn = "url_website";
-  static final String url_video_lowColumn = "url_video_low";
-  static final String url_video_hdColumn = "url_video_hd";
-  static final String filmlisteTimestampColumn = "filmlisteTimestamp";
-  static final String url_videoColumn = "url_video";
-  static final String url_subtitleColumn = "url_subtitle";
+  static const String idColumn = "id";
+  static const String progressColumn = "progress";
+  static const String channelColumn = "channel";
+  static const String topicColumn = "topic";
+  static const String descriptionColumn = "description";
+  static const String titleColumn = "title";
+  static const String timestampColumn = "timestamp";
+  static const String timestampLastViewedColumn = "timestampLastViewed";
+  static const String durationColumn = "duration";
+  static const String sizeColumn = "size";
+  static const String url_websiteColumn = "url_website";
+  static const String url_video_lowColumn = "url_video_low";
+  static const String url_video_hdColumn = "url_video_hd";
+  static const String filmlisteTimestampColumn = "filmlisteTimestamp";
+  static const String url_videoColumn = "url_video";
+  static const String url_subtitleColumn = "url_subtitle";
 
   VideoProgressEntity(this.id, this.progress,
       {this.channel,

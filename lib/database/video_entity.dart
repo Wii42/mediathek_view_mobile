@@ -1,7 +1,7 @@
 import 'package:flutter_ws/model/video.dart';
 
 class VideoEntity {
-  static final String TABLE_NAME = "videos";
+  static const String TABLE_NAME = "videos";
 
   String id;
   String task_id;
@@ -29,26 +29,26 @@ class VideoEntity {
   double rating;
 
   //column names
-  static final String idColumn = "id";
-  static final String task_idColumn = "task_id";
-  static final String channelColumn = "channel";
-  static final String topicColumn = "topic";
-  static final String descriptionColumn = "description";
-  static final String titleColumn = "title";
-  static final String timestampColumn = "timestamp";
-  static final String timestamp_video_savedColumn = "timestamp_video_saved";
-  static final String durationColumn = "duration";
-  static final String sizeColumn = "size";
-  static final String url_websiteColumn = "url_website";
-  static final String url_video_lowColumn = "url_video_low";
-  static final String url_video_hdColumn = "url_video_hd";
-  static final String filmlisteTimestampColumn = "filmlisteTimestamp";
-  static final String url_videoColumn = "url_video";
-  static final String url_subtitleColumn = "url_subtitle";
-  static final String ratingColumn = "rating";
-  static final String filePathColumn = "filePath";
-  static final String fileNameColumn = "fileName";
-  static final String mimeTypeColumn = "mimeType";
+  static const String idColumn = "id";
+  static const String task_idColumn = "task_id";
+  static const String channelColumn = "channel";
+  static const String topicColumn = "topic";
+  static const String descriptionColumn = "description";
+  static const String titleColumn = "title";
+  static const String timestampColumn = "timestamp";
+  static const String timestamp_video_savedColumn = "timestamp_video_saved";
+  static const String durationColumn = "duration";
+  static const String sizeColumn = "size";
+  static const String url_websiteColumn = "url_website";
+  static const String url_video_lowColumn = "url_video_low";
+  static const String url_video_hdColumn = "url_video_hd";
+  static const String filmlisteTimestampColumn = "filmlisteTimestamp";
+  static const String url_videoColumn = "url_video";
+  static const String url_subtitleColumn = "url_subtitle";
+  static const String ratingColumn = "rating";
+  static const String filePathColumn = "filePath";
+  static const String fileNameColumn = "fileName";
+  static const String mimeTypeColumn = "mimeType";
 
   VideoEntity(
       this.id,
@@ -73,7 +73,7 @@ class VideoEntity {
       this.rating});
 
   static VideoEntity fromVideo(Video video) {
-    return new VideoEntity(
+    return VideoEntity(
         video.id,
         "", //task Id is added by download manager
         video.channel,
