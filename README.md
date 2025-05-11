@@ -1,5 +1,11 @@
 ![logo](assets/launcher/ic_launcher.png)
 
+This is a fork of the official MediathekViewMobile repository, aiming to migrate the project to using a current version of Flutter and Dart.
+
+Currently, the app is working on Flutter 3.39.3, but not all features are working yet. Video watching in the player is possible for most channels; however, downloading seems not to work, as well as the thumbnails are not showing up.
+
+# About MediathekViewMobile
+
 MediathekViewMobile is an Android and iOS application written with Flutter that allows searching through and downloading videos from
 a wide range of public German TV providers (ARD, ZDF, Arte, 3Sat, SWR, BR, MDR, NDR, WDR, HR, RBB, ORF, SRF).
 It uses the API of [MediathekViewWeb](https://mediathekviewweb.de/).
@@ -42,6 +48,8 @@ flutter doctor
 
 Then install MediathekViewMobile by executing `flutter run --release` from the repository root.
 
+Alternatively build the APK from source using `flutter build apk`
+
 ## Installation from Source for iOS
 
 In addition to the steps for iOS, you need to setup XCode and configure the project to use your Apple ID.
@@ -54,5 +62,5 @@ You can install the application via XCode or by executing `flutter run --release
 
 
 #### TODOs:
-- [ ] Reimplement the swiper in the download manager, removed due to no null safe version of flutter_swiper
-- [ ] Reimplement giffy_dialog]
+- [ ] Reimplement the swiper in the download manager, removed due to missing null safe version of `flutter_swiper`
+
