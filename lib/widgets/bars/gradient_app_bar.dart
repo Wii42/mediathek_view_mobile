@@ -8,7 +8,7 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:logging/logging.dart';
 
 class GradientAppBar extends StatelessWidget {
-  final Logger logger = new Logger('GradientAppBar');
+  final Logger logger = Logger('GradientAppBar');
   final TextEditingController? controller;
   final bool isFilterMenuOpen;
   final int currentAmountOfVideosInList;
@@ -35,49 +35,49 @@ class GradientAppBar extends StatelessWidget {
 
     bool isFilterMenuOpen = getFilterMenuState(context);
 
-    return new Container(
+    return Container(
       padding: const EdgeInsets.only(left: 16.0, right: 32.0),
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         color: Color(0xffffbf00),
       ),
-      child: new Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          new Padding(
-            padding: new EdgeInsets.only(bottom: 10.0),
-            child: new Row(
+          Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                new Expanded(
-                  child: new Container(
-                    padding: new EdgeInsets.only(right: 20.0),
-                    child: new TextField(
-                      style: new TextStyle(
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(right: 20.0),
+                    child: TextField(
+                      style: TextStyle(
                           color: Colors.white,
                           fontSize: 18.0,
                           fontWeight: FontWeight.w700),
                       controller: controller,
-                      decoration: new InputDecoration(
+                      decoration: InputDecoration(
                         hintStyle: TextStyle(
                             fontSize: 18.0,
                             color: Colors.white,
                             fontStyle: FontStyle.italic),
-                        suffixIcon: new IconButton(
+                        suffixIcon: IconButton(
                             color: controller!.text.isNotEmpty
                                 ? Colors.red
                                 : Colors.transparent,
                             onPressed: () {
                               controller!.text = "";
                             },
-                            icon: new Icon(
+                            icon: Icon(
                               Icons.clear,
                               size: 30.0,
                             )),
                         labelStyle: hintTextStyle.copyWith(color: Colors.white),
-                        icon: new IconButton(
+                        icon: IconButton(
                           color: isFilterMenuOpen ? Colors.red : Colors.black,
-                          icon: new Icon(Icons.search),
+                          icon: Icon(Icons.search),
                           iconSize: 30.0,
                           onPressed: () {
                             state.updateAppBarState();
@@ -88,50 +88,50 @@ class GradientAppBar extends StatelessWidget {
                     ),
                   ),
                 ),
-                new Text(
+                Text(
                   totalAmountOfVideosForSelection.toString(),
-                  style: new TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                 )
               ],
             ),
           ),
           //show filters if there are some in the list
           searchFilters != null && searchFilters!.isNotEmpty
-              ? new Padding(
-                  padding: new EdgeInsets.only(bottom: 5.0),
-                  child: new Row(
+              ? Padding(
+                  padding: EdgeInsets.only(bottom: 5.0),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      new Text('Filter: ', style: filterRowTextStyle),
+                      Text('Filter: ', style: filterRowTextStyle),
                       !DeviceInformation.isTablet(context) &&
                               searchFilters!.length > 3
-                          ? new Column(
+                          ? Column(
                               children: <Widget>[
-                                new Row(
+                                Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: searchFilters!.sublist(0, 2)),
-                                new Row(
+                                Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: searchFilters!.sublist(2)),
                               ],
                             )
-                          : new Row(children: searchFilters!),
+                          : Row(children: searchFilters!),
                     ],
                   ),
                 )
-              : new Container(),
+              : Container(),
           AnimatedSize(
             duration: Duration(milliseconds: 300),
-            vsync: mixin,
+            //vsync: mixin,
             child: isFilterMenuOpen
-                ? new Padding(
-                    padding: new EdgeInsets.only(bottom: 10.0, top: 10.0),
+                ? Padding(
+                    padding: EdgeInsets.only(bottom: 10.0, top: 10.0),
                     child: filterMenu,
                   )
-                : new Container(),
+                : Container(),
           ),
         ],
       ),

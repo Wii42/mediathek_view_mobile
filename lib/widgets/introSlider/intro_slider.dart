@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:intro_slider/slide_object.dart';
+//import 'package:intro_slider/slide_object.dart';
 
 class IntroScreen extends StatefulWidget {
   var onDonePressed;
   IntroScreen({Key? key, this.onDonePressed}) : super(key: key);
 
   @override
-  IntroScreenState createState() => new IntroScreenState();
+  IntroScreenState createState() => IntroScreenState();
 }
 
 class IntroScreenState extends State<IntroScreen> {
@@ -18,26 +18,26 @@ class IntroScreenState extends State<IntroScreen> {
     super.initState();
 
     slides.add(
-      new Slide(
+      Slide(
         title: "Suchen und Downloaden",
         maxLineTitle: 2,
-        marginTitle: new EdgeInsets.only(top: 20.0, bottom: 20.0),
+        marginTitle: EdgeInsets.only(top: 20.0, bottom: 20.0),
         description: "Durchsuchen von öffentlich-rechtlichen Mediatheken.",
-        centerWidget: new Container(
+        centerWidget: Container(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: new Image(
-                image: new AssetImage("assets/intro/intro_slider_1.png"))),
+            child: Image(
+                image: AssetImage("assets/intro/intro_slider_1.png"))),
         backgroundColor: Color(0xfff5a623),
       ),
     );
     slides.add(
-      new Slide(
+      Slide(
         title: "Filtern",
         description: "Filtern nach Thema, Titel, Länge und Fernsehsender",
-        centerWidget: new Container(
+        centerWidget: Container(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: new Image(
-                image: new AssetImage("assets/intro/intro_slider_2.png"))),
+            child: Image(
+                image: AssetImage("assets/intro/intro_slider_2.png"))),
         backgroundColor: Color(0xff203152),
       ),
     );
@@ -49,7 +49,7 @@ class IntroScreenState extends State<IntroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new IntroSlider(
+    return IntroSlider(
       slides: this.slides,
       onDonePress: this.onDonePress,
     );

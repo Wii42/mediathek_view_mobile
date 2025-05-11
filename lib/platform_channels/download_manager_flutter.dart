@@ -24,11 +24,11 @@ class DownloadManager {
   static const String PERMISSION_DENIED_ID = "-1";
   static const SQL_GET_SINGEL_TASK = "SELECT * FROM task WHERE task_id =";
   static String SQL_GET_ALL_RUNNING_TASKS =
-      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.enqueued.value} OR status = ${DownloadTaskStatus.running.value} OR status = ${DownloadTaskStatus.paused.value}";
+      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.enqueued.name} OR status = ${DownloadTaskStatus.running.index} OR status = ${DownloadTaskStatus.paused.index}";
   static String SQL_GET_ALL_COMPLETED_TASKS =
-      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.complete.value}";
+      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.complete.index}";
   static String SQL_GET_ALL_FAILED_TASKS =
-      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.failed.value}";
+      "SELECT * FROM task WHERE status = ${DownloadTaskStatus.failed.index}";
 
   //Listeners
   static Multimap<String?, MapEntry<int, onFailed>> onFailedListeners =
