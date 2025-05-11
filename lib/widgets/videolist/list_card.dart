@@ -102,8 +102,8 @@ class _ListCardState extends State<ListCard> {
               maxLines: 1,
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
-                  .copyWith(color: Colors.black),
+                  .titleLarge?.
+                  copyWith(color: Colors.black),
             ),
           ),
         ),
@@ -119,7 +119,7 @@ class _ListCardState extends State<ListCard> {
               maxLines: 2,
               style: Theme.of(context)
                   .textTheme
-                  .subtitle1!
+                  .titleMedium!
                   .copyWith(color: Colors.black),
             ),
           ),

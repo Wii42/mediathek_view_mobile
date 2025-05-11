@@ -56,12 +56,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: TextTheme(
-            subtitle1: subHeaderTextStyle,
-            headline6: headerTextStyle,
-            bodyText2: body1TextStyle,
-            bodyText1: body2TextStyle,
-            headline4: hintTextStyle,
-            button: buttonTextStyle),
+            titleMedium: subHeaderTextStyle,
+            titleLarge: headerTextStyle,
+            bodyMedium: body1TextStyle,
+            bodyLarge: body2TextStyle,
+            headlineMedium: hintTextStyle,
+            labelLarge: buttonTextStyle),
         chipTheme: ChipThemeData.fromDefaults(
             secondaryColor: Colors.black,
             labelStyle: subHeaderTextStyle,
@@ -263,7 +263,7 @@ class HomePageState extends State<MyHomePage>
             // sets the active color of the `BottomNavigationBar` if `Brightness` is light
             primaryColor: Colors.red,
             textTheme: Theme.of(context).textTheme.copyWith(
-                caption: const TextStyle(
+                bodySmall: const TextStyle(
                     color: Colors
                         .yellow))), // sets the inactive color of the `BottomNavigationBar`
         child: BottomNavigationBar(

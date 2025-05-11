@@ -36,7 +36,7 @@ class FilterMenuChannelEditButton extends StatelessWidget {
                 child: new Icon(Icons.edit, size: 25.0, color: Colors.white),
               ),
               new Text(displayText!,
-                  style: Theme.of(context).textTheme.button,
+                  style: Theme.of(context).textTheme.labelLarge,
                   textAlign: TextAlign.start,
                   maxLines: 1)
             ],

@@ -65,8 +65,8 @@ class VideoDescription extends StatelessWidget {
                       video.title!,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
-                          .copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge?.
+                          copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     //getSpacedContentRow(video.title),
                     getDivider(),
@@ -75,8 +75,8 @@ class VideoDescription extends StatelessWidget {
                       video.topic!,
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
-                          .copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge?.
+                          copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
                     getCaption("Länge"),
@@ -84,8 +84,8 @@ class VideoDescription extends StatelessWidget {
                       Calculator.calculateDuration(video.duration),
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
-                          .copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge?.
+                          copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
                     getCaption("Ausgestrahlt"),
@@ -93,8 +93,8 @@ class VideoDescription extends StatelessWidget {
                       Calculator.calculateTimestamp(video.timestamp!),
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
-                          .copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge?.
+                          copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     video.description != null && video.description!.isNotEmpty
                         ? getDivider()
@@ -105,7 +105,7 @@ class VideoDescription extends StatelessWidget {
                     video.description != null && video.description!.isNotEmpty
                         ? Text('"${video.description}"',
                             textAlign: TextAlign.left,
-                            style: Theme.of(context).textTheme.headline6!.copyWith(
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 color: Colors.black,
                                 fontSize: 15.0,
                                 fontStyle: FontStyle.italic))
@@ -138,7 +138,7 @@ class VideoDescription extends StatelessWidget {
   Text getCaption(String caption) {
     return Text(
       caption,
-      style: Theme.of(context).textTheme.headline6!.copyWith(
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
     );
   }
