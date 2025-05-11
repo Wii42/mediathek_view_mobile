@@ -66,6 +66,11 @@ class MyApp extends StatelessWidget {
             secondaryColor: Colors.black,
             labelStyle: subHeaderTextStyle,
             brightness: Brightness.dark),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          selectedItemColor: Color(0xffffbf00),
+          unselectedItemColor: Colors.white,
+        ),
         brightness: Brightness.light,
       ),
       title: title,
