@@ -18,7 +18,7 @@ import 'download_switch.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoDetailScreen extends StatefulWidget {
-  final Logger logger = new Logger('VideoDetailScreen');
+  final Logger logger = Logger('VideoDetailScreen');
 
   AppSharedState? appWideState;
   Image? image;
@@ -71,7 +71,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
     GestureDetector image = getImageSurface(totalImageWidth, height);
 
-    Widget downloadProgressBar = new DownloadProgressBar(
+    Widget downloadProgressBar = DownloadProgressBar(
         widget.video.id,
         widget.video.title,
         widget.appWideState!.appState!.downloadManager,
@@ -84,7 +84,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           totalImageWidth, height, image, context, downloadProgressBar);
     } else if (!isTablet && orientation == Orientation.landscape) {
       // mobile landscape -> only provide ability to play video. no title nothing
-      layout = new Container(color: Colors.grey[900], child: image);
+      layout = Container(color: Colors.grey[900], child: image);
       // layout = buildMobileLandscapeLayout();
     } else {
       // all portrait:  like youtube:
@@ -94,9 +94,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       layout = buildVerticalLayout(image, downloadProgressBar);
     }
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new SafeArea(
+      body: SafeArea(
         child: CustomScrollView(
           slivers: <Widget>[
             SliverToBoxAdapter(
@@ -117,26 +117,26 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
     double rowPaddingLeft = 10;
     double rowPaddingRight = 5;
-    return new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        new Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Container(
+            Container(
               color: Colors.grey[900],
-              child: new ConstrainedBox(
+              child: ConstrainedBox(
                 constraints: BoxConstraints(
                     maxWidth: totalImageWidth, maxHeight: height),
-                child: new Stack(
+                child: Stack(
                   alignment: Alignment.center,
                   fit: StackFit.passthrough,
                   children: <Widget>[
                     image,
-                    new Positioned(
+                    Positioned(
                         bottom: 0.0,
                         left: 0.0,
                         right: 0.0,
@@ -145,12 +145,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 ),
               ),
             ),
-            new Padding(
+            Padding(
               padding:
                   EdgeInsets.only(left: rowPaddingLeft, right: rowPaddingRight),
-              child: new ClipRRect(
+              child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                child: new Container(
+                child: Container(
                   width: MediaQuery.of(context).size.width -
                       totalImageWidth -
                       rowPaddingLeft -
@@ -163,9 +163,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             )
           ],
         ),
-        new Container(
-          margin: EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
-          child: new DownloadSwitch(
+        Container(
+          margin: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+          child: DownloadSwitch(
               widget.appWideState,
               widget.video,
               widget.isDownloading,
@@ -183,40 +183,40 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     Widget sideBar = Container();
 
     if (widget.video.description != null &&
-        widget.video.description!.length > 0) {
-      sideBar = new SingleChildScrollView(
-        child: new Container(
-          margin: EdgeInsets.only(left: 35, top: 10),
-          child: new Column(
+        widget.video.description!.isNotEmpty) {
+      sideBar = SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.only(left: 35, top: 10),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              new Text("Description",
+              Text("Description",
                   style: headerTextStyle.copyWith(fontSize: 30)),
-              new Container(height: 10),
-              new Text(widget.video.description!,
+              Container(height: 10),
+              Text(widget.video.description!,
                   style: subHeaderTextStyle.copyWith(fontSize: 20)),
             ],
           ),
         ),
       );
     }
-    return new Column(
+    return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Stack(
+          Stack(
               alignment: Alignment.center,
               fit: StackFit.passthrough,
               children: <Widget>[
-                new Container(color: Colors.grey[900], child: image),
-                new Positioned(
+                Container(color: Colors.grey[900], child: image),
+                Positioned(
                   bottom: 0,
                   left: 0.0,
                   right: 0.0,
-                  child: new Opacity(
+                  child: Opacity(
                     opacity: 0.7,
-                    child: new Container(
+                    child: Container(
                       color: Colors.grey[800],
                       child: MetaInfoListTile.getVideoMetaInformationListTile(
                           context,
@@ -228,13 +228,13 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     ),
                   ),
                 ),
-                new Positioned(
+                Positioned(
                     bottom: 0.0,
                     left: 0.0,
                     right: 0.0,
                     child: downloadProgressBar)
               ]),
-          new DownloadSwitch(
+          DownloadSwitch(
               widget.appWideState,
               widget.video,
               widget.isDownloading,
@@ -247,54 +247,54 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   SingleChildScrollView getDescription() {
-    var container = new Container();
+    var container = Container();
 
     if (widget.video.description != null &&
         widget.video.description!.length > 0) {
-      container = new Container(
+      container = Container(
         margin: EdgeInsets.only(left: 5),
-        child: new Column(
+        child: Column(
           children: <Widget>[
-            new Text("Description",
+            Text("Description",
                 style: headerTextStyle.copyWith(fontSize: 30)),
-            new Text(widget.video.description!,
+            Text(widget.video.description!,
                 style: subHeaderTextStyle.copyWith(fontSize: 20)),
           ],
         ),
       );
     }
 
-    return new SingleChildScrollView(
+    return SingleChildScrollView(
       child: container,
     );
   }
 
   GestureDetector getImageSurface(double totalImageWidth, double height) {
-    Widget videoProgressBar = new Container();
+    Widget videoProgressBar = Container();
     if (videoProgressEntity != null) {
-      videoProgressBar = new PlaybackProgressBar(videoProgressEntity!.progress,
+      videoProgressBar = PlaybackProgressBar(videoProgressEntity!.progress,
           int.tryParse(widget.video.duration.toString()), false);
     }
 
-    return new GestureDetector(
-      child: new AspectRatio(
+    return GestureDetector(
+      child: AspectRatio(
         aspectRatio: totalImageWidth > height
             ? totalImageWidth / height
             : height / totalImageWidth,
-        child: new Container(
+        child: Container(
           constraints: BoxConstraints(maxWidth: totalImageWidth),
-          child: new Stack(
+          child: Stack(
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              new Hero(tag: widget.heroUuid!, child: widget.image!),
-              new Positioned(
+              Hero(tag: widget.heroUuid!, child: widget.image!),
+              Positioned(
                 bottom: 0,
                 left: 0.0,
                 right: 0.0,
-                child: new Opacity(opacity: 0.7, child: videoProgressBar),
+                child: Opacity(opacity: 0.7, child: videoProgressBar),
               ),
-              new Center(
+              Center(
                   child: Icon(
                 Icons.play_circle_outline,
                 color: Colors.white,
@@ -320,17 +320,17 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   AppBar getAppBar() {
-    return new AppBar(
-        backgroundColor: new Color(0xffffbf00),
+    return AppBar(
+        backgroundColor: Color(0xffffbf00),
         titleSpacing: 0.0,
         centerTitle: false,
-        title: new Text(
+        title: Text(
           "Zurück",
           style: sectionHeadingTextStyle,
         ),
-        leading: new Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          new IconButton(
-            icon: new Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
+        leading: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
             onPressed: () {
               //return channels when user pressed back
               return Navigator.pop(context);
@@ -353,20 +353,20 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
   ListTile getBottomBar(BuildContext context, String assetPath, String title,
       String lenght, int timestamp, bool isDownloaded) {
-    return new ListTile(
-      trailing: new Text(
+    return ListTile(
+      trailing: Text(
         lenght != null ? Calculator.calculateDuration(lenght) : "",
         style: videoMetadataTextStyle.copyWith(color: Colors.white),
       ),
       leading: assetPath.isNotEmpty
-          ? new ChannelThumbnail(assetPath, isDownloaded)
-          : new Container(),
-      title: new Text(
+          ? ChannelThumbnail(assetPath, isDownloaded)
+          : Container(),
+      title: Text(
         title,
         style:
             Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.white),
       ),
-      subtitle: new Text(
+      subtitle: Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
         style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
       ),

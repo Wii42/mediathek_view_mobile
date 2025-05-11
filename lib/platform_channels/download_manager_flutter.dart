@@ -31,13 +31,13 @@ class DownloadManager {
       "SELECT * FROM task WHERE status = ${DownloadTaskStatus.failed.value}";
 
   //Listeners
-  static Multimap<String?, MapEntry<int?, onFailed>> onFailedListeners =
+  static Multimap<String?, MapEntry<int, onFailed>> onFailedListeners =
       Multimap<String?, MapEntry<int, onFailed>>();
-  static Multimap<String?, MapEntry<int?, onComplete>> onCompleteListeners =
+  static Multimap<String?, MapEntry<int, onComplete>> onCompleteListeners =
       Multimap<String?, MapEntry<int, onComplete>>();
-  static Multimap<String?, MapEntry<int?, onCanceled>> onCanceledListeners =
+  static Multimap<String?, MapEntry<int, onCanceled>> onCanceledListeners =
       Multimap<String?, MapEntry<int, onCanceled>>();
-  static Multimap<String?, MapEntry<int?, onStateChanged>>
+  static Multimap<String?, MapEntry<int, onStateChanged>>
       onStateChangedListeners =
       Multimap<String?, MapEntry<int, onStateChanged>>();
 
@@ -387,7 +387,7 @@ class DownloadManager {
       onFailed onDownloadFailed,
       onCanceled onDownloadCanceled,
       // used to differentiate between download section & list view section as both need to listen for updates!
-      int? identifier) {
+      int identifier) {
     logger.fine("Subscribing on updates for video with id $videoId");
     onFailedListeners.add(videoId, MapEntry(identifier, onDownloadFailed));
     onCompleteListeners.add(videoId, MapEntry(identifier, onDownloadComplete));

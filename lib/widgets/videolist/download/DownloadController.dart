@@ -26,7 +26,7 @@ class DownloadController extends ValueNotifier<DownloadValue> {
   }
 
   int getIdentifier() {
-    Random random = new Random();
+    Random random = Random();
     return random.nextInt(1000);
   }
 
@@ -51,7 +51,7 @@ class DownloadController extends ValueNotifier<DownloadValue> {
         onDownloaderComplete,
         onDownloaderFailed,
         onSubscriptionCanceled,
-        downloadManagerIdentifier);
+        downloadManagerIdentifier!);
   }
 
   void onDownloaderFailed(String? videoId) {
