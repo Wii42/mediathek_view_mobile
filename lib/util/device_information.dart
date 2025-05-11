@@ -1,17 +1,18 @@
 import 'dart:async';
 
-import 'package:device_info/device_info.dart';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 
 class DeviceInformation {
-  static final Logger logger = new Logger('OsChecker');
+  static final Logger logger = Logger('OsChecker');
   static TargetPlatform? platform;
 
   static Future<TargetPlatform?> getTargetPlatform() async {
     if (platform != null) return platform;
 
-    DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     try {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       logger.info('Running on ${androidInfo.model}'); // e.g. "Moto G (4)"

@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -354,7 +354,7 @@ class _ListCardState extends State<ListCard> {
 
   void onDownloadRequested() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
       updateStatus(DownloadTaskStatus.failed, widget.video.id);
       return;

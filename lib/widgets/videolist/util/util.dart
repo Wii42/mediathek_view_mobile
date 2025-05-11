@@ -1,4 +1,5 @@
-import 'package:connectivity/connectivity.dart';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/database/video_progress_entity.dart';
@@ -18,7 +19,7 @@ class Util {
       BuildContext context, VideoEntity? entity, Video video) async {
     if (entity == null) {
       var connectivityResult = await (Connectivity().checkConnectivity());
-      if (connectivityResult == ConnectivityResult.none) {
+      if (connectivityResult.contains(ConnectivityResult.none)) {
         SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
         return false;
       }

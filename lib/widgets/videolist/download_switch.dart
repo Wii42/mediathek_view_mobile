@@ -1,4 +1,5 @@
-import 'package:connectivity/connectivity.dart';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
@@ -235,7 +236,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   void downloadVideo() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult.contains(ConnectivityResult.none)) {
       SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
       downloadController!.value =
           downloadController!.value.copyWith(status: DownloadTaskStatus.failed);

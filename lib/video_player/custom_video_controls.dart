@@ -13,7 +13,7 @@ import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'TVPlayerController.dart';
 import 'TvVideoPlayerValue.dart';
@@ -441,7 +441,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
                   //chewieController.toggleFullScreen();
                   Navigator.pop(context);
-                  Wakelock.disable();
+                  WakelockPlus.disable();
                 },
               ),
             ),

@@ -8,7 +8,7 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/video_player/custom_player_with_controls.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'TVPlayerController.dart';
 
@@ -190,7 +190,7 @@ class CustomChewieController extends ChangeNotifier {
 
   Future _initialize() async {
     // playing video on mobile - do not turn off the screen
-    Wakelock.enable();
+    WakelockPlus.enable();
 
     await videoPlayerController.setLooping(looping);
 
