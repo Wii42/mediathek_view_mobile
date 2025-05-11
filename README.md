@@ -51,3 +51,7 @@ To install MediathekViewMobile, make sure you have [setup XCode properly](https:
 You can install the application via XCode or by executing `flutter run --release` from the repository root.
  
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/danielfoehr)
+
+
+#### TODOs:
+- [ ] Reimplement the swiper in the download manager, removed due to no null safe version of flutter_swiper
