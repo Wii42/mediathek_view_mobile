@@ -11,7 +11,7 @@ class CountlyUtil {
 
   static Future<void> loadCountlyInformationFromGithub(
       Logger logger, AppSharedState appWideState, bool consentGiven) async {
-    var response = await http.get(HomePageState.COUNTLY_GITHUB);
+    var response = await http.get(Uri.parse(HomePageState.COUNTLY_GITHUB));
     if (response == null || response.statusCode != 200) {
       logger.warning("failed to setup countly");
       return;

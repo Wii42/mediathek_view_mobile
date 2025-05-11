@@ -9,8 +9,8 @@ environment:
   flutter: 3.0.0
 
 dependencies:
-  http: 0.12.2
-  path_provider: 1.6.5
+  http: ^0.13.1
+  path_provider: ^1.6.5
   sqflite: ^1.2.0
   uuid: ^1.0.3
   json_object_lite: ^2.0.0

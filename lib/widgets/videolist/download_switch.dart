@@ -243,7 +243,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     }
 
     // also check if video url is accessible
-    final response = await http.head(widget.video.url_video);
+    final response = await http.head(Uri.parse(widget.video.url_video));
 
     if (response.statusCode >= 300) {
       SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);

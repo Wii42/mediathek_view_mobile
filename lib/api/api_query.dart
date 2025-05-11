@@ -67,7 +67,7 @@ class APIQuery {
   void execute(String query) {
     http
         .post(
-          'https://mediathekviewweb.de/api/query',
+          Uri.parse('https://mediathekviewweb.de/api/query'),
           body: query,
         )
         .catchError((err) => onError(err))

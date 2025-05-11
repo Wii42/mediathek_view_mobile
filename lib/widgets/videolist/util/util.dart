@@ -26,7 +26,7 @@ class Util {
 
     //  video has been removed from the Mediathek already
     if (entity == null && video != null && video.url_video != null) {
-      final response = await http.head(video.url_video);
+      final response = await http.head(Uri.parse(video.url_video));
 
       if (response.statusCode >= 300) {
         SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);

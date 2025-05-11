@@ -365,7 +365,7 @@ class _ListCardState extends State<ListCard> {
     }
 
     // also check if video url is accessible
-    final response = await http.head(widget.video.url_video);
+    final response = await http.head(Uri.parse(widget.video.url_video));
 
     if (response.statusCode >= 300) {
       widget.logger.info("Url is not accessible: " +
