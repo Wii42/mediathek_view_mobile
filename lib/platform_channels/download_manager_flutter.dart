@@ -141,7 +141,9 @@ class DownloadManager {
     logger.info("Progress $progress");
 
     for (var entry in entries) {
-      {entry.value(entity.id, status, progress!.toDouble());}
+      {
+        entry.value(entity.id, status, progress!.toDouble());
+      }
     }
   }
 
@@ -173,7 +175,9 @@ class DownloadManager {
       // then notify listeners
       Iterable<MapEntry<int?, onComplete>> entries =
           onCompleteListeners[entity.id];
-      entries.forEach((entry) => {entry.value(entity.id)});
+      for (var entry in entries) {
+        entry.value(entity.id);
+      }
     });
   }
 
@@ -181,7 +185,9 @@ class DownloadManager {
     deleteVideo(entity.id);
     Iterable<MapEntry<int?, onCanceled>> entries =
         onCanceledListeners[entity.id];
-    entries.forEach((entry) => {entry.value(entity.id)});
+    for (var entry in entries) {
+      entry.value(entity.id);
+    }
   }
 
   void handleFailedDownload(VideoEntity entity) {
@@ -192,7 +198,9 @@ class DownloadManager {
 
     //notify listeners
     Iterable<MapEntry<int?, onCanceled>> entries = onFailedListeners[entity.id];
-    entries.forEach((entry) => {entry.value(entity.id)});
+    for (var entry in entries) {
+      entry.value(entity.id);
+    }
   }
 
   // Check & request filesystem permissions
@@ -212,8 +220,9 @@ class DownloadManager {
     }
 
     // subscribe to event stream to catch update - if granted by user then start download
-    Stream<dynamic> broadcastStream =
-        appWideState.appState!.filesystemPermissionManager.getBroadcastStream()!;
+    Stream<dynamic> broadcastStream = appWideState
+        .appState!.filesystemPermissionManager
+        .getBroadcastStream()!;
     broadcastStream.listen(
       (result) {
         String res = result['Granted'];
@@ -291,7 +300,9 @@ class DownloadManager {
       logger.fine("Cache hit for VideoId -> Entity");
       return entity;
     } else {
-      return databaseManager!.getVideoEntity(videoId).then((VideoEntity? entity) {
+      return databaseManager!
+          .getVideoEntity(videoId)
+          .then((VideoEntity? entity) {
         if (entity == null) {
           return null;
         }
@@ -321,10 +332,6 @@ class DownloadManager {
 
   Future<bool> _deleteVideo(VideoEntity entity) async {
     return _deleteFromVideoSchema(entity.id).then((deleted) {
-      if (deleted == null) {
-        return false;
-      }
-
       return _deleteFromFilesystem(entity);
     });
   }
@@ -404,7 +411,8 @@ class DownloadManager {
     _removeValueFromMultimap(onStateChangedListeners, videoId, identifier);
   }
 
-  _removeValueFromMultimap(Multimap multimap, String? videoId, int? identifier) {
+  _removeValueFromMultimap(
+      Multimap multimap, String? videoId, int? identifier) {
     String? keyToRemove;
     MapEntry? valueToRemove;
     // cannot break out of for each

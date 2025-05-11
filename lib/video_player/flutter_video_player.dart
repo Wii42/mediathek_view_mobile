@@ -15,7 +15,7 @@ import 'package:video_player/video_player.dart';
 import 'TVPlayerController.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
-  String? videoId;
+
   Video video;
   VideoEntity? videoEntity;
   late CustomChewieController chewieController;
@@ -24,23 +24,23 @@ class FlutterVideoPlayer extends StatefulWidget {
   late AppSharedState appSharedState;
   bool isAlreadyPlayingDifferentVideoOnTV = false;
 
-  final Logger log = new Logger('FlutterVideoPlayer');
+  final Logger log = Logger('FlutterVideoPlayer');
 
-  final Logger logger = new Logger('FlutterVideoPlayer');
+  final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(BuildContext context, AppSharedState appSharedState,
-      this.video, VideoEntity? entity, VideoProgressEntity? progress) {
-    this.videoId = video != null ? video.id : entity!.id;
-    this.databaseManager = appSharedState.appState!.databaseManager;
-    this.progressEntity = progress;
-    this.videoEntity = entity;
-    this.appSharedState = appSharedState;
+  FlutterVideoPlayer(BuildContext context, this.appSharedState,
+      this.video, VideoEntity? entity, VideoProgressEntity? progress, {super.key}) {
+    databaseManager = appSharedState.appState!.databaseManager;
+    progressEntity = progress;
+    videoEntity = entity;
 
     if (appSharedState.appState!.isCurrentlyPlayingOnTV &&
         videoId != appSharedState.appState!.tvCurrentlyPlayingVideo.id) {
       isAlreadyPlayingDifferentVideoOnTV = true;
     }
   }
+
+  String? get videoId => video.id ?? videoEntity?.id;
 
   @override
   _FlutterVideoPlayerState createState() => _FlutterVideoPlayerState();
@@ -65,10 +65,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     initTvVideoController();
     initChewieController();
 
-    return new Scaffold(
+    return Scaffold(
         backgroundColor: Colors.grey[800],
-        body: new Container(
-          child: new CustomChewie(
+        body: Container(
+          child: CustomChewie(
             controller: widget.chewieController,
           ),
         ));
@@ -96,7 +96,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   }
 
   void initTvVideoController() {
-    tvVideoController = new TvPlayerController(
+    tvVideoController = TvPlayerController(
       widget.appSharedState.appState!.availableTvs,
       widget.appSharedState.appState!.samsungTVCastManager,
       widget.appSharedState.appState!.databaseManager,
@@ -105,8 +105,8 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           ? widget.video
           : Video.fromMap(widget.videoEntity!.toMap()),
       widget.progressEntity != null
-          ? new Duration(milliseconds: widget.progressEntity!.progress!)
-          : new Duration(milliseconds: 0),
+          ? Duration(milliseconds: widget.progressEntity!.progress!)
+          : Duration(milliseconds: 0),
     );
 
     if (widget.appSharedState.appState!.targetPlatform ==
@@ -151,25 +151,21 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     String path;
     if (widget.appSharedState.appState!.targetPlatform ==
         TargetPlatform.android) {
-      path = widget.videoEntity!.filePath! + "/" + widget.videoEntity!.fileName!;
+      path = "${widget.videoEntity!.filePath!}/${widget.videoEntity!.fileName!}";
     } else {
-      path = widget.appSharedState.appState!.localDirectory!.path +
-          "/MediathekView" +
-          "/" +
-          widget.videoEntity!.fileName!;
+      path = "${widget.appSharedState.appState!.localDirectory!.path}/MediathekView/${widget.videoEntity!.fileName!}";
     }
 
-    Uri videoUri = new Uri.file(path);
+    Uri videoUri = Uri.file(path);
 
     File file = File.fromUri(videoUri);
     file.exists().then(
       (exists) {
         if (!exists) {
           widget.log.severe(
-              "Cannot play video from file. File does not exist: " +
-                  file.uri.toString());
-          videoController = VideoPlayerController.network(
-            videoUrl!,
+              "Cannot play video from file. File does not exist: ${file.uri}");
+          videoController = VideoPlayerController.networkUrl(
+            Uri.parse(videoUrl!),
           );
         }
       },
@@ -182,13 +178,13 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   }
 
   void initChewieController() {
-    widget.chewieController = new CustomChewieController(
+    widget.chewieController = CustomChewieController(
         context: context,
         videoPlayerController: videoController!,
         tvPlayerController: tvVideoController,
         looping: false,
         startAt: tvVideoController!.startAt,
-        customControls: new CustomVideoControls(
+        customControls: CustomVideoControls(
             backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),
             iconColor: Color(0xffffbf00)),
         fullScreenByDefault: false,
@@ -204,9 +200,9 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     return AlertDialog(
       backgroundColor: Colors.grey[800],
       title: Text('Fernseher Verbunden',
-          style: new TextStyle(color: Colors.white, fontSize: 18.0)),
-      content: new Text('Soll die aktuelle TV Wiedergabe unterbrochen werden?',
-          style: new TextStyle(color: Colors.white, fontSize: 16.0)),
+          style: TextStyle(color: Colors.white, fontSize: 18.0)),
+      content: Text('Soll die aktuelle TV Wiedergabe unterbrochen werden?',
+          style: TextStyle(color: Colors.white, fontSize: 16.0)),
       actions: <Widget>[
         ElevatedButton(
           child: const Text('Nein'),

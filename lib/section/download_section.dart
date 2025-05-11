@@ -7,7 +7,6 @@ import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/channel_util.dart';
 import 'package:flutter_ws/util/cross_axis_count.dart';
-import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/downloadSection/current_downloads.dart';
@@ -113,9 +112,9 @@ class DownloadSectionState extends State<DownloadSection> {
         .appWideState!.appState!.databaseManager
         .getAllDownloadedVideos();
 
-    if (downloads != null && this.downloadedVideos.length != downloads.length) {
+    if (downloads != null && downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
-      this.downloadedVideos =
+      downloadedVideos =
           downloads.map((entity) => Video.fromMap(entity.toMap())).toSet();
       if (mounted) {
         setState(() {});

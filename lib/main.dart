@@ -425,12 +425,6 @@ class HomePageState extends State<MyHomePage>
   }
 
   void onSearchResponse(String data) {
-    if (data == null) {
-      logger.fine("Data received is null");
-      setState(() {});
-      return;
-    }
-
     if (refreshOperationRunning) {
       refreshOperationRunning = false;
       refreshCompleter.complete();

@@ -83,7 +83,9 @@ class DatabaseManager {
       whereArgs: [''],
     );
     if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoEntity.fromMap(raw as Map<String, dynamic>)).toSet();
+      return result
+          .map((raw) => VideoEntity.fromMap(raw as Map<String, dynamic>))
+          .toSet();
     }
     return {};
   }
@@ -143,7 +145,9 @@ class DatabaseManager {
       return {};
     }
 
-    return resultList.map((result) => VideoEntity.fromMap(result as Map<String, dynamic>)).toSet();
+    return resultList
+        .map((result) => VideoEntity.fromMap(result as Map<String, dynamic>))
+        .toSet();
   }
 
   String _getConcatinatedWhereClause(List<String> list) {
@@ -173,7 +177,8 @@ class DatabaseManager {
 
     List<Map> maps = await db!.query(VideoEntity.TABLE_NAME,
         columns: getColums(),
-        where: "${VideoEntity.idColumn} = ? AND ${VideoEntity.fileNameColumn} != '' ",
+        where:
+            "${VideoEntity.idColumn} = ? AND ${VideoEntity.fileNameColumn} != '' ",
         whereArgs: [id]);
     if (maps.isNotEmpty) {
       return VideoEntity.fromMap(maps.first as Map<String, dynamic>);
@@ -215,12 +220,10 @@ class DatabaseManager {
       ChannelFavoriteEntity.logoColumn,
       ChannelFavoriteEntity.urlColumn
     ]);
-    if (result != null && result.isNotEmpty) {
-      return result
-          .map((raw) => ChannelFavoriteEntity.fromMap(raw as Map<String, dynamic>))
-          .toSet();
-    }
-    return {};
+    return result
+        .map(
+            (raw) => ChannelFavoriteEntity.fromMap(raw as Map<String, dynamic>))
+        .toSet();
   }
 
   String getChannelFavoriteSQL() {
@@ -328,29 +331,25 @@ class DatabaseManager {
     if (db == null || !db!.isOpen) {
       return null;
     }
-
     List<Map> result = await db!.query(VideoProgressEntity.TABLE_NAME,
         orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns(),
         limit: amount);
-    if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>)).toSet();
-    }
-    return {};
+    return result
+        .map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>))
+        .toSet();
   }
 
   Future<Set<VideoProgressEntity>?> getAllLastViewedVideos() async {
     if (db == null || !db!.isOpen) {
       return null;
     }
-
     List<Map> result = await db!.query(VideoProgressEntity.TABLE_NAME,
         orderBy: "${VideoProgressEntity.timestampLastViewedColumn} DESC",
         columns: getVideoProgressColumns());
-    if (result != null && result.isNotEmpty) {
-      return result.map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>)).toSet();
-    }
-    return {};
+    return result
+        .map((raw) => VideoProgressEntity.fromMap(raw as Map<String, dynamic>))
+        .toSet();
   }
 
   void updatePlaybackPosition(Video video, int position) {
@@ -375,20 +374,18 @@ class DatabaseManager {
       logger
           .info("Successfully inserted progress entity for video ${video.id}");
     }, onError: (err, stackTrace) {
-      logger
-          .warning("Could not insert video progress $stackTrace");
+      logger.warning("Could not insert video progress $stackTrace");
     });
   }
 
   void _updateProgress(String? videoId, int position) {
-    updateVideoProgressEntity(VideoProgressEntity(videoId, position))
-        .then((rowsUpdated) {
+    updateVideoProgressEntity(VideoProgressEntity(videoId, position)).then(
+        (rowsUpdated) {
       if (rowsUpdated < 1) {
         logger.warning("Could not update video progress. Rows Updated < 1");
       }
     }, onError: (err, stackTrace) {
-      logger
-          .warning("Could not update video progress $stackTrace");
+      logger.warning("Could not update video progress $stackTrace");
     });
   }
 }

@@ -48,6 +48,7 @@ class Util {
       VideoEntity? entity,
       Video video,
       VideoProgressEntity? videoProgressEntity) async {
+    NavigatorState navigator = Navigator.of(context);
     // only check for internet connection when video is not downloaded
     bool preChecksSuccessful =
         await Util.playVideoPreChecks(context, entity, video);
@@ -55,9 +56,9 @@ class Util {
       return;
     }
 
-    return Navigator.of(context).push(new MaterialPageRoute(
+    return navigator.push(MaterialPageRoute(
         builder: (BuildContext context) {
-          return new FlutterVideoPlayer(
+          return FlutterVideoPlayer(
               context, appState!, video, entity, videoProgressEntity);
         },
         settings: RouteSettings(name: "VideoPlayer"),

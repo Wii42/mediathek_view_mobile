@@ -3,10 +3,8 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'dart:ui';
 
-import 'package:chewie/src/chewie_progress_colors.dart';
-
+import 'package:chewie/chewie.dart';
 import 'package:countly_flutter/countly_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';

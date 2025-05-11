@@ -51,7 +51,7 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
   @override
   Widget build(BuildContext context) {
     if (_latestDownloadValue == null) {
-      return new Container();
+      return Container();
     }
 
     if (_latestDownloadValue!.isDownloading ||
@@ -60,21 +60,21 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
       return getProgressIndicator(_latestDownloadValue!.progress);
     }
 
-    return new Container();
+    return Container();
   }
 
   Widget getProgressIndicator(double progress) {
-    return new Container(
+    return Container(
         constraints: BoxConstraints.expand(height: 7.0),
         child: progress == null || progress == -1
-            ? new LinearProgressIndicator(
+            ? LinearProgressIndicator(
                 valueColor:
-                    new AlwaysStoppedAnimation<Color?>(Colors.green[700]),
+                    AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100])
-            : new LinearProgressIndicator(
+            : LinearProgressIndicator(
                 value: (progress / 100),
                 valueColor:
-                    new AlwaysStoppedAnimation<Color?>(Colors.green[700]),
+                    AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100]));
   }
 
@@ -85,7 +85,7 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
       if (status != null) {
         if (mounted) {
           setState(() {
-            _latestDownloadValue = new DownloadValue(
+            _latestDownloadValue = DownloadValue(
                 videoId: widget.videoId, progress: -1, status: status.status);
           });
         }
@@ -103,7 +103,7 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
   void subscribeToDownloadUpdates(
       String? videoId, String? videoTitle, DownloadManager downloadManager) {
     downloadController =
-        new DownloadController(videoId, videoTitle, downloadManager);
+        DownloadController(videoId, videoTitle, downloadManager);
     _latestDownloadValue = downloadController!.value;
     downloadController!.addListener(updateDownloadState);
     downloadController!.initialize();
