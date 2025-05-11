@@ -35,7 +35,7 @@ dependencies:
   connectivity: ^3.0.6
   video_thumbnail: ^0.5.5
   countly_flutter: ^20.11.3
-  giffy_dialog: ^1.8.0
+  #giffy_dialog: ^1.8.0
   filesize: ^2.0.1
 
   flutter:

@@ -20,7 +20,7 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:flutter_ws/widgets/introSlider/intro_slider.dart';
 import 'package:flutter_ws/widgets/videolist/video_list_view.dart';
 import 'package:flutter_ws/widgets/videolist/videolist_util.dart';
-import 'package:giffy_dialog/giffy_dialog.dart';
+//import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -239,10 +239,10 @@ class HomePageState extends State<MyHomePage>
       });
     }
 
-    if (showCountlyGDPRDialog) {
-      logger.info("show dialog");
-      return _showGDPRDialog(context);
-    }
+    //if (showCountlyGDPRDialog) {
+    //  logger.info("show dialog");
+    //  return _showGDPRDialog(context);
+    //}
 
     downloadSection ??= DownloadSection(appWideState);
 
@@ -592,42 +592,42 @@ class HomePageState extends State<MyHomePage>
     });
   }
 
-  Widget _showGDPRDialog(BuildContext context) {
-    return NetworkGiffyDialog(
-      //key: keys[1],
-      image: Image.network(
-        "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
-        fit: BoxFit.cover,
-      ),
-      entryAnimation: EntryAnimation.TOP_LEFT,
-      title: const Text(
-        'Vielen Dank',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
-      ),
-      description: const Text(
-        'Darf MediathekView anonymisierte Crash und Nutzungsdaten sammeln? Das hilft uns die App zu verbessern.',
-        textAlign: TextAlign.center,
-      ),
-      onOkButtonPressed: () {
-        CountlyUtil.loadCountlyInformationFromGithub(
-            logger, appWideState, true);
-        setState(() {
-          showCountlyGDPRDialog = false;
-        });
-      },
-      onCancelButtonPressed: () {
-        CountlyUtil.loadCountlyInformationFromGithub(
-            logger, appWideState, false);
-        setState(() {
-          showCountlyGDPRDialog = false;
-        });
-      },
-      buttonCancelText: const Text(
-        "Nein",
-        style: TextStyle(color: Colors.white),
-      ),
-      buttonOkText: const Text("Ja"),
-    );
-  }
+  //Widget _showGDPRDialog(BuildContext context) {
+  //  return NetworkGiffyDialog(
+  //    //key: keys[1],
+  //    image: Image.network(
+  //      "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
+  //      fit: BoxFit.cover,
+  //    ),
+  //    entryAnimation: EntryAnimation.TOP_LEFT,
+  //    title: const Text(
+  //      'Vielen Dank',
+  //      textAlign: TextAlign.center,
+  //      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+  //    ),
+  //    description: const Text(
+  //      'Darf MediathekView anonymisierte Crash und Nutzungsdaten sammeln? Das hilft uns die App zu verbessern.',
+  //      textAlign: TextAlign.center,
+  //    ),
+  //    onOkButtonPressed: () {
+  //      CountlyUtil.loadCountlyInformationFromGithub(
+  //          logger, appWideState, true);
+  //      setState(() {
+  //        showCountlyGDPRDialog = false;
+  //      });
+  //    },
+  //    onCancelButtonPressed: () {
+  //      CountlyUtil.loadCountlyInformationFromGithub(
+  //          logger, appWideState, false);
+  //      setState(() {
+  //        showCountlyGDPRDialog = false;
+  //      });
+  //    },
+  //    buttonCancelText: const Text(
+  //      "Nein",
+  //      style: TextStyle(color: Colors.white),
+  //    ),
+  //    buttonOkText: const Text("Ja"),
+  //  );
+  //}
 }

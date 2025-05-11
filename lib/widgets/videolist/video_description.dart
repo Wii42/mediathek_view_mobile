@@ -19,16 +19,16 @@ class VideoDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    return new Padding(
+    return Padding(
       padding: EdgeInsets.only(top: verticalOffset - 15.0),
-      child: new Stack(
+      child: Stack(
         children: <Widget>[
-          new GestureDetector(child: getBody()),
-          new Padding(
+          GestureDetector(child: getBody()),
+          Padding(
             padding: const EdgeInsets.only(left: 9.0),
             child: channelPictureImagePath.isNotEmpty
-                ? new ChannelThumbnail(channelPictureImagePath, false)
-                : new Container(),
+                ? ChannelThumbnail(channelPictureImagePath, false)
+                : Container(),
           ),
         ],
       ),
@@ -36,32 +36,32 @@ class VideoDescription extends StatelessWidget {
   }
 
   Widget getBody() {
-    return new ClipRect(
-      child: new BackdropFilter(
-        filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-        child: new Padding(
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        child: Padding(
           padding: const EdgeInsets.only(left: 30.0, right: 10.0, top: 10),
-          child: new Container(
+          child: Container(
             //height: 400.0,
-            decoration: new BoxDecoration(
-              borderRadius: new BorderRadius.only(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(40.0),
                   bottomLeft: const Radius.circular(40.0),
                   bottomRight: const Radius.circular(40.0),
                   topRight: const Radius.circular(40.0)),
-              color: new Color(0xffffbf00).withOpacity(0.4),
+              color: Color(0xffffbf00).withOpacity(0.4),
             ),
-            child: new Padding(
+            child: Padding(
               padding: const EdgeInsets.only(
                   left: 30.0, right: 30.0, top: 10.0, bottom: 20.0),
-              child: new SingleChildScrollView(
-                child: new Column(
+              child: SingleChildScrollView(
+                child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     getVerticalDividerLine(bottom: 15.0),
                     getCaption("Titel"),
-                    new Text(
+                    Text(
                       video.title,
                       style: Theme.of(context)
                           .textTheme
@@ -71,7 +71,7 @@ class VideoDescription extends StatelessWidget {
                     //getSpacedContentRow(video.title),
                     getDivider(),
                     getCaption("Thema"),
-                    new Text(
+                    Text(
                       video.topic,
                       style: Theme.of(context)
                           .textTheme
@@ -80,7 +80,7 @@ class VideoDescription extends StatelessWidget {
                     ),
                     getDivider(),
                     getCaption("Länge"),
-                    new Text(
+                    Text(
                       Calculator.calculateDuration(video.duration),
                       style: Theme.of(context)
                           .textTheme
@@ -89,7 +89,7 @@ class VideoDescription extends StatelessWidget {
                     ),
                     getDivider(),
                     getCaption("Ausgestrahlt"),
-                    new Text(
+                    Text(
                       Calculator.calculateTimestamp(video.timestamp),
                       style: Theme.of(context)
                           .textTheme
@@ -98,26 +98,26 @@ class VideoDescription extends StatelessWidget {
                     ),
                     video.description != null && video.description.isNotEmpty
                         ? getDivider()
-                        : new Container(),
+                        : Container(),
                     video.description != null && video.description.isNotEmpty
                         ? getCaption("Beschreibung")
-                        : new Container(),
+                        : Container(),
                     video.description != null && video.description.isNotEmpty
-                        ? new Text('"' + video.description + '"',
+                        ? Text('"${video.description}"',
                             textAlign: TextAlign.left,
                             style: Theme.of(context).textTheme.headline6.copyWith(
                                 color: Colors.black,
                                 fontSize: 15.0,
                                 fontStyle: FontStyle.italic))
-                        : new Container(),
+                        : Container(),
                     getDivider(),
                     video.url_website != null
-                        ? new FlatButton(
-                            color: Colors.grey[800],
-                            child: new Text('Website', style: body2TextStyle),
+                        ? TextButton(
+                      style: TextButton.styleFrom(backgroundColor: Colors.grey[800]),
+                            child: Text('Website', style: body2TextStyle),
                             onPressed: () => _launchURL(video.url_website),
                           )
-                        : new Container(),
+                        : Container(),
                     getVerticalDividerLine(top: 15.0),
                   ],
                 ),
@@ -130,13 +130,13 @@ class VideoDescription extends StatelessWidget {
   }
 
   Container getDivider() {
-    return new Container(
+    return Container(
       padding: EdgeInsets.only(top: 15.0),
     );
   }
 
   Text getCaption(String caption) {
-    return new Text(
+    return Text(
       caption,
       style: Theme.of(context).textTheme.headline6.copyWith(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
@@ -144,7 +144,7 @@ class VideoDescription extends StatelessWidget {
   }
 
   Container getVerticalDividerLine({double bottom, double top}) {
-    return new Container(
+    return Container(
       height: 2.0,
       color: Colors.grey,
       margin: bottom != null

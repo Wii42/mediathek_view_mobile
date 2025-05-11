@@ -55,3 +55,4 @@ You can install the application via XCode or by executing `flutter run --release
 
 #### TODOs:
 - [ ] Reimplement the swiper in the download manager, removed due to no null safe version of flutter_swiper
+- [ ] Reimplement giffy_dialog]
