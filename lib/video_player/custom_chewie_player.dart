@@ -195,7 +195,7 @@ class CustomChewieController extends ChangeNotifier {
     await videoPlayerController.setLooping(looping);
 
     // always initializing video player to obtain video information (length, size) to display the controls
-    if (!videoPlayerController.value.initialized) {
+    if (!videoPlayerController.value.isInitialized) {
       await videoPlayerController.initialize();
     }
 

@@ -84,7 +84,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
     _ProgressBarPainter painter;
     if (tvPlayerController.value.playbackOnTvStarted && !isScrubbing) {
       painter = _ProgressBarPainter(
-        flutterPlayerController.value.initialized,
+        flutterPlayerController.value.isInitialized,
         tvPlayerController.value.position,
         [],
         flutterPlayerController.value.duration,
@@ -92,7 +92,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
       );
     } else {
       painter = _ProgressBarPainter(
-        flutterPlayerController.value.initialized,
+        flutterPlayerController.value.isInitialized,
         flutterPlayerController.value.position,
         flutterPlayerController.value.buffered,
         flutterPlayerController.value.duration,
@@ -115,7 +115,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
         logger.info("On Drag start");
         isScrubbing = true;
 
-        if (!flutterPlayerController.value.initialized) {
+        if (!flutterPlayerController.value.isInitialized) {
           return;
         }
         _controllerWasPlaying = tvPlayerController.value.isPlaying ||
@@ -133,7 +133,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!flutterPlayerController.value.initialized) {
+        if (!flutterPlayerController.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);
@@ -166,7 +166,7 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!flutterPlayerController.value.initialized) {
+        if (!flutterPlayerController.value.isInitialized) {
           return;
         }
         seekToRelativePosition(details.globalPosition);

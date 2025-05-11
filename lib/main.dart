@@ -277,8 +277,7 @@ class HomePageState extends State<MyHomePage>
                   Icons.live_tv,
                   color: Color(0xffffbf00),
                 ),
-                title: Text("Mediathek",
-                    style: new TextStyle(color: Colors.white, fontSize: 15.0))),
+                label: "Mediathek"),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.folder,
@@ -288,8 +287,7 @@ class HomePageState extends State<MyHomePage>
                   Icons.folder,
                   color: Color(0xffffbf00),
                 ),
-                title: Text("Bibliothek",
-                    style: new TextStyle(color: Colors.white, fontSize: 15.0))),
+                label: "Bibliothek"),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.settings_outlined,
@@ -299,8 +297,7 @@ class HomePageState extends State<MyHomePage>
                   Icons.settings_outlined,
                   color: Color(0xffffbf00),
                 ),
-                title: Text("Settings",
-                    style: new TextStyle(color: Colors.white, fontSize: 15.0)))
+                label: "Settings")
           ],
         ),
       ),

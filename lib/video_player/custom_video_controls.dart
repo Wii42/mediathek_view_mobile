@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'dart:ui';
 
 import 'package:chewie/src/chewie_progress_colors.dart';
-import 'package:chewie/src/utils.dart';
+
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -279,7 +279,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     final isLoading = isScrubbing ||
         flutterPlayerController == null ||
         flutterPlayerController.value == null ||
-        !flutterPlayerController.value.initialized ||
+        !flutterPlayerController.value.isInitialized ||
         flutterPlayerController.value.isBuffering ||
         tvPlayerController.value.isCurrentlyCheckingTV ||
         isWaitingUntilTVPlaybackStarts ||
@@ -651,7 +651,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     return Padding(
       padding: EdgeInsets.only(right: 12.0),
       child: Text(
-        formatDuration(position),
+        position.toString(),
+        //formatDuration(position),
         style: TextStyle(
           color: iconColor,
           fontSize: 12.0,
@@ -670,7 +671,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     return Padding(
       padding: EdgeInsets.only(right: 12.0),
       child: Text(
-        '-${formatDuration(position)}',
+        '-${position.toString()}',
+        //'-${formatDuration(position)}',
         style: TextStyle(color: iconColor, fontSize: 12.0),
       ),
     );
@@ -806,7 +808,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           return;
         }
 
-        if (!flutterPlayerController.value.initialized) {
+        if (!flutterPlayerController.value.isInitialized) {
           flutterPlayerController.initialize().then((_) {
             flutterPlayerController.play();
           });
