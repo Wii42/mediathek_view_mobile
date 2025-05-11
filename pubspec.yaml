@@ -10,14 +10,14 @@ environment:
 
 dependencies:
   http: ^0.13.1
-  path_provider: ^1.6.5
-  sqflite: ^1.2.0
+  path_provider: ^2.0.2
+  sqflite: ^2.0.1
   uuid: ^1.0.3
   json_object_lite: ^2.0.0
   device_info: 0.4.2+1
   url_launcher: ^5.0.0
   logging: ^0.11.3+2
-  synchronized: ^2.2.0
+  synchronized: ^3.0.0
   flutter_downloader: ^1.4.4
   shimmer: ^1.0.0
   flutter_spinkit: ^3.1.0
