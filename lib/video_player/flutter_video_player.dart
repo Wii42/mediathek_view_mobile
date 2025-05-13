@@ -15,7 +15,6 @@ import 'package:video_player/video_player.dart';
 import 'TVPlayerController.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
-
   Video video;
   VideoEntity? videoEntity;
   late CustomChewieController chewieController;
@@ -28,8 +27,9 @@ class FlutterVideoPlayer extends StatefulWidget {
 
   final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(BuildContext context, this.appSharedState,
-      this.video, VideoEntity? entity, VideoProgressEntity? progress, {super.key}) {
+  FlutterVideoPlayer(BuildContext context, this.appSharedState, this.video,
+      VideoEntity? entity, VideoProgressEntity? progress,
+      {super.key}) {
     databaseManager = appSharedState.appState!.databaseManager;
     progressEntity = progress;
     videoEntity = entity;
@@ -43,7 +43,7 @@ class FlutterVideoPlayer extends StatefulWidget {
   String? get videoId => video.id ?? videoEntity?.id;
 
   @override
-  _FlutterVideoPlayerState createState() => _FlutterVideoPlayerState();
+  State<FlutterVideoPlayer> createState() => _FlutterVideoPlayerState();
 }
 
 class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
@@ -60,17 +60,15 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       return _showDialog(context);
     }
 
-    this.videoUrl = getVideoUrl(widget.video, widget.videoEntity);
-    initVideoPlayerController(context);
+    videoUrl = getVideoUrl(widget.video, widget.videoEntity);
+    initVideoPlayerController();
     initTvVideoController();
     initChewieController();
 
     return Scaffold(
         backgroundColor: Colors.grey[800],
-        body: Container(
-          child: CustomChewie(
-            controller: widget.chewieController,
-          ),
+        body: CustomChewie(
+          controller: widget.chewieController,
         ));
   }
 
@@ -129,7 +127,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
   }
 
-  void initVideoPlayerController(BuildContext context) {
+  void initVideoPlayerController() {
     if (videoController != null) {
       videoController!.dispose();
     }
@@ -151,9 +149,11 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     String path;
     if (widget.appSharedState.appState!.targetPlatform ==
         TargetPlatform.android) {
-      path = "${widget.videoEntity!.filePath!}/${widget.videoEntity!.fileName!}";
+      path =
+          "${widget.videoEntity!.filePath!}/${widget.videoEntity!.fileName!}";
     } else {
-      path = "${widget.appSharedState.appState!.localDirectory!.path}/MediathekView/${widget.videoEntity!.fileName!}";
+      path =
+          "${widget.appSharedState.appState!.localDirectory!.path}/MediathekView/${widget.videoEntity!.fileName!}";
     }
 
     Uri videoUri = Uri.file(path);
@@ -179,21 +179,23 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
 
   void initChewieController() {
     widget.chewieController = CustomChewieController(
-        context: context,
-        videoPlayerController: videoController!,
-        tvPlayerController: tvVideoController,
-        looping: false,
-        startAt: tvVideoController!.startAt,
-        customControls: CustomVideoControls(
-            backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),
-            iconColor: Color(0xffffbf00)),
-        fullScreenByDefault: false,
-        allowedScreenSleep: false,
-        isCurrentlyPlayingOnTV:
-            widget.appSharedState.appState!.isCurrentlyPlayingOnTV,
-        video: widget.video != null
-            ? widget.video
-            : Video.fromMap(widget.videoEntity!.toMap()));
+      context: context,
+      videoPlayerController: videoController!,
+      tvPlayerController: tvVideoController,
+      looping: false,
+      startAt: tvVideoController!.startAt,
+      customControls: CustomVideoControls(
+          backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),
+          iconColor: Color(0xffffbf00)),
+      fullScreenByDefault: false,
+      allowedScreenSleep: false,
+      isCurrentlyPlayingOnTV:
+          widget.appSharedState.appState!.isCurrentlyPlayingOnTV,
+      video: widget.video,
+      aspectRatio: 16 / 9,
+    ); // != null
+    //? widget.video
+    //: Video.fromMap(widget.videoEntity!.toMap()));
   }
 
   AlertDialog _showDialog(BuildContext context) {

@@ -20,6 +20,7 @@ import 'custom_video_progress_bar.dart';
 
 class CustomVideoControls extends StatefulWidget {
   const CustomVideoControls({
+    super.key,
     required this.backgroundColor,
     required this.iconColor,
   });
@@ -93,12 +94,11 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       DateTime now = DateTime.now();
       var lag =
           now.difference(lastVideoPlayerPositionUpdateTime).inMilliseconds;
-      logger.info("Same position detected with lag: " + lag.toString());
+      logger.info("Same position detected with lag: $lag");
       if (lag > LAGGING_THRESHOLD_IN_MILLISECONDS) {
         isLagging = true;
-        logger.info("Detected lag of > " +
-            LAGGING_THRESHOLD_IN_MILLISECONDS.toString() +
-            " ms - showing loading indicator!");
+        logger.info(
+            "Detected lag of > $LAGGING_THRESHOLD_IN_MILLISECONDS ms - showing loading indicator!");
         if (mounted) {
           setState(() {});
         }
@@ -113,7 +113,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     // update position
     final int position = _latestFlutterPlayerValue!.position.inMilliseconds;
-    logger.info("video playback position:" + position.toString());
+    logger.info("video playback position:$position");
 
     if (mounted) {
       setState(() {});
@@ -165,7 +165,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
       // add available tvs to global state - needed when navigation out of the player screen
       if (_appWideState != null) {
-        _appWideState!.appState!.availableTvs = _latestTvPlayerValue!.availableTvs;
+        _appWideState!.appState!.availableTvs =
+            _latestTvPlayerValue!.availableTvs;
       }
 
       // case: playback on TV manually disconnected. Start playing locally again
@@ -182,7 +183,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       }
 
       if (chewieController!.tvPlayerController!.value.isTvUnsupported &&
-          chewieController!.tvPlayerController!.value.errorDescription != null) {
+          chewieController!.tvPlayerController!.value.errorDescription !=
+              null) {
         _appWideState!.appState!.isCurrentlyPlayingOnTV = false;
         SnackbarActions.showError(context, "Verbindung nicht möglich.");
 
@@ -204,8 +206,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         flutterPlayerController!.pause();
         // also set the TV player positions to the flutter player to be able to continue playing
         // with the same position locally when disconnecting from TV
-        _latestFlutterPlayerValue = _latestFlutterPlayerValue!.copyWith(
-            position: _latestTvPlayerValue!.position);
+        _latestFlutterPlayerValue = _latestFlutterPlayerValue!
+            .copyWith(position: _latestTvPlayerValue!.position);
       }
     });
   }
@@ -228,13 +230,13 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   @override
   void didChangeDependencies() {
     logger.info("didChangeDependencies called");
-    final _oldController = chewieController;
+    final oldController = chewieController;
     chewieController = CustomChewieController.of(context);
     flutterPlayerController = chewieController!.videoPlayerController;
     tvPlayerController = chewieController!.tvPlayerController;
 
     // only initialize again / attach listeners - if chewie controller changed (contains videoPLayerController & tvPlayerController)
-    if (_oldController != chewieController) {
+    if (oldController != chewieController) {
       _dispose();
       _initialize();
     }
@@ -276,9 +278,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     final isLoading = isScrubbing ||
         flutterPlayerController == null ||
-        flutterPlayerController!.value == null ||
         !flutterPlayerController!.value.isInitialized ||
-        flutterPlayerController!.value.isBuffering ||
+        //flutterPlayerController!.value.isBuffering ||
         tvPlayerController!.value.isCurrentlyCheckingTV ||
         isWaitingUntilTVPlaybackStarts ||
         isLagging;
@@ -329,13 +330,19 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                         _buildLive(iconColor),
                       ],
                     )
-                  : Row(
-                      children: <Widget>[
-                        _buildPosition(iconColor),
-                        _buildProgressBar(),
-                        _buildRemaining(iconColor)
-                      ],
-                    ),
+                  : Padding(
+                padding: EdgeInsets.only(
+                        left: 12.0,
+                        right: 12.0,
+                      ),
+                    child: Row(
+                        children: <Widget>[
+                          _buildPosition(iconColor),
+                          _buildProgressBar(),
+                          _buildRemaining(iconColor)
+                        ],
+                      ),
+                  ),
             ),
           ),
         ),
@@ -481,8 +488,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                       children: <Widget>[
                         Container(
                           child: Image(
-                            image: AssetImage(
-                                "assets/launcher/ic_launcher.png"),
+                            image:
+                                AssetImage("assets/launcher/ic_launcher.png"),
                           ),
                         ),
                         Text(
@@ -649,7 +656,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     return Padding(
       padding: EdgeInsets.only(right: 12.0),
       child: Text(
-        position.toString(),
+        _printDuration(position),
         //formatDuration(position),
         style: TextStyle(
           color: iconColor,
@@ -657,6 +664,19 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         ),
       ),
     );
+  }
+
+  String _printDuration(Duration duration) {
+    String negativeSign = duration.isNegative ? '-' : '';
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60).abs());
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60).abs());
+    List<String> fragments = [
+      if (duration.inHours > 0) twoDigits(duration.inHours),
+      twoDigitMinutes,
+      twoDigitSeconds,
+    ];
+    return "$negativeSign${fragments.join(':')}";
   }
 
   Widget _buildRemaining(Color iconColor) {
@@ -667,9 +687,9 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         : Duration(seconds: 0);
 
     return Padding(
-      padding: EdgeInsets.only(right: 12.0),
+      padding: EdgeInsets.zero,
       child: Text(
-        '-${position.toString()}',
+        '-${_printDuration(position)}',
         //'-${formatDuration(position)}',
         style: TextStyle(color: iconColor, fontSize: 12.0),
       ),
@@ -728,6 +748,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
               ? _buildMuteButton(
                   backgroundColor, iconColor, barHeight, buttonPadding)
               : Container(),
+          if (chewieController!.allowMuting) SizedBox(width: 6),
           _buildSamsungScreenCast(flutterPlayerController, backgroundColor,
               iconColor, barHeight, buttonPadding)
         ],

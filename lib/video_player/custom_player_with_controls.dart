@@ -7,7 +7,7 @@ import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerWithControls extends StatelessWidget {
-  PlayerWithControls({Key? key}) : super(key: key);
+  const PlayerWithControls({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class PlayerWithControls extends StatelessWidget {
         CustomChewieController.of(context);
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
           aspectRatio:
@@ -26,23 +26,21 @@ class PlayerWithControls extends StatelessWidget {
     );
   }
 
-  Container _buildPlayerWithControls(
+  Widget _buildPlayerWithControls(
       CustomChewieController chewieController, BuildContext context) {
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          chewieController.placeholder ?? Container(),
-          Center(
-            child: AspectRatio(
-              aspectRatio: chewieController.aspectRatio ??
-                  _calculateAspectRatio(context),
-              child: VideoPlayer(chewieController.videoPlayerController),
-            ),
+    return Stack(
+      children: <Widget>[
+        chewieController.placeholder ?? Container(),
+        Center(
+          child: AspectRatio(
+            aspectRatio: chewieController.aspectRatio ??
+                _calculateAspectRatio(context),
+            child: VideoPlayer(chewieController.videoPlayerController),
           ),
-          chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController)!,
-        ],
-      ),
+        ),
+        chewieController.overlay ?? Container(),
+        _buildControls(context, chewieController)!,
+      ],
     );
   }
 
@@ -51,14 +49,12 @@ class PlayerWithControls extends StatelessWidget {
     CustomChewieController chewieController,
   ) {
     return chewieController.showControls
-        ? chewieController.customControls != null
-            ? chewieController.customControls
-            : Theme.of(context).platform == TargetPlatform.android
+        ? chewieController.customControls ?? (Theme.of(context).platform == TargetPlatform.android
                 ? MaterialControls()
                 : CupertinoControls(
                     backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),
                     iconColor: Color.fromARGB(255, 200, 200, 200),
-                  )
+                  ))
         : Container();
   }
 

@@ -17,11 +17,10 @@ import 'TVPlayerController.dart';
 /// `video_player` is pretty low level. Chewie wraps it in a friendly skin to
 /// make it easy to use!
 class CustomChewie extends StatefulWidget {
-  CustomChewie({
-    Key? key,
+  const CustomChewie({
+    super.key,
     required this.controller,
-  })  : assert(controller != null, 'You must provide a chewie controller'),
-        super(key: key);
+  });
 
   /// The [CustomChewieController]
   final CustomChewieController controller;
@@ -96,12 +95,11 @@ class CustomChewieController extends ChangeNotifier {
     ],
     this.video,
     this.isCurrentlyPlayingOnTV,
-  }) : assert(videoPlayerController != null,
-            'You must provide a controller to play a video') {
+  }) {
     _initialize();
   }
 
-  final Logger logger = new Logger('SamsungTvCastManager');
+  final Logger logger = Logger('SamsungTvCastManager');
 
   final BuildContext? context;
 
@@ -225,12 +223,10 @@ class CustomChewieController extends ChangeNotifier {
 
 class _ChewieControllerProvider extends InheritedWidget {
   const _ChewieControllerProvider({
-    Key? key,
+    super.key,
     required this.controller,
-    required Widget child,
-  })  : assert(controller != null),
-        assert(child != null),
-        super(key: key, child: child);
+    required super.child,
+  });
 
   final CustomChewieController controller;
 
