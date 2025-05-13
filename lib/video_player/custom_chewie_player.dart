@@ -213,6 +213,7 @@ class CustomChewieController extends ChangeNotifier {
   void enterFullScreen() {
     _isFullScreen = true;
     notifyListeners();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void toggleFullScreen() {

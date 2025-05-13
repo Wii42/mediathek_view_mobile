@@ -187,12 +187,13 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       customControls: CustomVideoControls(
           backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),
           iconColor: Color(0xffffbf00)),
-      fullScreenByDefault: false,
+      fullScreenByDefault: true,
       allowedScreenSleep: false,
       isCurrentlyPlayingOnTV:
           widget.appSharedState.appState!.isCurrentlyPlayingOnTV,
       video: widget.video,
       aspectRatio: 16 / 9,
+      systemOverlaysAfterFullScreen: []
     ); // != null
     //? widget.video
     //: Video.fromMap(widget.videoEntity!.toMap()));
