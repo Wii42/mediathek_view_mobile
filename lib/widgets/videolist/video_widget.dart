@@ -15,7 +15,7 @@ import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
   final Logger logger = Logger('VideoWidget');
-  AppSharedState? appWideState;
+  final AppState appWideState;
   Video video;
   String? mimeType;
   String? defaultImageAssetPath;
@@ -73,7 +73,7 @@ class VideoWidgetState extends State<VideoWidget> {
     Widget downloadProgressBar = DownloadProgressBar(
       widget.video.id,
       widget.video.title,
-      widget.appWideState!.appState!.downloadManager,
+      widget.appWideState!.downloadManager,
       false,
       checkIfAlreadyDownloaded,
     );
@@ -150,10 +150,7 @@ class VideoWidgetState extends State<VideoWidget> {
               MaterialPageRoute(
                   builder: (_) {
                     return VideoDetailScreen(
-                      widget.appWideState,
-                      widget.previewImage != null
-                          ? widget.previewImage
-                          : placeholderImage,
+                      widget.previewImage ?? placeholderImage,
                       widget.video,
                       entity,
                       widget.isDownloading,
@@ -225,10 +222,10 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   void checkPlaybackProgress() async {
-    widget.appWideState!.appState!.databaseManager
+    widget.appWideState.databaseManager
         .getVideoProgressEntity(widget.video.id)
         .then((entity) {
-      widget.logger.info("Video has playback progress: " + widget.video.title!);
+      widget.logger.info("Video has playback progress: ${widget.video.title!}");
       if (this.videoProgressEntity == null && mounted) {
         this.videoProgressEntity = entity;
         setState(() {});
@@ -237,7 +234,7 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   void checkIfAlreadyDownloaded() async {
-    widget.appWideState!.appState!.downloadManager
+    widget.appWideState.downloadManager
         .isAlreadyDownloaded(widget.video.id)
         .then((entity) {
       if (this.entity == null && mounted) {

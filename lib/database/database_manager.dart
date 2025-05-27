@@ -15,19 +15,23 @@ class DatabaseManager {
   final Logger logger = Logger('DatabaseManager');
   Database? db;
 
-  Future open(String path) async {
+  Future<void> open(String path) async {;
     db = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
+        onConfigure: (db) => print("DB onConfigure: ${db}"),
+        onCreate: (Database db, int version)  {
+      print("DB init: ${db}");
       String createVideoTableSQL = getVideoTableSQL();
       String createFavoriteLiveTVChannelsTable = getChannelFavoriteSQL();
       String videoProgressCreateTableSQL = getProgressTableSQL();
 
       logger.fine("DB MANAGER: Executing $createVideoTableSQL");
-      await db.execute(createVideoTableSQL);
+       db.execute(createVideoTableSQL);
       logger.fine("DB MANAGER: Executing $createFavoriteLiveTVChannelsTable");
-      await db.execute(createFavoriteLiveTVChannelsTable);
+       db.execute(createFavoriteLiveTVChannelsTable);
       logger.fine("DB MANAGER: Executing $videoProgressCreateTableSQL");
-      await db.execute(videoProgressCreateTableSQL);
+       db.execute(videoProgressCreateTableSQL);
+      print("DB init: ${db}");
+
     });
   }
 
@@ -271,7 +275,7 @@ class DatabaseManager {
   Future<int> insertVideoProgress(VideoProgressEntity entity) async {
     entity.timestampLastViewed = DateTime.now().millisecondsSinceEpoch;
     Map<String, dynamic> map = entity.toMap();
-
+    assert(db != null);
     return await db!.insert(VideoProgressEntity.TABLE_NAME, map);
   }
 

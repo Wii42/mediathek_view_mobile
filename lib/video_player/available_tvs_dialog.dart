@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/widgets/videolist/circular_progress_with_text.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
 import 'TVPlayerController.dart';
 
 class AvailableTVsDialog extends StatefulWidget {
   final TvPlayerController? tvPlayerController;
 
-  AvailableTVsDialog(this.tvPlayerController);
+  const AvailableTVsDialog(this.tvPlayerController, {super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return new _AvailableTVsDialogState();
+    return _AvailableTVsDialogState();
   }
 }
 
 class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
-  late AppSharedState _appWideState;
-  final Logger logger = new Logger('_AvailableTVsDialog');
+  final Logger logger = Logger('_AvailableTVsDialog');
   late VoidCallback listener;
 
   _AvailableTVsDialogState() {
@@ -42,12 +42,11 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    _appWideState = AppSharedStateContainer.of(context);
 
     var availableTVs = tvPlayerController!.value.availableTvs
-        .map((tv) => new SimpleDialogOption(
-              child: new Text(tv,
-                  style: new TextStyle(color: Colors.white, fontSize: 18.0)),
+        .map((tv) => SimpleDialogOption(
+              child: Text(tv,
+                  style: TextStyle(color: Colors.white, fontSize: 18.0)),
               onPressed: () {
                 logger.info("Connecting to Samsung TV" + tv);
 
@@ -57,17 +56,17 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
                   widget.tvPlayerController!.initialize();
                 }
 
-                _appWideState.appState!.samsungTVCastManager
+                context.watch<AppState>().samsungTVCastManager
                     .checkIfTvIsSupported(tv);
                 Navigator.pop(context, true);
               },
             ))
         .toList();
     if (tvPlayerController!.value.playbackOnTvStarted) {
-      availableTVs.add(new SimpleDialogOption(
-        child: new ElevatedButton(
-          child: new Text("Verbindung trennen",
-              style: new TextStyle(color: Colors.white, fontSize: 20.0)),
+      availableTVs.add(SimpleDialogOption(
+        child: ElevatedButton(
+          child: Text("Verbindung trennen",
+              style: TextStyle(color: Colors.white, fontSize: 20.0)),
           style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xffffbf00))),
           onPressed: () {
             tvPlayerController!.disconnect();
@@ -77,20 +76,20 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
       ));
     }
 
-    return new AlertDialog(
+    return AlertDialog(
       backgroundColor: Colors.grey[800],
-      title: new CircularProgressWithText(
-        new Text(
+      title: CircularProgressWithText(
+        Text(
           "Verfügbare Fernseher",
-          style: new TextStyle(color: Colors.white, fontSize: 20.0),
+          style: TextStyle(color: Colors.white, fontSize: 20.0),
           softWrap: true,
           maxLines: 2,
         ),
         Colors.grey[800],
-        new Color(0xffffbf00),
+        Color(0xffffbf00),
       ),
-      content: new SingleChildScrollView(
-        child: new Column(
+      content: SingleChildScrollView(
+        child: Column(
           children: availableTVs,
         ),
       ),

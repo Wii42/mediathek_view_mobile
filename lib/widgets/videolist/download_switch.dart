@@ -10,6 +10,7 @@ import 'package:flutter_ws/util/video.dart';
 import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'download/DownloadController.dart';
@@ -19,7 +20,6 @@ const ERROR_MSG = "Löschen fehlgeschlagen";
 
 class DownloadSwitch extends StatefulWidget {
   final Logger logger = new Logger('DownloadSwitch');
-  AppSharedState? appWideState;
 
   final Video video;
   final bool? isTablet;
@@ -30,7 +30,6 @@ class DownloadSwitch extends StatefulWidget {
   String filesize;
 
   DownloadSwitch(
-      this.appWideState,
       this.video,
       this.isCurrentlyDownloading,
       this.isDownloadedAlready,
@@ -235,6 +234,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   }
 
   void downloadVideo() async {
+    AppState appState = context.read<AppState>();
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.none)) {
       SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
@@ -260,13 +260,12 @@ class DownloadSwitchState extends State<DownloadSwitch> {
             .copyWith(status: DownloadTaskStatus.enqueued);
       });
     }
-
     // check for filesystem permissions
     // if user grants permission, start downloading right away
-    if (!widget.appWideState!.appState!.hasFilesystemPermission) {
-      widget.appWideState!.appState!.downloadManager
+    if (appState.hasFilesystemPermission) {
+      appState.downloadManager
           .checkAndRequestFilesystemPermissions(
-              widget.appWideState!, widget.video);
+              appState, widget.video);
       return;
     }
 

@@ -44,7 +44,7 @@ class Util {
 
   static Future playVideoHandler(
       BuildContext context,
-      AppSharedState? appState,
+      AppState appState,
       VideoEntity? entity,
       Video video,
       VideoProgressEntity? videoProgressEntity) async {
@@ -59,7 +59,7 @@ class Util {
     return navigator.push(MaterialPageRoute(
         builder: (BuildContext context) {
           return FlutterVideoPlayer(
-              context, appState!, video, entity, videoProgressEntity);
+              context, appState, video, entity, videoProgressEntity);
         },
         settings: RouteSettings(name: "VideoPlayer"),
         fullscreenDialog: false));

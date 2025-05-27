@@ -14,21 +14,20 @@ import 'package:logging/logging.dart';
 
 class CurrentDownloads extends StatefulWidget {
   final Logger logger = Logger('CurrentDownloads');
-  final AppSharedState? appWideState;
-  var setStateNecessary;
-  int downloadManagerIdentifier = 1;
+  final AppState appWideState;
+  final setStateNecessary;
+  final int downloadManagerIdentifier = 1;
 
-  CurrentDownloads(this.appWideState, this.setStateNecessary, {Key? key}) : super(key: key);
+  CurrentDownloads(this.appWideState, this.setStateNecessary, {super.key});
 
   @override
-  _CurrentDownloadsState createState() => _CurrentDownloadsState();
+  State<CurrentDownloads> createState() => _CurrentDownloadsState();
 }
 
 class _CurrentDownloadsState extends State<CurrentDownloads> {
   List<Video> currentDownloads = [];
   Map<DownloadController, Function> downloadControllerToListener =
       <DownloadController, Function>{};
-  late BuildContext context;
 
   @override
   void dispose() {
@@ -44,7 +43,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
     updateCurrentDownloads().then((List<Video> videos) {
       for (var video in videos) {
         subscribeToDownloadUpdates(video.id, video.title,
-            widget.appWideState!.appState!.downloadManager);
+            widget.appWideState.downloadManager);
       }
 
       if (videos.isNotEmpty && mounted) {
@@ -58,7 +57,6 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     if (currentDownloads.isEmpty) {
       return SliverToBoxAdapter(child: Container());
     }
@@ -107,7 +105,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
 
   Future<List<Video>> updateCurrentDownloads() async {
     Set<VideoEntity> downloads = await widget
-        .appWideState!.appState!.downloadManager
+        .appWideState.downloadManager
         .getCurrentDownloads();
 
     List<Video> currentDownloads = [];
@@ -127,7 +125,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void cancelCurrentDownload(BuildContext context, String id) {
     widget.logger.info("Canceling download for: $id");
-    widget.appWideState!.appState!.downloadManager
+    widget.appWideState.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
       if (deletedSuccessfully) {
@@ -141,10 +139,10 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
         return;
       }
       SnackbarActions.showErrorWithTryAgain(
-          this.context,
+          context,
           ERROR_MSG,
           TRY_AGAIN_MSG,
-          widget.appWideState!.appState!.downloadManager.deleteVideo,
+          widget.appWideState.downloadManager.deleteVideo,
           id);
     });
   }

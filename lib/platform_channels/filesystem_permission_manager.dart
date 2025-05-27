@@ -11,7 +11,7 @@ class FilesystemPermissionManager {
   Stream<dynamic>? _updateStream;
   StreamSubscription<dynamic>? streamSubscription;
 
-  FilesystemPermissionManager(BuildContext context) {
+  FilesystemPermissionManager() {
     _eventChannel =
         const EventChannel('com.mediathekview.mobile/permissionEvent');
     _methodChannel = const MethodChannel('com.mediathekview.mobile/permission');

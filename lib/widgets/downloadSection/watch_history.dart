@@ -5,6 +5,7 @@ import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/downloadSection/util.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
 class WatchHistory extends StatefulWidget {
   final Logger logger = Logger('WatchHistory');
@@ -19,11 +20,9 @@ class WatchHistory extends StatefulWidget {
 
 class WatchHistoryState extends State<WatchHistory> {
   Set<VideoProgressEntity>? history;
-  AppState? appState;
 
   @override
   Widget build(BuildContext context) {
-    appState = AppSharedStateContainer.of(context).appState;
     Size size = MediaQuery.of(context).size;
     var orientation = MediaQuery.of(context).orientation;
 
@@ -113,8 +112,9 @@ class WatchHistoryState extends State<WatchHistory> {
 
   Future loadWatchHistory() async {
     //check for playback progress
+    AppState appState = context.watch<AppState>();
     if (history == null || history!.isEmpty) {
-      return appState!.databaseManager.getAllLastViewedVideos().then((all) {
+      return appState.databaseManager.getAllLastViewedVideos().then((all) {
         if (all != null && all.isNotEmpty) {
           history = all;
           setState(() {});

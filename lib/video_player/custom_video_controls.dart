@@ -11,6 +11,7 @@ import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -36,8 +37,6 @@ class CustomVideoControls extends StatefulWidget {
 }
 
 class _CustomVideoControlsState extends State<CustomVideoControls> {
-  AppSharedState? _appWideState;
-
   bool isScrubbing = false;
   bool listeningToPlayerPosition = false;
   bool isWaitingUntilTVPlaybackStarts = false;
@@ -125,14 +124,16 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     if (tvPlayerController!.value.playbackOnTvStarted) {
       return;
     }
-
+    AppState? _appWideState =
+        context.read<AppState?>();
     if (_appWideState != null) {
-      _appWideState!.appState!.databaseManager
+      _appWideState.databaseManager
           .updatePlaybackPosition(chewieController!.video!, position);
     }
   }
 
   void _updateTvPlayerState() {
+    AppState? _appWideState = context.read<AppState?>();
     setState(() {
       if (_latestTvPlayerValue != null &&
           _latestTvPlayerValue!.isCurrentlyCheckingTV &&
@@ -148,10 +149,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       // isPlaying is only true if the video has been successfully casted / isPlaying on the TV
       if (_appWideState != null &&
           _latestTvPlayerValue != null &&
-          !_appWideState!.appState!.isCurrentlyPlayingOnTV &&
+          !_appWideState.isCurrentlyPlayingOnTV &&
           chewieController!.tvPlayerController!.value.isPlaying) {
-        _appWideState!.appState!.isCurrentlyPlayingOnTV = true;
-        _appWideState!.appState!.tvCurrentlyPlayingVideo =
+        _appWideState.isCurrentlyPlayingOnTV = true;
+        _appWideState.tvCurrentlyPlayingVideo =
             tvPlayerController!.video;
         SnackbarActions.showSuccess(context, "Verbunden");
 
@@ -166,14 +167,14 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
       // add available tvs to global state - needed when navigation out of the player screen
       if (_appWideState != null) {
-        _appWideState!.appState!.availableTvs =
+        _appWideState.availableTvs =
             _latestTvPlayerValue!.availableTvs;
       }
 
       // case: playback on TV manually disconnected. Start playing locally again
       if (tvPlayerController!.value.isDisconnected && _appWideState != null) {
         logger.info("PLAY LOCALLY AGAIN");
-        _appWideState!.appState!.isCurrentlyPlayingOnTV = false;
+        _appWideState.isCurrentlyPlayingOnTV = false;
         tvPlayerController!.value =
             tvPlayerController!.value.copyWith(isDisconnected: false);
         flutterPlayerController!
@@ -186,7 +187,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       if (chewieController!.tvPlayerController!.value.isTvUnsupported &&
           chewieController!.tvPlayerController!.value.errorDescription !=
               null) {
-        _appWideState!.appState!.isCurrentlyPlayingOnTV = false;
+        _appWideState?.isCurrentlyPlayingOnTV = false;
         SnackbarActions.showError(context, "Verbindung nicht möglich.");
 
         Map<String, Object> event = {
@@ -247,7 +248,6 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   @override
   Widget build(BuildContext context) {
-    _appWideState = AppSharedStateContainer.of(context);
     chewieController = CustomChewieController.of(context);
 
     if (_latestFlutterPlayerValue != null &&
@@ -332,18 +332,18 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                       ],
                     )
                   : Padding(
-                padding: EdgeInsets.only(
+                      padding: EdgeInsets.only(
                         left: 12.0,
                         right: 12.0,
                       ),
-                    child: Row(
+                      child: Row(
                         children: <Widget>[
                           _buildPosition(iconColor),
                           _buildProgressBar(),
                           _buildRemaining(iconColor)
                         ],
                       ),
-                  ),
+                    ),
             ),
           ),
         ),
@@ -444,7 +444,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                   flutterPlayerController!
                       .removeListener(_updateFlutterPlayerState);
                   tvPlayerController!.removeListener(_updateTvPlayerState);
-                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                      overlays: SystemUiOverlay.values);
 
                   //chewieController.toggleFullScreen();
                   Navigator.pop(context);

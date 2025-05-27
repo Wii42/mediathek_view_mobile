@@ -9,11 +9,11 @@ import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-typedef void TriggerStateReloadOnPreviewReceived(String? trigger);
+typedef TriggerStateReloadOnPreviewReceived = void Function(String? trigger);
 
 class VideoPreviewManager {
-  final Logger logger = new Logger('VideoPreviewManager');
-  late AppSharedState _appWideState;
+  final Logger logger = Logger('VideoPreviewManager');
+  late final AppState _appWideState;
 
   //Map<String, bool> requestedVideoPreview = new Map();
   // Maps a video id to a function that reloads the state of the widget that requested the preview
@@ -21,17 +21,17 @@ class VideoPreviewManager {
   // this is the case when the user just watched the video (visible in recently viewed) and also downloads it at the same time
   // the preview should not be requested twice & when the preview is received, both widget should be updated with the preview
   Map<String?, List<TriggerStateReloadOnPreviewReceived>>
-      videoIdToPreviewReceived = new Map();
+      videoIdToPreviewReceived = {};
 
-  var setStateNecessary;
+  VideoPreviewManager();
 
-  VideoPreviewManager(BuildContext context) {
-    _appWideState = AppSharedStateContainer.of(context);
+  set appWideState(AppState appWideState) {
+    _appWideState = appWideState;
   }
 
-  Future<Image?> getImagePreview(String videoId) async {
+  Future<Image?> getImagePreview(String videoId, VideoListState videoListState) async {
     String thumbnailPath =
-        getThumbnailPath(_appWideState.appState!.localDirectory!, videoId);
+        getThumbnailPath(_appWideState.localDirectory!, videoId);
 
     var file = io.File(thumbnailPath);
     if (!await file.exists()) {
@@ -39,23 +39,23 @@ class VideoPreviewManager {
     }
 
     var image = Image.file(file, fit: BoxFit.cover);
-    _appWideState.addImagePreview(videoId, image);
+    videoListState.addImagePreview(videoId, image);
 
     return image;
   }
 
   void startPreviewGeneration(
-      BuildContext context,
+      VideoListState videoListState,
       String? videoId,
       String? title,
       String? url,
       TriggerStateReloadOnPreviewReceived triggerStateReload) async {
-    if (_appWideState.videoListState!.previewImages.containsKey(videoId)) {
+    if (videoListState.previewImages.containsKey(videoId)) {
       return null;
     }
 
     if (videoIdToPreviewReceived.containsKey(videoId)) {
-      logger.info("Preview requested again for " + title!);
+      logger.info("Preview requested again for ${title!}");
       videoIdToPreviewReceived.update(videoId, (value) {
         List<TriggerStateReloadOnPreviewReceived> list =
             videoIdToPreviewReceived[videoId]!;
@@ -71,8 +71,8 @@ class VideoPreviewManager {
       return list;
     });
 
-    logger.info("Request preview for: " + title!);
-    _createAndPersistThumbnail(context, videoId!, url).then((filepath) {
+    logger.info("Request preview for: ${title!}");
+    _createAndPersistThumbnail(videoId!, url, videoListState).then((filepath) {
       // update each widget that waited for the preview
       videoIdToPreviewReceived[videoId]!.forEach((triggerReload) {
         triggerReload(filepath);
@@ -81,16 +81,20 @@ class VideoPreviewManager {
     });
   }
 
-  Future<String?> _createAndPersistThumbnail(
-      BuildContext context, String videoId, String? url) async {
+  Future<String?> _createAndPersistThumbnail(String videoId, String? url, VideoListState videoListState) async {
     Uint8List? uint8list;
 
-    io.Directory directory = _appWideState.appState!.localDirectory!;
+    io.Directory? directory = _appWideState.localDirectory;
 
-    String thumbnailPath = getThumbnailPath(directory, videoId);
+    String? thumbnailPath;
+    if (directory != null){
+      thumbnailPath = getThumbnailPath(directory, videoId);
 
-    if (await io.File(thumbnailPath).exists()) {
-      return thumbnailPath;
+      if (await io.File(thumbnailPath).exists()) {
+        return thumbnailPath;
+      }
+    }else {
+      logger.severe("No local directory set. Cannot create thumbnail for $videoId");
     }
 
     try {
@@ -100,13 +104,10 @@ class VideoPreviewManager {
         quality: 10,
       );
     } on PlatformException catch (e) {
-      logger.severe("Create preview failed. Reason " + e.toString());
+      logger.severe("Create preview failed. Reason $e");
       return null;
     } on MissingPluginException catch (e) {
-      logger.severe("Creating preview failed faile for: " +
-          url! +
-          ". Missing Plugin: " +
-          e.toString());
+      logger.severe("Creating preview failed faile for: ${url!}. Missing Plugin: $e");
       return null;
     }
 
@@ -115,27 +116,23 @@ class VideoPreviewManager {
       return null;
     }
 
-    logger.info("Received image for " +
-        url +
-        " with size: " +
-        uint8list.length.toString());
-
-    io.File(thumbnailPath)
-        .writeAsBytes(uint8list)
-        .catchError((error) => logger
-            .warning("Failed to persist preview file " + error.toString()))
-        .then((file) => logger.info("Wrote preview file to " + file.path));
+    logger.info("Received image for $url with size: ${uint8list.length}");
+    if (thumbnailPath != null) {
+      io.File(thumbnailPath)
+          .writeAsBytes(uint8list)
+          .catchError((error) =>
+          logger
+              .warning("Failed to persist preview file $error"))
+          .then((file) => logger.info("Wrote preview file to ${file.path}"));
+    }
 
     Image image = await _createImage(uint8list);
-    _appWideState.addImagePreview(videoId, image);
+    videoListState.addImagePreview(videoId, image);
     return thumbnailPath;
   }
 
   String getThumbnailPath(io.Directory directory, String videoId) {
-    String thumbnailPath = directory.path +
-        "/MediathekView/thumbnails/" +
-        sanitizeVideoId(videoId) +
-        ".jpeg";
+    String thumbnailPath = "${directory.path}/MediathekView/thumbnails/${sanitizeVideoId(videoId)}.jpeg";
     return thumbnailPath;
   }
 
@@ -149,7 +146,7 @@ class VideoPreviewManager {
     int height = frameInfo.image.height;
     int width = frameInfo.image.width;
 
-    return new Image.memory(pictureRaw,
+    return Image.memory(pictureRaw,
         fit: BoxFit.cover, height: height.toDouble(), width: width.toDouble());
   }
 }

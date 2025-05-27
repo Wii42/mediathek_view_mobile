@@ -22,26 +22,24 @@ const TRY_AGAIN_MSG = "Try again.";
 const recentlyWatchedVideosLimit = 5;
 
 class DownloadSection extends StatefulWidget {
-  final Logger logger = new Logger('DownloadSection');
-  final AppSharedState? appWideState;
+  final Logger logger = Logger('DownloadSection');
+  final AppState appWideState;
 
-  DownloadSection(this.appWideState);
+  DownloadSection(this.appWideState, {super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return new DownloadSectionState(new Set());
-  }
+  State<StatefulWidget> createState() => DownloadSectionState();
 }
 
 class DownloadSectionState extends State<DownloadSection> {
   List<Video> currentDownloads = [];
-  Set<Video> downloadedVideos = new Set();
+  Set<Video> downloadedVideos = {};
   Set<String> userDeletedAppId; //used for fade out animation
   int milliseconds = 1500;
-  Map<String, double> progress = new Map();
-  Map<String?, VideoProgressEntity> videosWithPlaybackProgress = new Map();
+  Map<String, double> progress = {};
+  Map<String?, VideoProgressEntity> videosWithPlaybackProgress = {};
 
-  DownloadSectionState(this.userDeletedAppId);
+  DownloadSectionState({this.userDeletedAppId = const {}});
 
   @override
   void dispose() {
@@ -51,7 +49,7 @@ class DownloadSectionState extends State<DownloadSection> {
   @override
   void initState() {
     super.initState();
-    widget.appWideState!.appState!.downloadManager.syncCompletedDownloads();
+    widget.appWideState.downloadManager.syncCompletedDownloads();
     loadAlreadyDownloadedVideosFromDb();
     loadVideosWithPlaybackProgress();
   }
@@ -69,8 +67,8 @@ class DownloadSectionState extends State<DownloadSection> {
   Widget getCurrentDownloadsTopBar() {
     if (currentDownloads.length == 1) {
       return CircularProgressWithText(
-          new Text(
-            "Downloading: '" + currentDownloads.elementAt(0).title! + "'",
+          Text(
+            "Downloading: '${currentDownloads.elementAt(0).title!}'",
             style: connectionLostTextStyle,
             softWrap: true,
             maxLines: 3,
@@ -79,22 +77,22 @@ class DownloadSectionState extends State<DownloadSection> {
           Colors.green);
     } else if (currentDownloads.length > 1) {
       return CircularProgressWithText(
-        new Text(
-            "Downloading " + currentDownloads.length.toString() + " videos",
+        Text(
+            "Downloading ${currentDownloads.length} videos",
             style: connectionLostTextStyle),
         Colors.green,
         Colors.green,
         height: 50.0,
       );
     } else {
-      return new Container();
+      return Container();
     }
   }
 
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void deleteDownload(BuildContext context, String id) {
-    widget.logger.info("Deleting video with title id: " + id);
-    widget.appWideState!.appState!.downloadManager
+    widget.logger.info("Deleting video with title id: $id");
+    widget.appWideState.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
       loadAlreadyDownloadedVideosFromDb();
@@ -103,16 +101,16 @@ class DownloadSectionState extends State<DownloadSection> {
         return;
       }
       SnackbarActions.showErrorWithTryAgain(context, ERROR_MSG, TRY_AGAIN_MSG,
-          widget.appWideState!.appState!.downloadManager.deleteVideo, id);
+          widget.appWideState.downloadManager.deleteVideo, id);
     });
   }
 
   void loadAlreadyDownloadedVideosFromDb() async {
     Set<VideoEntity> downloads = await widget
-        .appWideState!.appState!.databaseManager
+        .appWideState.databaseManager
         .getAllDownloadedVideos();
 
-    if (downloads != null && downloadedVideos.length != downloads.length) {
+    if ( downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
       downloadedVideos =
           downloads.map((entity) => Video.fromMap(entity.toMap())).toSet();
@@ -125,14 +123,14 @@ class DownloadSectionState extends State<DownloadSection> {
   Future loadVideosWithPlaybackProgress() async {
     //check for playback progress
     if (videosWithPlaybackProgress.isEmpty) {
-      return widget.appWideState!.appState!.databaseManager
+      return widget.appWideState.databaseManager
           .getLastViewedVideos(recentlyWatchedVideosLimit)
           .then((all) {
         if (all != null && all.isNotEmpty) {
           bool stateReloadNeeded = false;
           for (var i = 0; i < all.length; ++i) {
             var entity = all.elementAt(i);
-            if (!videosWithPlaybackProgress.containsKey(entity)) {
+            if (!videosWithPlaybackProgress.containsKey(entity.id)) {
               videosWithPlaybackProgress.putIfAbsent(entity.id, () => entity);
               stateReloadNeeded = true;
             }
@@ -148,23 +146,23 @@ class DownloadSectionState extends State<DownloadSection> {
   }
 
   SliverPadding getWatchHistoryButton() {
-    ListTile tile = new ListTile(
-      leading: new Icon(
+    ListTile tile = ListTile(
+      leading: Icon(
         Icons.history,
         color: Color(0xffffbf00),
         size: 30.0,
       ),
-      title: new Text(
+      title: Text(
         "Alle angesehenen Videos",
-        style: new TextStyle(
+        style: TextStyle(
             fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.w600),
       ),
       onTap: () async {
-        await Navigator.of(context).push(new MaterialPageRoute(
+        await Navigator.of(context).push(MaterialPageRoute(
             builder: (BuildContext context) {
               // TODO: save previews of recently watched videos to disk
               // 1) get previews from file 2) previews even when video is already deleted
-              return new WatchHistory();
+              return WatchHistory();
             },
             settings: RouteSettings(name: "WatchHistory"),
             fullscreenDialog: true));
@@ -175,7 +173,7 @@ class DownloadSectionState extends State<DownloadSection> {
 
     return SliverPadding(
       padding: EdgeInsets.only(top: 10.0, bottom: 8.0),
-      sliver: new SliverToBoxAdapter(child: tile),
+      sliver: SliverToBoxAdapter(child: tile),
     );
   }
 
@@ -185,17 +183,17 @@ class DownloadSectionState extends State<DownloadSection> {
       BuildContext context,
       Widget currentDownloadsTopBar) {
     Widget recentlyViewedHeading =
-        new SliverToBoxAdapter(child: new Container());
+        SliverToBoxAdapter(child: Container());
     Widget recentlyViewedSlider =
-        new SliverToBoxAdapter(child: new Container());
+        SliverToBoxAdapter(child: Container());
     Widget watchHistoryNavigation =
-        new SliverToBoxAdapter(child: new Container());
+        SliverToBoxAdapter(child: Container());
 
     int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
-    widget.logger.info("Cross axis count: " + crossAxisCount.toString());
+    widget.logger.info("Cross axis count: $crossAxisCount");
     if (videosWithPlaybackProgress.isNotEmpty) {
       recentlyViewedHeading =
-          new Heading("Kürzlich angesehen", 25.0, 20.0, 5.0, 16.0);
+          Heading("Kürzlich angesehen", 25.0, 20.0, 5.0, 16.0);
 
       List<Widget> watchHistoryItems = Util.getWatchHistoryItems(
           videosWithPlaybackProgress, size.width / crossAxisCount);
@@ -223,15 +221,15 @@ class DownloadSectionState extends State<DownloadSection> {
     }
 
     Widget downloadHeading =
-        new SliverToBoxAdapter(child: getEmptyDownloadWidget());
-    Widget downloadList = new SliverToBoxAdapter(
-      child: new Container(),
+        SliverToBoxAdapter(child: getEmptyDownloadWidget());
+    Widget downloadList = SliverToBoxAdapter(
+      child: Container(),
     );
 
     if (downloadedVideos != null && downloadedVideos.isNotEmpty) {
-      downloadHeading = new Heading("Meine Downloads", 25.0, 20.0, 20.0, 0.0);
+      downloadHeading = Heading("Meine Downloads", 25.0, 20.0, 20.0, 0.0);
 
-      var videoListItemBuilder = new VideoListItemBuilder.name(
+      var videoListItemBuilder = VideoListItemBuilder.name(
           downloadedVideos.toList(), true, true, false,
           onRemoveVideo: deleteDownload);
 
@@ -247,9 +245,9 @@ class DownloadSectionState extends State<DownloadSection> {
       );
     }
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new SafeArea(
+      body: SafeArea(
         child: CustomScrollView(
           slivers: <Widget>[
             SliverToBoxAdapter(
@@ -259,7 +257,7 @@ class DownloadSectionState extends State<DownloadSection> {
             recentlyViewedSlider,
             watchHistoryNavigation,
             downloadHeading,
-            new CurrentDownloads(widget.appWideState, downloadedVideosChanged),
+            CurrentDownloads(widget.appWideState, downloadedVideosChanged),
             downloadList
           ],
         ),
@@ -300,20 +298,20 @@ class DownloadSectionState extends State<DownloadSection> {
   //}
 
   Center getEmptyDownloadWidget() {
-    return new Center(
-      child: new Column(
+    return Center(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          new Center(
-            child: new Text(
+          Center(
+            child: Text(
               "Keine Downloads",
-              style: new TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25),
             ),
           ),
-          new Container(
+          Container(
             height: 50,
-            child: new ListView(
+            child: ListView(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               children: ChannelUtil.getAllChannelImages(),

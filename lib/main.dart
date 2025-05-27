@@ -22,14 +22,22 @@ import 'package:flutter_ws/widgets/videolist/video_list_view.dart';
 import 'package:flutter_ws/widgets/videolist/videolist_util.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import 'global_state/appBar_state_container.dart';
 
-void main() {
+void main() async {
+  Logger.root.level = Level.ALL;
   runZonedGuarded<Future<void>>(() async {
-    runApp(AppSharedStateContainer(child: MyApp()));
+    WidgetsFlutterBinding.ensureInitialized();
+    AppState appState = AppState();
+    await appState.ensureInitialized();
+    runApp(MultiProvider(providers: [
+      ChangeNotifierProvider<AppState>.value(value: appState),
+      ChangeNotifierProvider<VideoListState>(create: (_) => VideoListState())
+    ], child: MyApp(),));
   }, Countly.recordDartError);
 }
 
@@ -40,7 +48,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppSharedStateContainer.of(context).initializeState(context);
 
     const title = 'MediathekViewMobile';
 
@@ -97,9 +104,7 @@ class MyHomePage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return HomePageState(textEditingController, logger);
-  }
+  State<MyHomePage> createState() => HomePageState(textEditingController, logger);
 }
 
 class HomePageState extends State<MyHomePage>
@@ -108,7 +113,7 @@ class HomePageState extends State<MyHomePage>
   final Logger logger;
 
   //global state
-  AppSharedState? appWideState;
+  AppState? appWideState;
 
   //AppBar
   IconButton? buttonOpenFilterMenu;
@@ -175,11 +180,6 @@ class HomePageState extends State<MyHomePage>
   void dispose() {
     logger.fine("Disposing Home Page");
     WidgetsBinding.instance.removeObserver(this);
-    Countly.isInitialized().then((initialized) {
-      if (initialized) {
-        Countly.stop();
-      }
-    });
 
     super.dispose();
   }
@@ -215,8 +215,7 @@ class HomePageState extends State<MyHomePage>
     statusBarKey = Key(uuid.v1());
     indexingBarKey = Key(uuid.v1());
 
-    api = APIQuery(
-        onDataReceived: onSearchResponse, onError: onAPISearchError);
+    api = APIQuery(onDataReceived: onSearchResponse, onError: onAPISearchError);
     api.search(currentUserQueryInput, searchFilters!);
 
     checkForFirstStart();
@@ -228,7 +227,7 @@ class HomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
-    appWideState = AppSharedStateContainer.of(context);
+    appWideState = Provider.of<AppState>(context, listen: false);
 
     if (isFirstStart) {
       return IntroScreen(onDonePressed: () {
@@ -244,7 +243,7 @@ class HomePageState extends State<MyHomePage>
       return _showGDPRDialog(context);
     }
 
-    downloadSection ??= DownloadSection(appWideState);
+    downloadSection ??= DownloadSection(appWideState!);
 
     return Scaffold(
       backgroundColor: Colors.grey[800],
@@ -323,26 +322,26 @@ class HomePageState extends State<MyHomePage>
                       this,
                       searchFieldController,
                       FilterMenu(
-                          searchFilters: searchFilters,
-                          onFilterUpdated: _filterMenuUpdatedCallback,
-                          onSingleFilterTapped: _singleFilterTappedCallback,
-                      onChannelsSelected: (){},),
-
+                        searchFilters: searchFilters,
+                        onFilterUpdated: _filterMenuUpdatedCallback,
+                        onSingleFilterTapped: _singleFilterTappedCallback,
+                        onChannelsSelected: () {},
+                      ),
                       false,
                       videos!.length,
                       totalQueryResults),
                 ),
               ),
               VideoListView(
-                  key: videoListKey,
-                  videos: videos,
-                  amountOfVideosFetched: lastAmountOfVideosRetrieved,
-                  queryEntries: onQueryEntries,
-                  currentQuerySkip: api.getCurrentSkip(),
-                  totalResultSize: totalQueryResults,
-                  mixin: this,
-              refreshList: [],),
-
+                key: videoListKey,
+                videos: videos,
+                amountOfVideosFetched: lastAmountOfVideosRetrieved,
+                queryEntries: onQueryEntries,
+                currentQuerySkip: api.getCurrentSkip(),
+                totalResultSize: totalQueryResults,
+                mixin: this,
+                refreshList: [],
+              ),
               SliverToBoxAdapter(
                 child: StatusBar(
                     key: statusBarKey,
@@ -374,10 +373,9 @@ class HomePageState extends State<MyHomePage>
     Gets triggered whenever TabController changes page.
     This can be due to a user's swipe or via tab on the BottomNavigationBar
    */
-  onUISectionChange() {
+  void onUISectionChange() {
     if (_page != _controller!.index) {
-      logger
-          .info("UI Section Change: ---> Page ${_controller!.index}");
+      logger.info("UI Section Change: ---> Page ${_controller!.index}");
 
       Countly.isInitialized().then((initialized) {
         if (initialized) {
@@ -461,7 +459,8 @@ class HomePageState extends State<MyHomePage>
       }
       int newVideosCount = videos!.length - videoListLengthOld;
 
-      logger.info('Received $newVideosCount new video(s). Amount of videos in list ${videos!.length}');
+      logger.info(
+          'Received $newVideosCount new video(s). Amount of videos in list ${videos!.length}');
 
       lastAmountOfVideosRetrieved = newVideosCount;
       scrolledToEndOfList == false;
@@ -471,7 +470,7 @@ class HomePageState extends State<MyHomePage>
 
   // ----------CALLBACKS: From List View ----------------
 
-  onQueryEntries() {
+  void onQueryEntries() {
     api.search(currentUserQueryInput, searchFilters!);
   }
 
@@ -504,12 +503,13 @@ class HomePageState extends State<MyHomePage>
 
   // ----------CALLBACKS: FILTER MENU----------------
 
-  _filterMenuUpdatedCallback(SearchFilter newFilter) {
+  void _filterMenuUpdatedCallback(SearchFilter newFilter) {
     //called whenever a filter in the menu gets a value
     if (searchFilters![newFilter.filterId] != null) {
       if (searchFilters![newFilter.filterId]!.filterValue !=
           newFilter.filterValue) {
-        logger.fine("Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters![newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
+        logger.fine(
+            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters![newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
@@ -520,7 +520,8 @@ class HomePageState extends State<MyHomePage>
         _createQueryWithClearedVideoList();
       }
     } else if (newFilter.filterValue.isNotEmpty) {
-      logger.fine("New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
+      logger.fine(
+          "New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
 
       HapticFeedback.mediumImpact();
 
@@ -529,7 +530,7 @@ class HomePageState extends State<MyHomePage>
     }
   }
 
-  _singleFilterTappedCallback(String id) {
+  void _singleFilterTappedCallback(String id) {
     //remove filter from list and refresh state to trigger build of app bar and list!
     searchFilters!.remove(id);
     HapticFeedback.mediumImpact();
@@ -538,7 +539,7 @@ class HomePageState extends State<MyHomePage>
 
   // ----------LIFECYCLE----------------
 
-  checkForFirstStart() async {
+  Future<void> checkForFirstStart() async {
     prefs = await SharedPreferences.getInstance();
     var firstStart = prefs.getBool('firstStart');
     if (firstStart == null) {
@@ -552,17 +553,17 @@ class HomePageState extends State<MyHomePage>
   void setupCountly() async {
     logger.info("setup countly");
     var sharedPreferences = await SharedPreferences.getInstance();
-    appWideState!.appState!.setSharedPreferences(sharedPreferences);
+    appWideState!.setSharedPreferences(sharedPreferences);
 
     logger.info("setup countly -2");
 
-    if (appWideState!.appState!.sharedPreferences
+    if (appWideState!.sharedPreferences
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_API) &&
-        appWideState!.appState!.sharedPreferences
+        appWideState!.sharedPreferences
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
       logger.info("setup countly -4");
 
-      bool countlyConsent = appWideState!.appState!.sharedPreferences
+      bool countlyConsent = appWideState!.sharedPreferences
           .getBool(SHARED_PREFERENCE_KEY_COUNTLY_CONSENT)!;
 
       if (!countlyConsent) {
@@ -570,9 +571,9 @@ class HomePageState extends State<MyHomePage>
         return;
       }
 
-      String? countlyAPI = appWideState!.appState!.sharedPreferences
+      String? countlyAPI = appWideState!.sharedPreferences
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_API);
-      String? countlyAppKey = appWideState!.appState!.sharedPreferences
+      String? countlyAppKey = appWideState!.sharedPreferences
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
 
       logger.info("Loaded Countly data from shared preferences");
@@ -612,7 +613,8 @@ class HomePageState extends State<MyHomePage>
       actions: [
         FilledButton(
           onPressed: () {
-            CountlyUtil.loadCountlyInformationFromGithub(logger, appWideState, false);
+            CountlyUtil.loadCountlyInformationFromGithub(
+                logger, appWideState!, false);
             setState(() {
               showCountlyGDPRDialog = false;
             });
@@ -624,7 +626,8 @@ class HomePageState extends State<MyHomePage>
         ),
         TextButton(
           onPressed: () {
-            CountlyUtil.loadCountlyInformationFromGithub(logger, appWideState, true);
+            CountlyUtil.loadCountlyInformationFromGithub(
+                logger, appWideState!, true);
             setState(() {
               showCountlyGDPRDialog = false;
             });

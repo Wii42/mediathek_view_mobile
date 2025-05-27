@@ -26,7 +26,7 @@ class SamsungTVCastManager {
   Stream<dynamic>? _tvPlayerStream;
   Stream<dynamic>? _tvPlaybackPositionStream;
 
-  SamsungTVCastManager(BuildContext context) {
+  SamsungTVCastManager() {
     _methodChannel =
         const MethodChannel('com.mediathekview.mobile/samsungTVCast');
     _tvFoundEventChannel =

@@ -15,212 +15,314 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class VideoListState {
-  VideoListState(this.extendetListTiles, this.previewImages);
-  Set<String?> extendetListTiles;
-  Map<String, Image> previewImages;
+class VideoListState extends ChangeNotifier {
+  final Logger logger = Logger('VideoListState');
+  final Set<String> _extendedListTiles;
+  final Map<String, Image> _previewImages;
+
+  VideoListState(
+      {Set<String> extendedListTiles = const {},
+      Map<String, Image> previewImages = const {}})
+      : _extendedListTiles = extendedListTiles,
+        _previewImages = previewImages;
+
+  Set<String> get extendedListTiles => Set.unmodifiable(_extendedListTiles);
+
+  Map<String, Image> get previewImages => Map.unmodifiable(_previewImages);
+
+  void addImagePreview(String videoId, Image preview) {
+    logger.fine("Adding preview image to state for video with id $videoId");
+    _previewImages.putIfAbsent(videoId, () => preview);
+    notifyListeners();
+  }
+
+  void updateExtendedListTile(String videoId) {
+    _extendedListTiles.contains(videoId)
+        ? _extendedListTiles.remove(videoId)
+        : _extendedListTiles.add(videoId);
+    notifyListeners();
+  }
 }
 
-class AppState {
-  AppState(
-      this.downloadManager,
-      this.databaseManager,
-      this.videoPreviewManager,
-      this.filesystemPermissionManager,
-      this.samsungTVCastManager,
-      this.isCurrentlyPlayingOnTV,
-      this.tvCurrentlyPlayingVideo,
-      this.availableTvs,
-      this.favoriteChannels);
+class AppState extends ChangeNotifier {
+  final Logger logger = Logger('AppState');
 
-  TargetPlatform? targetPlatform;
-  Directory? localDirectory;
-  DownloadManager downloadManager;
-  DatabaseManager databaseManager;
-  VideoPreviewManager videoPreviewManager;
-  FilesystemPermissionManager filesystemPermissionManager;
-  late SharedPreferences sharedPreferences;
+  AppState({
+    this.isCurrentlyPlayingOnTV = false,
+    this.tvCurrentlyPlayingVideo,
+    this.availableTvs = const [],
+    this.favoriteChannels = const {},
+  });
+
+  TargetPlatform? _targetPlatform;
+  late final Directory? localDirectory;
+  final DownloadManager downloadManager = DownloadManager();
+  final DatabaseManager databaseManager = DatabaseManager();
+  final VideoPreviewManager videoPreviewManager = VideoPreviewManager();
+  final FilesystemPermissionManager filesystemPermissionManager =
+      FilesystemPermissionManager();
+  late final SharedPreferences sharedPreferences;
+  bool _initialized = false;
 
   // only relevant on Android, always true on other platforms
-  late bool hasFilesystemPermission;
+  bool _hasFilesystemPermission = false;
   Map<String?, ChannelFavoriteEntity> favoriteChannels;
 
   // Samsung TV cast
-  SamsungTVCastManager samsungTVCastManager;
+  final SamsungTVCastManager samsungTVCastManager = SamsungTVCastManager();
   bool isCurrentlyPlayingOnTV;
-  Video tvCurrentlyPlayingVideo;
+  Video? tvCurrentlyPlayingVideo;
   List<String> availableTvs;
 
-  void setHasFilesystemPermission(bool permission) {
-    hasFilesystemPermission = permission;
+  bool get hasFilesystemPermission => _hasFilesystemPermission;
+
+  set hasFilesystemPermission(bool permission) {
+    _hasFilesystemPermission = permission;
+    notifyListeners();
   }
 
-  void setTargetPlatform(TargetPlatform? platform) {
-    targetPlatform = platform;
-  }
+  TargetPlatform? get targetPlatform => _targetPlatform;
 
-  void setDirectory(Directory? dir) {
-    localDirectory = dir;
+  set targetPlatform(TargetPlatform? platform) {
+    _targetPlatform = platform;
+    notifyListeners();
   }
 
   void setSharedPreferences(SharedPreferences preferences) {
     sharedPreferences = preferences;
   }
-}
 
-class _InheritedWidget extends InheritedWidget {
-  final AppSharedState data;
-
-  const _InheritedWidget({
-    Key? key,
-    required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
-
-  @override
-  bool updateShouldNotify(_InheritedWidget old) {
-    return true;
-  }
-}
-
-class AppSharedStateContainer extends StatefulWidget {
-  final Widget child;
-  final VideoListState? videoListState;
-  final AppState? appState;
-
-  const AppSharedStateContainer(
-      {required this.child, this.videoListState, this.appState});
-
-  static AppSharedState of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_InheritedWidget>()!
-        .data;
-  }
-
-  @override
-  AppSharedState createState() => AppSharedState();
-}
-
-class AppSharedState extends State<AppSharedStateContainer> {
-  final Logger logger = Logger('VideoWidget');
-
-  VideoListState? videoListState;
-  AppState? appState;
-
-  @override
-  Widget build(BuildContext context) {
-    logger.fine("Rendering StateContainerState");
-    return _InheritedWidget(
-      data: this,
-      child: widget.child,
-    );
-  }
-
-  void initializeState(BuildContext context) async {
-    if (videoListState == null) {
-      _initializeListState();
-    }
-
-    if (appState != null) {
+  Future<void> ensureInitialized() async {
+    if (_initialized) {
       return;
     }
-
-    DownloadManager downloadManager = DownloadManager(context);
-    WidgetsFlutterBinding.ensureInitialized();
+    print("Initializing AppState");
     FlutterDownloader.initialize();
 
-    DatabaseManager databaseManager = DatabaseManager();
-    var filesystemPermissionManager = FilesystemPermissionManager(context);
-
-    appState = AppState(
-        downloadManager,
-        databaseManager,
-        VideoPreviewManager(context),
-        filesystemPermissionManager,
-        SamsungTVCastManager(context),
-        false,
-        Video(""),
-        [],
-        {});
-
+    videoPreviewManager.appWideState = this;
+    logger.info("Initializing Filesystem Permission Manager");
     // async execution to concurrently open database
-    DeviceInformation.getTargetPlatform().then((platform) async {
-      appState!.setTargetPlatform(platform);
+    await Future.wait(
+        [getPlatformAndSetDirectory(), initDBAndDownloadManager()]);
 
-      bool hasPermission = true;
-      if (platform == TargetPlatform.android) {
-        hasPermission =
-            await filesystemPermissionManager.hasFilesystemPermission();
-      }
+    _initialized = true;
+  }
 
-      appState!.setHasFilesystemPermission(hasPermission);
+  Future<void> initDBAndDownloadManager() async {
+    await initializeDatabase().then((_) => print("Database initialized: ${databaseManager.db != null}"));
+    //start subscription to Flutter Download Manager
+    downloadManager.startListeningToDownloads(this);
 
-      Directory? directory;
-      if (platform == TargetPlatform.iOS) {
-        directory = await getApplicationDocumentsDirectory();
-      } else {
-        directory = await getExternalStorageDirectory();
-      }
-      appState!.setDirectory(directory);
+    //check for downloads that have been completed while flutter app was not running
+    downloadManager.syncCompletedDownloads();
 
-      // create thumbnail directory
-      final Directory thumbnailDirectory =
-          Directory('${directory!.path}/MediathekView/thumbnails/');
+    //check for failed DownloadTasks and retry them
+    downloadManager.retryFailedDownloads();
 
-      if (!await thumbnailDirectory.exists()) {
-        //if folder already exists return path
-        await thumbnailDirectory.create(recursive: true).catchError((error) =>
-            logger.info(
-                "Failed to create thumbnail directory $error"));
-      }
-    });
+    prefillFavoritedChannels();
+    print("initialized DB and DownloadManager");
+  }
 
-    initializeDatabase().then((init) {
-      //start subscription to Flutter Download Manager
-      downloadManager.startListeningToDownloads();
+  Future<void> getPlatformAndSetDirectory() async {
+    print("Getting target platform and local directory");
+    targetPlatform = await DeviceInformation.getTargetPlatform();
+    print("Target platform set to: $targetPlatform");
 
-      //check for downloads that have been completed while flutter app was not running
-      downloadManager.syncCompletedDownloads();
+    bool hasPermission = true;
+    if (targetPlatform == TargetPlatform.android) {
+      hasPermission =
+          await filesystemPermissionManager.hasFilesystemPermission();
+    }
+    print("Has filesystem permission: $hasPermission");
 
-      //check for failed DownloadTasks and retry them
-      downloadManager.retryFailedDownloads();
+    hasFilesystemPermission = hasPermission;
 
-      prefillFavoritedChannels();
-    });
+    Directory? directory;
+    if (targetPlatform == TargetPlatform.iOS) {
+      directory = await getApplicationDocumentsDirectory();
+    } else {
+      directory = await getExternalStorageDirectory();
+    }
+    localDirectory = directory;
+    print("Local directory set to: ${localDirectory!.path}");
+    if (directory == null) {
+      logger.severe("Failed to get local directory");
+      return;
+    }
+    print("Local directory initialized: ${directory.path}");
+
+    // create thumbnail directory
+    final Directory thumbnailDirectory =
+        Directory('${directory.path}/MediathekView/thumbnails/');
+
+    if (!await thumbnailDirectory.exists()) {
+      //if folder already exists return path
+      await thumbnailDirectory.create(recursive: true).catchError((error) =>
+          logger.info("Failed to create thumbnail directory $error"));
+    }
+    print("Local directory and thumbnail directory initialized");
   }
 
   void prefillFavoritedChannels() async {
     Set<ChannelFavoriteEntity> channels =
-        await appState!.databaseManager.getAllChannelFavorites();
-    logger.fine("There are ${channels.length} favorited channels in the database");
+        await databaseManager.getAllChannelFavorites();
+    logger.fine(
+        "There are ${channels.length} favorited channels in the database");
     for (var entity in channels) {
-      appState!.favoriteChannels.putIfAbsent(entity.name, () => entity);
+      favoriteChannels.putIfAbsent(entity.name, () => entity);
     }
   }
 
-  Future initializeDatabase() async {
+  Future<void> initializeDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    print("DB dir: ${documentsDirectory.path}");
     String path = join(documentsDirectory.path, "demo.db");
     //Uncomment when having made changes to the DB Schema
     //appState.databaseManager.deleteDb(path);
     //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
-    return appState!.databaseManager.open(path).then(
+    return await databaseManager.open(path).then(
           (dynamic) => logger.info("Successfully opened database"),
           onError: (e) => logger.severe("Error when opening database"),
         );
   }
-
-  void _initializeListState() {
-    videoListState = VideoListState({}, {});
-  }
-
-  void addImagePreview(String videoId, Image preview) {
-    logger.fine("Adding preview image to state for video with id $videoId");
-    videoListState!.previewImages.putIfAbsent(videoId, () => preview);
-  }
-
-  void updateExtendetListTile(String? videoId) {
-    videoListState!.extendetListTiles.contains(videoId)
-        ? videoListState!.extendetListTiles.remove(videoId)
-        : videoListState!.extendetListTiles.add(videoId);
-  }
 }
+
+//class _InheritedWidget extends InheritedWidget {
+//  final AppSharedState data;
+//
+//  const _InheritedWidget({
+//    Key? key,
+//    required this.data,
+//    required Widget child,
+//  }) : super(key: key, child: child);
+//
+//  @override
+//  bool updateShouldNotify(_InheritedWidget old) {
+//    return true;
+//  }
+//}
+//
+//class AppSharedStateContainer extends StatefulWidget {
+//  final Widget child;
+//  final VideoListState? videoListState;
+//  final AppState? appState;
+//
+//  const AppSharedStateContainer(
+//      {required this.child, this.videoListState, this.appState});
+//
+//  static AppSharedState of(BuildContext context) {
+//    return context.dependOnInheritedWidgetOfExactType<_InheritedWidget>()!.data;
+//  }
+//
+//  @override
+//  AppSharedState createState() => AppSharedState();
+//}
+//
+//class AppSharedState extends State<AppSharedStateContainer> {
+//  final Logger logger = Logger('VideoWidget');
+//
+//  VideoListState? videoListState;
+//  AppState? appState;
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    logger.fine("Rendering StateContainerState");
+//    return _InheritedWidget(
+//      data: this,
+//      child: widget.child,
+//    );
+//  }
+//
+//  void initializeState(BuildContext context) async {
+//    videoListState ??= VideoListState();
+//
+//    if (appState != null) {
+//      return;
+//    }
+//
+//    DownloadManager downloadManager = DownloadManager(context);
+//    WidgetsFlutterBinding.ensureInitialized();
+//    FlutterDownloader.initialize();
+//
+//    DatabaseManager databaseManager = DatabaseManager();
+//    var filesystemPermissionManager = FilesystemPermissionManager(context);
+//
+//    appState = AppState(
+//        downloadManager,
+//        databaseManager,
+//        VideoPreviewManager(context),
+//        filesystemPermissionManager,
+//        SamsungTVCastManager(context),
+//        false,
+//        Video(""), [], {});
+//
+//    // async execution to concurrently open database
+//    DeviceInformation.getTargetPlatform().then((platform) async {
+//      appState!.targetPlatform = platform;
+//
+//      bool hasPermission = true;
+//      if (platform == TargetPlatform.android) {
+//        hasPermission =
+//            await filesystemPermissionManager.hasFilesystemPermission();
+//      }
+//
+//      appState!.hasFilesystemPermission = hasPermission;
+//
+//      Directory? directory;
+//      if (platform == TargetPlatform.iOS) {
+//        directory = await getApplicationDocumentsDirectory();
+//      } else {
+//        directory = await getExternalStorageDirectory();
+//      }
+//      appState!.setDirectory(directory);
+//
+//      // create thumbnail directory
+//      final Directory thumbnailDirectory =
+//          Directory('${directory!.path}/MediathekView/thumbnails/');
+//
+//      if (!await thumbnailDirectory.exists()) {
+//        //if folder already exists return path
+//        await thumbnailDirectory.create(recursive: true).catchError((error) =>
+//            logger.info("Failed to create thumbnail directory $error"));
+//      }
+//    });
+//
+//    initializeDatabase().then((init) {
+//      //start subscription to Flutter Download Manager
+//      downloadManager.startListeningToDownloads();
+//
+//      //check for downloads that have been completed while flutter app was not running
+//      downloadManager.syncCompletedDownloads();
+//
+//      //check for failed DownloadTasks and retry them
+//      downloadManager.retryFailedDownloads();
+//
+//      prefillFavoritedChannels();
+//    });
+//  }
+//
+//  void prefillFavoritedChannels() async {
+//    Set<ChannelFavoriteEntity> channels =
+//        await appState!.databaseManager.getAllChannelFavorites();
+//    logger.fine(
+//        "There are ${channels.length} favorited channels in the database");
+//    for (var entity in channels) {
+//      appState!.favoriteChannels.putIfAbsent(entity.name, () => entity);
+//    }
+//  }
+//
+//  Future initializeDatabase() async {
+//    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+//    String path = join(documentsDirectory.path, "demo.db");
+//    //Uncomment when having made changes to the DB Schema
+//    //appState.databaseManager.deleteDb(path);
+//    //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
+//    return appState!.databaseManager.open(path).then(
+//          (dynamic) => logger.info("Successfully opened database"),
+//          onError: (e) => logger.severe("Error when opening database"),
+//        );
+//  }
+//
+//
+//}
+//

@@ -10,9 +10,9 @@ class CountlyUtil {
   static bool countlySessionStarted = false;
 
   static Future<void> loadCountlyInformationFromGithub(
-      Logger logger, AppSharedState? appWideState, bool consentGiven) async {
+      Logger logger, AppState appWideState, bool consentGiven) async {
     var response = await http.get(Uri.parse(HomePageState.COUNTLY_GITHUB));
-    if (response == null || response.statusCode != 200) {
+    if (response.statusCode != 200) {
       logger.warning("failed to setup countly");
       return;
     }
@@ -26,11 +26,11 @@ class CountlyUtil {
 
     logger.info("Loaded Countly data from Github");
 
-    appWideState!.appState!.sharedPreferences.setBool(
+    appWideState.sharedPreferences.setBool(
         HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, consentGiven);
-    appWideState.appState!.sharedPreferences
+    appWideState.sharedPreferences
         .setString(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
-    appWideState.appState!.sharedPreferences.setString(
+    appWideState.sharedPreferences.setString(
         HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY, countlyAppKey);
 
     initializeCountly(logger, countlyAPI, countlyAppKey, consentGiven);
