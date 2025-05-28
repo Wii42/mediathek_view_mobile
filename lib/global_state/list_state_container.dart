@@ -96,7 +96,7 @@ class AppState extends ChangeNotifier {
     if (_initialized) {
       return;
     }
-    print("Initializing AppState");
+    logger.info("Initializing AppState");
     FlutterDownloader.initialize();
 
     videoPreviewManager.appWideState = this;
@@ -110,7 +110,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> initDBAndDownloadManager() async {
-    await initializeDatabase().then((_) => print("Database initialized: ${databaseManager.db != null}"));
+    await initializeDatabase().then((_) => logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
     downloadManager.startListeningToDownloads(this);
 
@@ -121,13 +121,13 @@ class AppState extends ChangeNotifier {
     downloadManager.retryFailedDownloads();
 
     prefillFavoritedChannels();
-    print("initialized DB and DownloadManager");
+    logger.info("initialized DB and DownloadManager");
   }
 
   Future<void> getPlatformAndSetDirectory() async {
-    print("Getting target platform and local directory");
+    logger.info("Getting target platform and local directory");
     targetPlatform = await DeviceInformation.getTargetPlatform();
-    print("Target platform set to: $targetPlatform");
+    logger.info("Target platform set to: $targetPlatform");
 
     bool hasPermission = true;
     //if (targetPlatform == TargetPlatform.android) {
@@ -145,12 +145,12 @@ class AppState extends ChangeNotifier {
       directory = await getApplicationDocumentsDirectory();
     }
     localDirectory = directory;
-    print("Local directory set to: ${localDirectory!.path}");
+    logger.info("Local directory set to: ${localDirectory!.path}");
     if (directory == null) {
       logger.severe("Failed to get local directory");
       return;
     }
-    print("Local directory initialized: ${directory.path}");
+    logger.info("Local directory initialized: ${directory.path}");
 
     // create thumbnail directory
     final Directory thumbnailDirectory =
@@ -176,7 +176,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> initializeDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    print("DB dir: ${documentsDirectory.path}");
+    logger.info("DB dir: ${documentsDirectory.path}");
     String path = join(documentsDirectory.path, "demo.db");
     //Uncomment when having made changes to the DB Schema
     //appState.databaseManager.deleteDb(path);

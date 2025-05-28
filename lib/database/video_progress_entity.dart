@@ -9,7 +9,7 @@ class VideoProgressEntity {
   String? title;
   int? timestamp;
   int? timestampLastViewed;
-  var duration;
+  String? duration;
   int? size;
   String? url_website;
   String? url_video_low;

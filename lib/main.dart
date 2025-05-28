@@ -26,7 +26,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import 'global_state/appBar_state_container.dart';
+import 'global_state/appbar_state_container.dart';
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -44,7 +44,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final TextEditingController textEditingController = TextEditingController();
 
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -97,20 +97,19 @@ class MyHomePage extends StatefulWidget {
   final Logger logger = Logger('Main');
 
   MyHomePage(
-      {Key? key,
+      {super.key,
       required this.title,
       this.pageController,
-      this.textEditingController})
-      : super(key: key);
+      this.textEditingController});
 
   @override
-  State<MyHomePage> createState() => HomePageState(textEditingController, logger);
+  State<MyHomePage> createState() => HomePageState();
 }
 
 class HomePageState extends State<MyHomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   List<Video>? videos;
-  final Logger logger;
+  Logger get logger => widget.logger;
 
   //global state
   AppState? appWideState;
@@ -152,7 +151,7 @@ class HomePageState extends State<MyHomePage>
   int _page = 0;
 
   //search
-  TextEditingController? searchFieldController;
+  TextEditingController? get searchFieldController => widget.textEditingController;
   bool? scrolledToEndOfList;
   int? lastAmountOfVideosRetrieved;
   int? totalQueryResults = 0;
@@ -174,7 +173,7 @@ class HomePageState extends State<MyHomePage>
   static const SHARED_PREFERENCE_KEY_COUNTLY_API = "countly_api";
   static const SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY = "countly_app_key";
 
-  HomePageState(this.searchFieldController, this.logger);
+  HomePageState();
 
   @override
   void dispose() {
@@ -514,8 +513,9 @@ class HomePageState extends State<MyHomePage>
         HapticFeedback.mediumImpact();
 
         searchFilters!.remove(newFilter.filterId);
-        if (newFilter.filterValue.isNotEmpty)
+        if (newFilter.filterValue.isNotEmpty) {
           searchFilters!.putIfAbsent(newFilter.filterId, () => newFilter);
+        }
         //updates state internally
         _createQueryWithClearedVideoList();
       }

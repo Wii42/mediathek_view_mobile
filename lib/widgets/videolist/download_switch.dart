@@ -238,9 +238,10 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   void downloadVideo() async {
     AppState appState = context.read<AppState>();
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.none)) {
-      SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
+      SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
       downloadController!.value =
           downloadController!.value.copyWith(status: DownloadTaskStatus.failed);
       return;
@@ -250,7 +251,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     final response = await http.head(Uri.parse(widget.video.url_video!));
 
     if (response.statusCode >= 300) {
-      SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);
+      SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);
       downloadController!.value =
           downloadController!.value.copyWith(status: DownloadTaskStatus.failed);
       return;

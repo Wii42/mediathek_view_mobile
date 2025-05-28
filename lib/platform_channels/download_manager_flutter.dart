@@ -13,10 +13,10 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:logging/logging.dart';
 import 'package:quiver/collection.dart';
 
-typedef onFailed = void Function(String? videoId);
-typedef onComplete = void Function(String? videoId);
-typedef onCanceled = void Function(String? videoId);
-typedef onStateChanged = void Function(
+typedef OnFailed = void Function(String? videoId);
+typedef OnComplete = void Function(String? videoId);
+typedef OnCanceled = void Function(String? videoId);
+typedef OnStateChanged = void Function(
     String? videoId, DownloadTaskStatus? status, double progress);
 
 class DownloadManager {
@@ -31,15 +31,15 @@ class DownloadManager {
       "SELECT * FROM task WHERE status = ${DownloadTaskStatus.failed.index}";
 
   //Listeners
-  static Multimap<String?, MapEntry<int, onFailed>> onFailedListeners =
-      Multimap<String?, MapEntry<int, onFailed>>();
-  static Multimap<String?, MapEntry<int, onComplete>> onCompleteListeners =
-      Multimap<String?, MapEntry<int, onComplete>>();
-  static Multimap<String?, MapEntry<int, onCanceled>> onCanceledListeners =
-      Multimap<String?, MapEntry<int, onCanceled>>();
-  static Multimap<String?, MapEntry<int, onStateChanged>>
+  static Multimap<String?, MapEntry<int, OnFailed>> onFailedListeners =
+      Multimap<String?, MapEntry<int, OnFailed>>();
+  static Multimap<String?, MapEntry<int, OnComplete>> onCompleteListeners =
+      Multimap<String?, MapEntry<int, OnComplete>>();
+  static Multimap<String?, MapEntry<int, OnCanceled>> onCanceledListeners =
+      Multimap<String?, MapEntry<int, OnCanceled>>();
+  static Multimap<String?, MapEntry<int, OnStateChanged>>
       onStateChangedListeners =
-      Multimap<String?, MapEntry<int, onStateChanged>>();
+      Multimap<String?, MapEntry<int, OnStateChanged>>();
 
   // VideoId -> VideoEntity
   static Map<String?, VideoEntity?> cache = {};
@@ -87,7 +87,7 @@ class DownloadManager {
     send.send([id, status, progress]);
   }
 
-  void handleDownloadProgress(taskId, status, progress) {
+  void handleDownloadProgress(String? taskId, DownloadTaskStatus? status, int? progress) {
     logger.fine(
         "Received download update with status $status and progress $progress");
     String? videoId = cacheTask[taskId];
@@ -129,7 +129,7 @@ class DownloadManager {
 
   void handleRunningDownload(
       VideoEntity entity, int? progress, DownloadTaskStatus? status) {
-    Iterable<MapEntry<int?, onStateChanged>> entries =
+    Iterable<MapEntry<int?, OnStateChanged>> entries =
         onStateChangedListeners[entity.id];
     if (entries.isEmpty) {
       logger.info(
@@ -170,7 +170,7 @@ class DownloadManager {
       cache.update(entity.id, (oldEntity) => entity);
 
       // then notify listeners
-      Iterable<MapEntry<int?, onComplete>> entries =
+      Iterable<MapEntry<int?, OnComplete>> entries =
           onCompleteListeners[entity.id];
       for (var entry in entries) {
         entry.value(entity.id);
@@ -180,7 +180,7 @@ class DownloadManager {
 
   void handleCanceledDownload(VideoEntity entity) {
     deleteVideo(entity.id);
-    Iterable<MapEntry<int?, onCanceled>> entries =
+    Iterable<MapEntry<int?, OnCanceled>> entries =
         onCanceledListeners[entity.id];
     for (var entry in entries) {
       entry.value(entity.id);
@@ -194,7 +194,7 @@ class DownloadManager {
     Countly.recordEvent(event);
 
     //notify listeners
-    Iterable<MapEntry<int?, onCanceled>> entries = onFailedListeners[entity.id];
+    Iterable<MapEntry<int?, OnCanceled>> entries = onFailedListeners[entity.id];
     for (var entry in entries) {
       entry.value(entity.id);
     }
@@ -386,10 +386,10 @@ class DownloadManager {
 
   void subscribe(
       String? videoId,
-      onStateChanged onDownloadStateChanged,
-      onComplete onDownloadComplete,
-      onFailed onDownloadFailed,
-      onCanceled onDownloadCanceled,
+      OnStateChanged onDownloadStateChanged,
+      OnComplete onDownloadComplete,
+      OnFailed onDownloadFailed,
+      OnCanceled onDownloadCanceled,
       // used to differentiate between download section & list view section as both need to listen for updates!
       int identifier) {
     logger.fine("Subscribing on updates for video with id $videoId");
@@ -408,7 +408,7 @@ class DownloadManager {
     _removeValueFromMultimap(onStateChangedListeners, videoId, identifier);
   }
 
-  _removeValueFromMultimap(
+  void _removeValueFromMultimap(
       Multimap multimap, String? videoId, int? identifier) {
     String? keyToRemove;
     MapEntry? valueToRemove;
@@ -427,7 +427,7 @@ class DownloadManager {
   Future<Set<VideoEntity>> getCurrentDownloads() async {
     return _getCurrentDownloadTasks().then((tasks) async {
       if (tasks.isEmpty) {
-        return Set();
+        return <VideoEntity>{};
       }
       return databaseManager.getVideoEntitiesForTaskIds(
           tasks.map((task) => task.taskId).toList());
@@ -457,7 +457,7 @@ class DownloadManager {
   }
 
   //sync completed DownloadTasks from DownloadManager with VideoEntity - filename and storage location
-  syncCompletedDownloads() {
+  void syncCompletedDownloads() {
     _getCompletedTasks().then((List<DownloadTask> tasks) {
       for (DownloadTask task in tasks) {
         databaseManager
@@ -486,9 +486,9 @@ class DownloadManager {
     });
   }
 
-  retryFailedDownloads() {
+  void retryFailedDownloads() {
     _getFailedTasks().then((List<DownloadTask> taskList) {
-      taskList.forEach((DownloadTask task) {
+      for (DownloadTask task in taskList) {
         databaseManager.getVideoEntityForTaskId(task.taskId).then(
           (VideoEntity? entity) {
             if (entity == null) {
@@ -502,7 +502,7 @@ class DownloadManager {
             FlutterDownloader.retry(taskId: task.taskId);
           },
         );
-      });
+      }
     });
   }
 

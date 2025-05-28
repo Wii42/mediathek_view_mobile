@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/main.dart';
@@ -11,9 +11,9 @@ import 'package:url_launcher/url_launcher.dart';
 class SettingsSection extends StatelessWidget {
   static final Logger logger = Logger('SettingsSection');
 
-  static const githubUrl =
-      'https://github.com/Mediathekview/MediathekViewMobile';
-  static const payPal = 'https://paypal.me/danielfoehr';
+  static Uri githubUrl =
+      Uri.parse('https://github.com/Mediathekview/MediathekViewMobile');
+  static Uri payPal = Uri.parse('https://paypal.me/danielfoehr');
 
   const SettingsSection({super.key});
 
@@ -51,11 +51,11 @@ class SettingsSection extends StatelessWidget {
                   ),
                   ButtonTheme(
                     // make buttons use the appropriate styles for cards
-                    child: ButtonBar(
+                    child: OverflowBar(
                       children: <Widget>[
                         TextButton(
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
+                              backgroundColor: WidgetStateProperty.all<Color>(
                                   Colors.blue)),
                           child: Text('Paypal', style: body2TextStyle),
                           onPressed: () {
@@ -80,11 +80,11 @@ class SettingsSection extends StatelessWidget {
                   ),
                   ButtonTheme(
                     // make buttons use the appropriate styles for cards
-                    child: ButtonBar(
+                    child: OverflowBar(
                       children: <Widget>[
                         TextButton(
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color?>(
+                              backgroundColor: WidgetStateProperty.all<Color?>(
                                   Colors.grey[800])),
                           child: Text('Github', style: body2TextStyle),
                           onPressed: () => _launchURL(githubUrl),
@@ -101,11 +101,11 @@ class SettingsSection extends StatelessWidget {
     );
   }
 
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url) || true) {
+      await launchUrl(url);
     } else {
-      logger.fine('Could not launch $url');
+      logger.warning('Could not launch $url');
     }
   }
 }
@@ -113,8 +113,10 @@ class SettingsSection extends StatelessWidget {
 class SettingsState extends StatefulWidget {
   final Logger logger = Logger('SettingsState');
 
+  SettingsState({super.key});
+
   @override
-  _SettingsStateState createState() => _SettingsStateState();
+  State<SettingsState> createState() => _SettingsStateState();
 }
 
 class _SettingsStateState extends State<SettingsState> {

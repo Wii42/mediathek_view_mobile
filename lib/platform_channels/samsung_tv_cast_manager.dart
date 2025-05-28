@@ -11,7 +11,7 @@ const ERROR_MSG_PLAY_FAILED = "Abspielen fehlgeschlagen.";
 
 // SamsungTVCastManager has the platform channels to talk to the native iOS implementation for casting videos to supported Samsung TVs
 class SamsungTVCastManager {
-  final Logger logger = new Logger('SamsungTvCastManager');
+  final Logger logger = Logger('SamsungTvCastManager');
   late EventChannel _tvFoundEventChannel;
   late EventChannel _tvLostEventChannel;
   late EventChannel _tvReadinessEventChannel;
@@ -42,48 +42,45 @@ class SamsungTVCastManager {
 
   Future startTVDiscovery() async {
     try {
-      Map<String, String> requestArguments = new Map();
+      Map<String, String> requestArguments = {};
       await _methodChannel.invokeMethod('startDiscovery', requestArguments);
     } on PlatformException catch (e) {
       logger.severe(
-          "Starting samsung tv discovery failed. Reason " + e.toString());
+          "Starting samsung tv discovery failed. Reason $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Starting samsung tv discovery failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Starting samsung tv discovery failed. Missing Plugin: $e");
     }
   }
 
   Future stopTVDiscovery() async {
     try {
-      Map<String, String> requestArguments = new Map();
+      Map<String, String> requestArguments = {};
       await _methodChannel.invokeMethod('stopDiscovery', requestArguments);
     } on PlatformException catch (e) {
       logger.severe(
-          "Stopping samsung tv discovery failed. Reason " + e.toString());
+          "Stopping samsung tv discovery failed. Reason $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Stopping samsung tv discovery failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Stopping samsung tv discovery failed. Missing Plugin: $e");
     }
   }
 
   void checkIfTvIsSupported(String tvName) async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     requestArguments.putIfAbsent("tvName", () => tvName);
 
     try {
       await _methodChannel.invokeMethod('check', requestArguments);
     } on PlatformException catch (e) {
       logger.severe(
-          "Starting samsung tv readiness check failed. Reason " + e.toString());
+          "Starting samsung tv readiness check failed. Reason $e");
     } on MissingPluginException catch (e) {
       logger.severe(
-          "Starting samsung tv readiness check failed. Missing Plugin: " +
-              e.toString());
+          "Starting samsung tv readiness check failed. Missing Plugin: $e");
     }
   }
 
   Future play(String? videoUrl, String? title, Duration startingPosition) async {
-    Map<String, String?> requestArguments = new Map();
+    Map<String, String?> requestArguments = {};
     // has to be url accessible from internet (do not support downloaded videos)
     requestArguments.putIfAbsent("url", () => videoUrl);
     requestArguments.putIfAbsent("title", () => title);
@@ -94,15 +91,14 @@ class SamsungTVCastManager {
       _methodChannel.invokeMethod('play', requestArguments);
     } on PlatformException catch (e) {
       logger
-          .severe("Playing video on Samsung TV failed. Reason " + e.toString());
+          .severe("Playing video on Samsung TV failed. Reason $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Playing video on Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Playing video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future seekTo(Duration seek) async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     requestArguments.putIfAbsent(
         "seekTo", () => seek.inMilliseconds.toString());
 
@@ -110,121 +106,104 @@ class SamsungTVCastManager {
       await _methodChannel.invokeMethod('seekTo', requestArguments);
     } on PlatformException catch (e) {
       logger.severe(
-          "Seeking to video position on Samsung TV failed " + e.toString());
+          "Seeking to video position on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
       logger.severe(
-          "Seeking to video position on Samsung TV failed. Missing Plugin: " +
-              e.toString());
+          "Seeking to video position on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future pause() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       await _methodChannel.invokeMethod('pause', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe("Pausing video on Samsung TV failed " + e.toString());
+      logger.severe("Pausing video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Pausing video on Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Pausing video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future disconnect() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       await _methodChannel.invokeMethod('disconnect', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe("Disconnecting from Samsung TV failed " + e.toString());
+      logger.severe("Disconnecting from Samsung TV failed $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Disconnecting from Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Disconnecting from Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future stop() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       await _methodChannel.invokeMethod('stop', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe("Stopping video on Samsung TV failed " + e.toString());
+      logger.severe("Stopping video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Stopping video on Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Stopping video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future resume() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       _methodChannel.invokeMethod('resume', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe("Resuming video on Samsung TV failed " + e.toString());
+      logger.severe("Resuming video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
-      logger.severe("Resuming video on Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Resuming video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future mute() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       _methodChannel.invokeMethod('mute', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe("Muting video on Samsung TV failed " + e.toString());
+      logger.severe("Muting video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
       logger.severe(
-          "Muting video on Samsung TV failed. Missing Plugin: " + e.toString());
+          "Muting video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Future unmute() async {
-    Map<String, String> requestArguments = new Map();
+    Map<String, String> requestArguments = {};
     try {
       _methodChannel.invokeMethod('unmute', requestArguments);
     } on PlatformException catch (e) {
 //      SnackbarActions.showError(ctx, ERROR_GENERAL_CAST);
-      logger.severe("Unmuting video on Samsung TV failed " + e.toString());
+      logger.severe("Unmuting video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
 //      SnackbarActions.showError(ctx, ERROR_GENERAL_CAST);
-      logger.severe("Unmuting video on Samsung TV failed. Missing Plugin: " +
-          e.toString());
+      logger.severe("Unmuting video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
   Stream<dynamic>? getFoundTVStream() {
-    if (_foundTvsStream == null) {
-      _foundTvsStream = _tvFoundEventChannel.receiveBroadcastStream();
-    }
+    _foundTvsStream ??= _tvFoundEventChannel.receiveBroadcastStream();
     return _foundTvsStream;
   }
 
   Stream<dynamic>? getLostTVStream() {
-    if (_lostTvsStream == null) {
-      _lostTvsStream = _tvLostEventChannel.receiveBroadcastStream();
-    }
+    _lostTvsStream ??= _tvLostEventChannel.receiveBroadcastStream();
     return _lostTvsStream;
   }
 
   Stream<dynamic>? getTvReadinessStream() {
-    if (_tvReadinessStream == null) {
-      _tvReadinessStream = _tvReadinessEventChannel.receiveBroadcastStream();
-    }
+    _tvReadinessStream ??= _tvReadinessEventChannel.receiveBroadcastStream();
     return _tvReadinessStream;
   }
 
   Stream<dynamic>? getTvPlayerStream() {
-    if (_tvPlayerStream == null) {
-      _tvPlayerStream = _tvPlayerEventChannel.receiveBroadcastStream();
-    }
+    _tvPlayerStream ??= _tvPlayerEventChannel.receiveBroadcastStream();
     return _tvPlayerStream;
   }
 
   Stream<dynamic>? getTvPlaybackPositionStream() {
-    if (_tvPlaybackPositionStream == null) {
-      _tvPlaybackPositionStream =
-          _tvPlaybackPositionEventChannel.receiveBroadcastStream();
-    }
+    _tvPlaybackPositionStream ??= _tvPlaybackPositionEventChannel.receiveBroadcastStream();
     return _tvPlaybackPositionStream;
   }
 }

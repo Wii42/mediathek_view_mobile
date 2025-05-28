@@ -125,6 +125,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void cancelCurrentDownload(BuildContext context, String? id) {
     widget.logger.info("Canceling download for: $id");
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     widget.appWideState.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
@@ -133,13 +134,13 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
           return video.id == id;
         });
         if (mounted) {
-          SnackbarActions.showSuccess(this.context, "Löschen erfolgreich");
+          SnackbarActions.showSuccess(scaffoldMessenger, "Löschen erfolgreich");
         }
         widget.setStateNecessary(currentDownloads);
         return;
       }
       SnackbarActions.showErrorWithTryAgain(
-          context,
+          scaffoldMessenger,
           ERROR_MSG,
           TRY_AGAIN_MSG,
           widget.appWideState.downloadManager.deleteVideo,

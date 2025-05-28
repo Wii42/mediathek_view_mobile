@@ -92,15 +92,16 @@ class DownloadSectionState extends State<DownloadSection> {
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void deleteDownload(BuildContext context, String? id) {
     widget.logger.info("Deleting video with title id: $id");
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     widget.appWideState.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
       loadAlreadyDownloadedVideosFromDb();
       if (deletedSuccessfully) {
-        SnackbarActions.showSuccess(context, "Löschen erfolgreich");
+        SnackbarActions.showSuccess(scaffoldMessenger, "Löschen erfolgreich");
         return;
       }
-      SnackbarActions.showErrorWithTryAgain(context, ERROR_MSG, TRY_AGAIN_MSG,
+      SnackbarActions.showErrorWithTryAgain(scaffoldMessenger, ERROR_MSG, TRY_AGAIN_MSG,
           widget.appWideState.downloadManager.deleteVideo, id ?? "");
     });
   }
@@ -309,7 +310,7 @@ class DownloadSectionState extends State<DownloadSection> {
               style: TextStyle(fontSize: 25),
             ),
           ),
-          Container(
+          SizedBox(
             height: 50,
             child: ListView(
               shrinkWrap: true,

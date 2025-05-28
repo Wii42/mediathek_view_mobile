@@ -11,7 +11,7 @@ class VideoEntity {
   String? title;
   int? timestamp;
   int? timestamp_video_saved;
-  var duration;
+  String? duration;
   int? size;
   String? url_website;
   String? url_video_low;

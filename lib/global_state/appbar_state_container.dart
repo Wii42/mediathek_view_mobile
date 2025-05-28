@@ -9,10 +9,10 @@ class _InheritedStateContainer extends InheritedWidget {
   final StateContainerAppBarState data;
 
   const _InheritedStateContainer({
-    Key? key,
+    super.key,
     required this.data,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   @override
   bool updateShouldNotify(_InheritedStateContainer old) {

@@ -1,53 +1,53 @@
 import 'package:flutter/material.dart';
 
 class SnackbarActions {
-  static void showError(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      new SnackBar(
+  static void showError(ScaffoldMessengerState scaffoldMessenger, String msg) {
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
         backgroundColor: Colors.red,
-        content: new Row(
+        content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[new Text(msg)],
+          children: <Widget>[Text(msg)],
         ),
       ),
     );
   }
 
-  static void showSuccess(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      new SnackBar(
+  static void showSuccess(ScaffoldMessengerState scaffoldMessenger, String msg) {
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
         backgroundColor: Colors.green,
-        content: new Row(
+        content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[new Text(msg)],
+          children: <Widget>[Text(msg)],
         ),
       ),
     );
   }
 
-  static void showInfo(BuildContext context, String msg, {Duration? duration}) {
-    ScaffoldMessenger.of(context).showSnackBar(
+  static void showInfo(ScaffoldMessengerState scaffoldMessenger, String msg, {Duration? duration}) {
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         duration: duration ?? Duration(seconds: 4),
         backgroundColor: Colors.grey,
-        content: new Row(
+        content: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[new Text(msg)],
+          children: <Widget>[Text(msg)],
         ),
       ),
     );
   }
 
-  static void showErrorWithTryAgain(BuildContext context, String errorMsg,
+  static void showErrorWithTryAgain(ScaffoldMessengerState scaffoldMessenger, String errorMsg,
       String tryAgainMsg, dynamic onTryAgainPressed, String videoId) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      new SnackBar(
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
         backgroundColor: Colors.red,
-        content: new Text(errorMsg),
-        action: new SnackBarAction(
+        content: Text(errorMsg),
+        action: SnackBarAction(
           label: tryAgainMsg,
           onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            scaffoldMessenger.hideCurrentSnackBar();
             onTryAgainPressed(videoId);
           },
         ),

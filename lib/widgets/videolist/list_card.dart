@@ -339,9 +339,10 @@ class _ListCardState extends State<ListCard> {
 
   void onDownloadRequested() async {
     AppState appWideState = context.read<AppState>();
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.none)) {
-      SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
+      SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
       updateStatus(DownloadTaskStatus.failed, widget.video.id);
       return;
     }
@@ -353,7 +354,7 @@ class _ListCardState extends State<ListCard> {
       widget.logger.info(
           "Url is not accessible: ${widget.video.url_video}. Status code: ${response.statusCode}. Reason: ${response.reasonPhrase!}");
 
-      SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);
+      SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);
       updateStatus(DownloadTaskStatus.failed, widget.video.id);
       return;
     }

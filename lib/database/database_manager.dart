@@ -15,11 +15,11 @@ class DatabaseManager {
   final Logger logger = Logger('DatabaseManager');
   Database? db;
 
-  Future<void> open(String path) async {;
+  Future<void> open(String path) async {
     db = await openDatabase(path, version: 1,
-        onConfigure: (db) => print("DB onConfigure: ${db}"),
+        onConfigure: (db) => logger.info("DB onConfigure: $db"),
         onCreate: (Database db, int version)  {
-      print("DB init: ${db}");
+      logger.info("DB init: $db");
       String createVideoTableSQL = getVideoTableSQL();
       String createFavoriteLiveTVChannelsTable = getChannelFavoriteSQL();
       String videoProgressCreateTableSQL = getProgressTableSQL();
@@ -30,7 +30,7 @@ class DatabaseManager {
        db.execute(createFavoriteLiveTVChannelsTable);
       logger.fine("DB MANAGER: Executing $videoProgressCreateTableSQL");
        db.execute(videoProgressCreateTableSQL);
-      print("DB init: ${db}");
+      logger.info("DB init: $db");
 
     });
   }
@@ -174,7 +174,7 @@ class DatabaseManager {
     return where;
   }
 
-  Future<VideoEntity?> getDownloadedVideo(id) async {
+  Future<VideoEntity?> getDownloadedVideo(String? id) async {
     if (db == null || !db!.isOpen) {
       return null;
     }

@@ -134,6 +134,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _updateTvPlayerState() {
     AppState? _appWideState = context.read<AppState?>();
+    ScaffoldMessengerState scaffoldMessenger =
+        ScaffoldMessenger.of(context);
     setState(() {
       if (_latestTvPlayerValue != null &&
           _latestTvPlayerValue!.isCurrentlyCheckingTV &&
@@ -154,7 +156,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _appWideState.isCurrentlyPlayingOnTV = true;
         _appWideState.tvCurrentlyPlayingVideo =
             tvPlayerController!.video;
-        SnackbarActions.showSuccess(context, "Verbunden");
+        SnackbarActions.showSuccess(scaffoldMessenger, "Verbunden");
 
         Map<String, Object> event = {"key": "PLAY_VIDEO_ON_TV", "count": 1};
         Countly.recordEvent(event);
@@ -188,7 +190,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           chewieController!.tvPlayerController!.value.errorDescription !=
               null) {
         _appWideState?.isCurrentlyPlayingOnTV = false;
-        SnackbarActions.showError(context, "Verbindung nicht möglich.");
+        SnackbarActions.showError(scaffoldMessenger, "Verbindung nicht möglich.");
 
         Map<String, Object> event = {
           "key": "PLAY_VIDEO_ON_TV_FAILED",
@@ -198,7 +200,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       }
 
       if (_latestTvPlayerValue!.isCurrentlyCheckingTV) {
-        SnackbarActions.showInfo(context, "Verbinde...",
+        SnackbarActions.showInfo(scaffoldMessenger, "Verbinde...",
             duration: Duration(seconds: 1));
       }
 

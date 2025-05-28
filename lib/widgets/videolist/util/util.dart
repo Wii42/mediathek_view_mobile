@@ -17,10 +17,11 @@ const ERROR_MSG_DOWNLOAD_FAILED = "Download fehlgeschlagen";
 class Util {
   static Future<bool> playVideoPreChecks(
       BuildContext context, VideoEntity? entity, Video? video) async {
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     if (entity == null) {
       var connectivityResult = await (Connectivity().checkConnectivity());
       if (connectivityResult.contains(ConnectivityResult.none)) {
-        SnackbarActions.showError(context, ERROR_MSG_NO_INTERNET);
+        SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
         return false;
       }
     }
@@ -30,13 +31,13 @@ class Util {
       final response = await http.head(Uri.parse(video.url_video!));
 
       if (response.statusCode >= 300) {
-        SnackbarActions.showError(context, ERROR_MSG_NOT_AVAILABLE);
+        SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);
         return false;
       }
     }
 
     if (video == null && entity == null) {
-      SnackbarActions.showError(context, ERROR_MSG_FAILED_PLAYING);
+      SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_FAILED_PLAYING);
       return false;
     }
     return true;

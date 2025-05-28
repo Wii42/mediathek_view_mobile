@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io' as io;
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -74,9 +73,9 @@ class VideoPreviewManager {
     logger.info("Request preview for: ${title!}");
     _createAndPersistThumbnail(videoId!, url, videoListState).then((filepath) {
       // update each widget that waited for the preview
-      videoIdToPreviewReceived[videoId]!.forEach((triggerReload) {
+      for (var triggerReload in videoIdToPreviewReceived[videoId]!) {
         triggerReload(filepath);
-      });
+      }
       videoIdToPreviewReceived.remove(videoId);
     });
   }
