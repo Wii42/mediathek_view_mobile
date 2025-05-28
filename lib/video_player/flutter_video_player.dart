@@ -15,32 +15,23 @@ import 'package:video_player/video_player.dart';
 import 'tv_player_controller.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
-  Video video;
-  VideoEntity? videoEntity;
-  late CustomChewieController chewieController;
-  DatabaseManager? databaseManager;
-  VideoProgressEntity? progressEntity;
-  late AppState appSharedState;
-  bool isAlreadyPlayingDifferentVideoOnTV = false;
-
-  final Logger log = Logger('FlutterVideoPlayer');
+  final Video initialVideo;
+  final VideoEntity? initialVideoEntity;
+  final VideoProgressEntity? initialProgressEntity;
+  final AppState appSharedState;
 
   final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(BuildContext context, this.appSharedState, this.video,
-      VideoEntity? entity, VideoProgressEntity? progress,
-      {super.key}) {
-    databaseManager = appSharedState.databaseManager;
-    progressEntity = progress;
-    videoEntity = entity;
+  FlutterVideoPlayer(BuildContext context, this.appSharedState, this.initialVideo,
+      this.initialVideoEntity, this.initialProgressEntity,
+      {super.key});
 
-    if (appSharedState.isCurrentlyPlayingOnTV &&
-        videoId != appSharedState.tvCurrentlyPlayingVideo!.id) {
-      isAlreadyPlayingDifferentVideoOnTV = true;
-    }
-  }
+  DatabaseManager get databaseManager => appSharedState.databaseManager;
 
-  String? get videoId => video.id ?? videoEntity?.id;
+  String? get videoId => initialVideo.id ?? initialVideoEntity?.id;
+
+  bool get isInitiallyPlayingDifferentVideoOnTV => (appSharedState.isCurrentlyPlayingOnTV &&
+      videoId != appSharedState.tvCurrentlyPlayingVideo!.id);
 
   @override
   State<FlutterVideoPlayer> createState() => _FlutterVideoPlayerState();
@@ -53,14 +44,27 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   bool castNewVideoToTV = false;
   static VideoPlayerController? videoController;
   static TvPlayerController? tvVideoController;
+  late CustomChewieController chewieController;
+  late Video video;
+  late VideoEntity? videoEntity;
+  late VideoProgressEntity? progressEntity;
+  late bool isAlreadyPlayingDifferentVideoOnTV;
+
+  @override
+  void initState() {
+    video = widget.initialVideo;
+    videoEntity = widget.initialVideoEntity;
+    progressEntity = widget.initialProgressEntity;
+    isAlreadyPlayingDifferentVideoOnTV = widget.isInitiallyPlayingDifferentVideoOnTV;
+    videoUrl = getVideoUrl(widget.initialVideo, widget.initialVideoEntity);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isAlreadyPlayingDifferentVideoOnTV) {
+    if (isAlreadyPlayingDifferentVideoOnTV) {
       return _showDialog(context);
     }
-
-    videoUrl = getVideoUrl(widget.video, widget.videoEntity);
     initVideoPlayerController();
     initTvVideoController();
     initChewieController();
@@ -68,7 +72,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     return Scaffold(
         backgroundColor: Colors.grey[800],
         body: CustomChewie(
-          controller: widget.chewieController,
+          controller: chewieController,
         ));
   }
 
@@ -99,9 +103,9 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       widget.appSharedState.samsungTVCastManager,
       widget.appSharedState.databaseManager,
       videoUrl,
-      widget.video ?? Video.fromMap(widget.videoEntity!.toMap()),
-      widget.progressEntity != null
-          ? Duration(milliseconds: widget.progressEntity!.progress!)
+      widget.initialVideo ?? Video.fromMap(widget.initialVideoEntity!.toMap()),
+      widget.initialProgressEntity != null
+          ? Duration(milliseconds: widget.initialProgressEntity!.progress!)
           : Duration(milliseconds: 0),
     );
 
@@ -131,7 +135,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
     // always use network datasource if should be casted to TV
     // TV needs accessible video URL
-    if (widget.videoEntity == null ||
+    if (widget.initialVideoEntity == null ||
         widget.appSharedState.isCurrentlyPlayingOnTV) {
       videoController = VideoPlayerController.networkUrl(
         Uri.parse(videoUrl!),
@@ -146,10 +150,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     if (widget.appSharedState.targetPlatform ==
         TargetPlatform.android) {
       path =
-          "${widget.videoEntity!.filePath!}/${widget.videoEntity!.fileName!}";
+          "${widget.initialVideoEntity!.filePath!}/${widget.initialVideoEntity!.fileName!}";
     } else {
       path =
-          "${widget.appSharedState.localDirectory!.path}/MediathekView/${widget.videoEntity!.fileName!}";
+          "${widget.appSharedState.localDirectory!.path}/MediathekView/${widget.initialVideoEntity!.fileName!}";
     }
 
     Uri videoUri = Uri.file(path);
@@ -158,7 +162,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     file.exists().then(
       (exists) {
         if (!exists) {
-          widget.log.severe(
+          widget.logger.severe(
               "Cannot play video from file. File does not exist: ${file.uri}");
           videoController = VideoPlayerController.networkUrl(
             Uri.parse(videoUrl!),
@@ -173,7 +177,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   }
 
   void initChewieController() {
-    widget.chewieController = CustomChewieController(
+    chewieController = CustomChewieController(
       context: context,
       videoPlayerController: videoController!,
       tvPlayerController: tvVideoController,
@@ -186,7 +190,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       allowedScreenSleep: false,
       isCurrentlyPlayingOnTV:
           widget.appSharedState.isCurrentlyPlayingOnTV,
-      video: widget.video,
+      video: widget.initialVideo,
       aspectRatio: 16 / 9,
       systemOverlaysAfterFullScreen: []
     ); // != null
@@ -205,21 +209,21 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
         ElevatedButton(
           child: const Text('Nein'),
           onPressed: () async {
-            widget.isAlreadyPlayingDifferentVideoOnTV = false;
+            isAlreadyPlayingDifferentVideoOnTV = false;
             // replace widget.video with the currently playing video
             // to not interrupt the video playback
-            widget.video =
+            video =
                 widget.appSharedState.tvCurrentlyPlayingVideo!;
 
             // get the video entity
-            widget.videoEntity = await widget
+            videoEntity = await widget
                 .appSharedState.databaseManager
                 .getDownloadedVideo(widget.videoId);
 
             // get the video progress
-            widget.progressEntity = await widget
+            progressEntity = await widget
                 .appSharedState.databaseManager
-                .getVideoProgressEntity(widget.video.id);
+                .getVideoProgressEntity(widget.initialVideo.id);
 
             // start initializing players with the video playing on the TV
             setState(() {});
@@ -231,7 +235,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             widget.appSharedState.samsungTVCastManager.stop();
 
             setState(() {
-              widget.isAlreadyPlayingDifferentVideoOnTV = false;
+              isAlreadyPlayingDifferentVideoOnTV = false;
               castNewVideoToTV = true;
             });
           },
