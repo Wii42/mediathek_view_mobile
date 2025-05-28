@@ -119,7 +119,7 @@ class HomePageState extends State<MyHomePage>
   String? currentUserQueryInput;
 
   //Filter Menu
-  Map<String, SearchFilter>? searchFilters;
+  late Map<String, SearchFilter> searchFilters;
   bool? filterMenuOpen;
   bool? filterMenuChannelFilterIsOpen;
 
@@ -215,7 +215,7 @@ class HomePageState extends State<MyHomePage>
     indexingBarKey = Key(uuid.v1());
 
     api = APIQuery(onDataReceived: onSearchResponse, onError: onAPISearchError);
-    api.search(currentUserQueryInput, searchFilters!);
+    api.search(currentUserQueryInput, searchFilters);
 
     checkForFirstStart();
 
@@ -452,9 +452,9 @@ class HomePageState extends State<MyHomePage>
       return;
     } else if (newVideosCount != 0) {
       // client side result filtering
-      if (searchFilters!["Länge"] != null) {
+      if (searchFilters["Länge"] != null) {
         videos =
-            VideoListUtil.applyLengthFilter(videos!, searchFilters!["Länge"]!);
+            VideoListUtil.applyLengthFilter(videos!, searchFilters["Länge"]!);
       }
       int newVideosCount = videos!.length - videoListLengthOld;
 
@@ -470,7 +470,7 @@ class HomePageState extends State<MyHomePage>
   // ----------CALLBACKS: From List View ----------------
 
   void onQueryEntries() {
-    api.search(currentUserQueryInput, searchFilters!);
+    api.search(currentUserQueryInput, searchFilters);
   }
 
   // ---------- SEARCH Input ----------------
@@ -488,7 +488,7 @@ class HomePageState extends State<MyHomePage>
   void _createQuery() {
     currentUserQueryInput = searchFieldController!.text;
 
-    api.search(currentUserQueryInput, searchFilters!);
+    api.search(currentUserQueryInput, searchFilters);
   }
 
   void _createQueryWithClearedVideoList() {
@@ -504,17 +504,17 @@ class HomePageState extends State<MyHomePage>
 
   void _filterMenuUpdatedCallback(SearchFilter newFilter) {
     //called whenever a filter in the menu gets a value
-    if (searchFilters![newFilter.filterId] != null) {
-      if (searchFilters![newFilter.filterId]!.filterValue !=
+    if (searchFilters[newFilter.filterId] != null) {
+      if (searchFilters[newFilter.filterId]!.filterValue !=
           newFilter.filterValue) {
         logger.fine(
-            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters![newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
+            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters[newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
-        searchFilters!.remove(newFilter.filterId);
+        searchFilters.remove(newFilter.filterId);
         if (newFilter.filterValue.isNotEmpty) {
-          searchFilters!.putIfAbsent(newFilter.filterId, () => newFilter);
+          searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
         }
         //updates state internally
         _createQueryWithClearedVideoList();
@@ -525,14 +525,14 @@ class HomePageState extends State<MyHomePage>
 
       HapticFeedback.mediumImpact();
 
-      searchFilters!.putIfAbsent(newFilter.filterId, () => newFilter);
+      searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
       _createQueryWithClearedVideoList();
     }
   }
 
   void _singleFilterTappedCallback(String id) {
     //remove filter from list and refresh state to trigger build of app bar and list!
-    searchFilters!.remove(id);
+    searchFilters.remove(id);
     HapticFeedback.mediumImpact();
     _createQueryWithClearedVideoList();
   }
