@@ -23,8 +23,8 @@ class VideoListState extends ChangeNotifier {
   VideoListState(
       {Set<String> extendedListTiles = const {},
       Map<String, Image> previewImages = const {}})
-      : _extendedListTiles = extendedListTiles,
-        _previewImages = previewImages;
+      : _extendedListTiles = {...extendedListTiles},
+        _previewImages = {...previewImages};
 
   Set<String> get extendedListTiles => Set.unmodifiable(_extendedListTiles);
 
