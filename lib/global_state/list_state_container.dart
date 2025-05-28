@@ -105,6 +105,7 @@ class AppState extends ChangeNotifier {
     await Future.wait(
         [getPlatformAndSetDirectory(), initDBAndDownloadManager()]);
 
+
     _initialized = true;
   }
 
@@ -129,11 +130,11 @@ class AppState extends ChangeNotifier {
     print("Target platform set to: $targetPlatform");
 
     bool hasPermission = true;
-    if (targetPlatform == TargetPlatform.android) {
-      hasPermission =
-          await filesystemPermissionManager.hasFilesystemPermission();
-    }
-    print("Has filesystem permission: $hasPermission");
+    //if (targetPlatform == TargetPlatform.android) {
+    //  hasPermission =
+    //      await filesystemPermissionManager.hasFilesystemPermission();
+    //}
+    //print("Has filesystem permission: $hasPermission");
 
     hasFilesystemPermission = hasPermission;
 
@@ -141,7 +142,7 @@ class AppState extends ChangeNotifier {
     if (targetPlatform == TargetPlatform.iOS) {
       directory = await getApplicationDocumentsDirectory();
     } else {
-      directory = await getExternalStorageDirectory();
+      directory = await getApplicationDocumentsDirectory();
     }
     localDirectory = directory;
     print("Local directory set to: ${localDirectory!.path}");

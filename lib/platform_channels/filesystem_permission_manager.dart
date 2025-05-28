@@ -1,11 +1,9 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 class FilesystemPermissionManager {
-  final Logger logger = new Logger('FilesystemPermissionManager');
+  final Logger logger = Logger('FilesystemPermissionManager');
   late EventChannel _eventChannel;
   late MethodChannel _methodChannel;
   Stream<dynamic>? _updateStream;
@@ -18,9 +16,7 @@ class FilesystemPermissionManager {
   }
 
   Stream<dynamic>? getBroadcastStream() {
-    if (_updateStream == null) {
-      _updateStream = _eventChannel.receiveBroadcastStream();
-    }
+    _updateStream ??= _eventChannel.receiveBroadcastStream();
     return _updateStream;
   }
 
@@ -32,8 +28,7 @@ class FilesystemPermissionManager {
       bool alreadyGranted = res.toLowerCase() == 'true';
       return alreadyGranted;
     } on PlatformException catch (e) {
-      logger.severe("Asking for Android FileSystemPermissions failed. Reason " +
-          e.toString());
+      logger.severe("Asking for Android FileSystemPermissions failed. Reason $e");
 
       return false;
     }
@@ -47,8 +42,7 @@ class FilesystemPermissionManager {
       return hasPermission;
     } on PlatformException catch (e) {
       logger.severe(
-          "Checking for Asking for Android FileSystemPermissions failed. Reason " +
-              e.toString());
+          "Checking for Asking for Android FileSystemPermissions failed. Reason $e");
 
       return false;
     }
