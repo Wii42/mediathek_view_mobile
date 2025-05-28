@@ -1,6 +1,6 @@
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
@@ -16,6 +16,8 @@ import 'package:flutter_ws/widgets/downloadSection/video_list_item_builder.dart'
 import 'package:flutter_ws/widgets/downloadSection/watch_history.dart';
 import 'package:flutter_ws/widgets/videolist/circular_progress_with_text.dart';
 import 'package:logging/logging.dart';
+
+import '../util/device_information.dart';
 
 const ERROR_MSG = "Deletion of video failed.";
 const TRY_AGAIN_MSG = "Try again.";
@@ -77,8 +79,7 @@ class DownloadSectionState extends State<DownloadSection> {
           Colors.green);
     } else if (currentDownloads.length > 1) {
       return CircularProgressWithText(
-        Text(
-            "Downloading ${currentDownloads.length} videos",
+        Text("Downloading ${currentDownloads.length} videos",
             style: connectionLostTextStyle),
         Colors.green,
         Colors.green,
@@ -101,17 +102,20 @@ class DownloadSectionState extends State<DownloadSection> {
         SnackbarActions.showSuccess(scaffoldMessenger, "Löschen erfolgreich");
         return;
       }
-      SnackbarActions.showErrorWithTryAgain(scaffoldMessenger, ERROR_MSG, TRY_AGAIN_MSG,
-          widget.appWideState.downloadManager.deleteVideo, id ?? "");
+      SnackbarActions.showErrorWithTryAgain(
+          scaffoldMessenger,
+          ERROR_MSG,
+          TRY_AGAIN_MSG,
+          widget.appWideState.downloadManager.deleteVideo,
+          id ?? "");
     });
   }
 
   void loadAlreadyDownloadedVideosFromDb() async {
-    Set<VideoEntity> downloads = await widget
-        .appWideState.databaseManager
-        .getAllDownloadedVideos();
+    Set<VideoEntity> downloads =
+        await widget.appWideState.databaseManager.getAllDownloadedVideos();
 
-    if ( downloadedVideos.length != downloads.length) {
+    if (downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
       downloadedVideos =
           downloads.map((entity) => Video.fromMap(entity.toMap())).toSet();
@@ -183,39 +187,37 @@ class DownloadSectionState extends State<DownloadSection> {
       Size size,
       BuildContext context,
       Widget currentDownloadsTopBar) {
-    Widget recentlyViewedHeading =
-        SliverToBoxAdapter(child: Container());
-    Widget recentlyViewedSlider =
-        SliverToBoxAdapter(child: Container());
-    Widget watchHistoryNavigation =
-        SliverToBoxAdapter(child: Container());
+    Widget recentlyViewedHeading = SliverToBoxAdapter(child: Container());
+    Widget recentlyViewedSlider = SliverToBoxAdapter(child: Container());
+    Widget watchHistoryNavigation = SliverToBoxAdapter(child: Container());
 
     int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
     widget.logger.info("Cross axis count: $crossAxisCount");
     if (videosWithPlaybackProgress.isNotEmpty) {
-      recentlyViewedHeading =
-          Heading("Kürzlich angesehen", fontSize: 25.0, padding: EdgeInsets.only(left:20, top: 5, bottom: 16));
+      recentlyViewedHeading = Heading("Kürzlich angesehen",
+          fontSize: 25.0,
+          padding: EdgeInsets.only(left: 20, top: 5, bottom: 16));
 
       List<Widget> watchHistoryItems = Util.getWatchHistoryItems(
           videosWithPlaybackProgress, size.width / crossAxisCount);
 
       double containerHeight = size.width / crossAxisCount / 16 * 9;
 
-    //  Widget recentlyViewedSwiper = ListView(
-    //    scrollDirection: Axis.horizontal,
-    //    children: watchHistoryItems,
-    //  );
-    //
-    //  // special case for mobile & portrait -> use swiper instead of horizontally scrolling list
-    //  if (!DeviceInformation.isTablet(context) &&
-    //      MediaQuery.of(context).orientation == Orientation.portrait) {
-    //    recentlyViewedSwiper =
-    //        getMobileRecentlyWatchedSwiper(watchHistoryItems);
-    //  }
-    //
-    //  recentlyViewedSlider = SliverToBoxAdapter(
-    //      child: new Container(
-    //          height: containerHeight, child: recentlyViewedSwiper));
+      Widget recentlyViewedSwiper = ListView(
+        scrollDirection: Axis.horizontal,
+        children: watchHistoryItems,
+      );
+
+      // special case for mobile & portrait -> use swiper instead of horizontally scrolling list
+      if (!DeviceInformation.isTablet(context) &&
+          MediaQuery.of(context).orientation == Orientation.portrait) {
+        recentlyViewedSwiper =
+            getMobileRecentlyWatchedSwiper(watchHistoryItems);
+      }
+
+      recentlyViewedSlider = SliverToBoxAdapter(
+          child:
+              SizedBox(height: containerHeight, child: recentlyViewedSwiper));
 
       // build navigation to complete history
       watchHistoryNavigation = getWatchHistoryButton();
@@ -228,7 +230,9 @@ class DownloadSectionState extends State<DownloadSection> {
     );
 
     if (downloadedVideos.isNotEmpty) {
-      downloadHeading = Heading("Meine Downloads", fontSize: 25.0, padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom:0.0));
+      downloadHeading = Heading("Meine Downloads",
+          fontSize: 25.0,
+          padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom: 0.0));
 
       var videoListItemBuilder = VideoListItemBuilder.name(
           downloadedVideos.toList(), true, true, false,
@@ -266,37 +270,37 @@ class DownloadSectionState extends State<DownloadSection> {
     );
   }
 
-  //Theme getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
-  //  return new Theme(
-  //    //data: new ThemeData(primarySwatch: Colors.red),
-  //    data: new ThemeData(
-  //        primarySwatch: new MaterialColor(
-  //      0xffffbf00,
-  //      const <int, Color>{
-  //        50: Color(0xFFFAFAFA),
-  //        100: Color(0xFFF5F5F5),
-  //        200: Color(0xFFEEEEEE),
-  //        300: Color(0xFFE0E0E0),
-  //        350: Color(0xFFD6D6D6),
-  //        400: Color(0xFFBDBDBD),
-  //        500: Color(0xFF9E9E9E),
-  //        600: Color(0xFF757575),
-  //        700: Color(0xFF616161),
-  //        800: Color(0xFF424242),
-  //        850: Color(0xFF303030),
-  //        900: Color(0xFF212121),
-  //      },
-  //    )),
-  //    child: new Swiper(
-  //      itemBuilder: (BuildContext context, int index) {
-  //        return watchHistoryItems[index];
-  //      },
-  //      itemCount: watchHistoryItems.length,
-  //      pagination: new SwiperPagination(),
-  //      control: new SwiperControl(),
-  //    ),
-  //  );
-  //}
+  Theme getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
+    return Theme(
+      //data: new ThemeData(primarySwatch: Colors.red),
+      data: ThemeData(
+          primarySwatch: MaterialColor(
+        0xffffbf00,
+        const <int, Color>{
+          50: Color(0xFFFAFAFA),
+          100: Color(0xFFF5F5F5),
+          200: Color(0xFFEEEEEE),
+          300: Color(0xFFE0E0E0),
+          350: Color(0xFFD6D6D6),
+          400: Color(0xFFBDBDBD),
+          500: Color(0xFF9E9E9E),
+          600: Color(0xFF757575),
+          700: Color(0xFF616161),
+          800: Color(0xFF424242),
+          850: Color(0xFF303030),
+          900: Color(0xFF212121),
+        },
+      )),
+      child: Swiper(
+        itemBuilder: (BuildContext context, int index) {
+          return watchHistoryItems[index];
+        },
+        itemCount: watchHistoryItems.length,
+        pagination: SwiperPagination(),
+        control: SwiperControl(),
+      ),
+    );
+  }
 
   Center getEmptyDownloadWidget() {
     return Center(
