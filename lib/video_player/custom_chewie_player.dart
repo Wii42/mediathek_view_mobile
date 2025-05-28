@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:chewie/src/chewie_progress_colors.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -10,7 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import 'TVPlayerController.dart';
+import 'tv_player_controller.dart';
 
 /// A Video Player with Material and Cupertino skins.
 ///

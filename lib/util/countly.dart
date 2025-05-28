@@ -18,7 +18,7 @@ class CountlyUtil {
     }
 
     var responseList =
-        new LineSplitter().convert(utf8.decode(response.bodyBytes));
+        LineSplitter().convert(utf8.decode(response.bodyBytes));
     // in this simple format it is assumed that the countly API is on line 1,
     // the APP_KEY on line 2 and the tampering salt und line 3
     String countlyAPI = responseList.elementAt(0);

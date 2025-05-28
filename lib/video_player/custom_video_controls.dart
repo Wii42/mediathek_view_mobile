@@ -15,8 +15,8 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import 'TVPlayerController.dart';
-import 'TvVideoPlayerValue.dart';
+import 'tv_player_controller.dart';
+import 'tv_video_player_value.dart';
 import 'available_tvs_dialog.dart';
 import 'custom_video_progress_bar.dart';
 
@@ -124,16 +124,16 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     if (tvPlayerController!.value.playbackOnTvStarted) {
       return;
     }
-    AppState? _appWideState =
+    AppState? appWideState =
         context.read<AppState?>();
-    if (_appWideState != null) {
-      _appWideState.databaseManager
+    if (appWideState != null) {
+      appWideState.databaseManager
           .updatePlaybackPosition(chewieController!.video!, position);
     }
   }
 
   void _updateTvPlayerState() {
-    AppState? _appWideState = context.read<AppState?>();
+    AppState? appWideState = context.read<AppState?>();
     ScaffoldMessengerState scaffoldMessenger =
         ScaffoldMessenger.of(context);
     setState(() {
@@ -149,12 +149,12 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       }
 
       // isPlaying is only true if the video has been successfully casted / isPlaying on the TV
-      if (_appWideState != null &&
+      if (appWideState != null &&
           _latestTvPlayerValue != null &&
-          !_appWideState.isCurrentlyPlayingOnTV &&
+          !appWideState.isCurrentlyPlayingOnTV &&
           chewieController!.tvPlayerController!.value.isPlaying) {
-        _appWideState.isCurrentlyPlayingOnTV = true;
-        _appWideState.tvCurrentlyPlayingVideo =
+        appWideState.isCurrentlyPlayingOnTV = true;
+        appWideState.tvCurrentlyPlayingVideo =
             tvPlayerController!.video;
         SnackbarActions.showSuccess(scaffoldMessenger, "Verbunden");
 
@@ -168,15 +168,15 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       _latestTvPlayerValue = chewieController!.tvPlayerController!.value;
 
       // add available tvs to global state - needed when navigation out of the player screen
-      if (_appWideState != null) {
-        _appWideState.availableTvs =
+      if (appWideState != null) {
+        appWideState.availableTvs =
             _latestTvPlayerValue!.availableTvs;
       }
 
       // case: playback on TV manually disconnected. Start playing locally again
-      if (tvPlayerController!.value.isDisconnected && _appWideState != null) {
+      if (tvPlayerController!.value.isDisconnected && appWideState != null) {
         logger.info("PLAY LOCALLY AGAIN");
-        _appWideState.isCurrentlyPlayingOnTV = false;
+        appWideState.isCurrentlyPlayingOnTV = false;
         tvPlayerController!.value =
             tvPlayerController!.value.copyWith(isDisconnected: false);
         flutterPlayerController!
@@ -189,7 +189,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       if (chewieController!.tvPlayerController!.value.isTvUnsupported &&
           chewieController!.tvPlayerController!.value.errorDescription !=
               null) {
-        _appWideState?.isCurrentlyPlayingOnTV = false;
+        appWideState?.isCurrentlyPlayingOnTV = false;
         SnackbarActions.showError(scaffoldMessenger, "Verbindung nicht möglich.");
 
         Map<String, Object> event = {
@@ -462,51 +462,47 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   Expanded _buildHitArea(bool showLoadingIndicator) {
-    Container backGroundContainer = Container(
+    Widget backGroundContainer = Container(
       color: Colors.transparent,
       child: _buildPlayerCenterControls(showLoadingIndicator),
     );
     // set static picture as background
     if (tvPlayerController!.value.playbackOnTvStarted) {
-      backGroundContainer = Container(
-        child: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 30.0, right: 10.0, top: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(40.0),
-                      bottomLeft: const Radius.circular(40.0),
-                      bottomRight: const Radius.circular(40.0),
-                      topRight: const Radius.circular(40.0)),
-                  color: Colors.grey.withOpacity(0.4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 30.0, right: 30.0, top: 10.0, bottom: 20.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          child: Image(
-                            image:
-                                AssetImage("assets/launcher/ic_launcher.png"),
-                          ),
-                        ),
-                        Text(
-                          "Video wird auf dem TV abgespielt.",
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              color: Colors.white,
-                              fontSize: 20.0),
-                        ),
-                        _buildPlayerCenterControls(showLoadingIndicator),
-                      ],
-                    ),
+      backGroundContainer = ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 30.0, right: 10.0, top: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(40.0),
+                    bottomLeft: const Radius.circular(40.0),
+                    bottomRight: const Radius.circular(40.0),
+                    topRight: const Radius.circular(40.0)),
+                color: Colors.grey.withOpacity(0.4),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 30.0, right: 30.0, top: 10.0, bottom: 20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Image(
+                        image:
+                            AssetImage("assets/launcher/ic_launcher.png"),
+                      ),
+                      Text(
+                        "Video wird auf dem TV abgespielt.",
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                            fontSize: 20.0),
+                      ),
+                      _buildPlayerCenterControls(showLoadingIndicator),
+                    ],
                   ),
                 ),
               ),
@@ -703,12 +699,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   GestureDetector _buildSkipBack(double height) {
     return GestureDetector(
       onTap: _skipBack,
-      child: Container(
-        child: Icon(
-          Icons.skip_previous_outlined,
-          color: Colors.white,
-          size: height,
-        ),
+      child: Icon(
+        Icons.skip_previous_outlined,
+        color: Colors.white,
+        size: height,
       ),
     );
   }

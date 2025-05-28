@@ -248,7 +248,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     var container = Container();
 
     if (widget.video.description != null &&
-        widget.video.description!.length > 0) {
+        widget.video.description!.isNotEmpty) {
       container = Container(
         margin: EdgeInsets.only(left: 5),
         child: Column(

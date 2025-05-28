@@ -5,23 +5,23 @@ class ChannelThumbnail extends StatelessWidget {
   final String imgPath;
   final bool isDownloadedAlready;
 
-  ChannelThumbnail(this.imgPath, this.isDownloadedAlready);
+  const ChannelThumbnail(this.imgPath, this.isDownloadedAlready, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    Uuid uuid = new Uuid();
+    Uuid uuid = Uuid();
 
-    return new Container(
-      key: new Key(uuid.v1()),
-      margin: new EdgeInsets.only(left: 2.0),
+    return Container(
+      key: Key(uuid.v1()),
+      margin: EdgeInsets.only(left: 2.0),
       alignment: FractionalOffset.topLeft,
       width: 50.0,
       height: 50.0,
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isDownloadedAlready ? Colors.green[800] : Colors.grey[300],
-        image: new DecorationImage(
-          image: new AssetImage('assets/img/' + imgPath),
+        image: DecorationImage(
+          image: AssetImage('assets/img/$imgPath'),
         ),
       ),
     );

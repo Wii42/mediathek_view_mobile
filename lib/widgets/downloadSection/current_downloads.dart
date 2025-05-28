@@ -8,14 +8,14 @@ import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/util/cross_axis_count.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/widgets/downloadSection/video_list_item_builder.dart';
-import 'package:flutter_ws/widgets/videolist/download/DownloadController.dart';
-import 'package:flutter_ws/widgets/videolist/download/DownloadValue.dart';
+import 'package:flutter_ws/widgets/videolist/download/download_controller.dart';
+import 'package:flutter_ws/widgets/videolist/download/download_value.dart';
 import 'package:logging/logging.dart';
 
 class CurrentDownloads extends StatefulWidget {
   final Logger logger = Logger('CurrentDownloads');
   final AppState appWideState;
-  final setStateNecessary;
+  final void Function(List<Video>) setStateNecessary;
   final int downloadManagerIdentifier = 1;
 
   CurrentDownloads(this.appWideState, this.setStateNecessary, {super.key});
@@ -109,12 +109,12 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
         .getCurrentDownloads();
 
     List<Video> currentDownloads = [];
-    downloads.forEach((entity) {
-      var video = Video.fromMap(entity.toMap());
+    for (VideoEntity entity in downloads) {
+      Video video = Video.fromMap(entity.toMap());
       currentDownloads.add(video);
       widget.logger
           .info("Current download: ${video.id!}. Title: ${video.title!}");
-    });
+    }
 
     widget.setStateNecessary(currentDownloads);
     this.currentDownloads = currentDownloads;

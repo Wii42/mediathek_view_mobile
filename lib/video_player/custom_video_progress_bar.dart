@@ -1,16 +1,16 @@
-import 'package:chewie/src/chewie_progress_colors.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
 
-import 'TVPlayerController.dart';
+import 'tv_player_controller.dart';
 import 'custom_chewie_player.dart';
 
 class CustomCupertinoVideoProgressBar extends StatefulWidget {
   CustomCupertinoVideoProgressBar(
     this.flutterPlayerController,
     this.tvPlayerController, {
+    super.key,
     ChewieProgressColors? colors,
     this.onDragEnd,
     this.onDragStart,
@@ -25,14 +25,15 @@ class CustomCupertinoVideoProgressBar extends StatefulWidget {
   final Function()? onDragUpdate;
 
   @override
-  _VideoProgressBarState createState() {
+  State<CustomCupertinoVideoProgressBar> createState() {
     return _VideoProgressBarState();
   }
 }
 
 class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
-  final Logger logger = new Logger('VideoProgressBar');
+  final Logger logger = Logger('VideoProgressBar');
   CustomChewieController? chewieController;
+
   // used to determine which value to consider for the progress bar painting
   // use the flutter player position when scrubbing while being connected to the TV
   bool isScrubbing = false;

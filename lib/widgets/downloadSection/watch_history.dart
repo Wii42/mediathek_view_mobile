@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 class WatchHistory extends StatefulWidget {
   final Logger logger = Logger('WatchHistory');
 
-  WatchHistory({Key? key}) : super(key: key);
+  WatchHistory({super.key});
 
   @override
   WatchHistoryState createState() {

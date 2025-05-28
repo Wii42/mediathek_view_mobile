@@ -6,18 +6,18 @@ import 'package:uuid/uuid.dart';
 
 class RowAdapter {
   static Widget createRow(Video video) {
-    Uuid uuid = new Uuid();
+    Uuid uuid = Uuid();
 
     String assetPath = Channels.channelMap.entries
         .firstWhere(
             (entry) =>
                 video.channel!.toUpperCase().contains(entry.key.toUpperCase()) ||
                 entry.key.toUpperCase().contains(video.channel!.toUpperCase()),
-            orElse: () => new MapEntry("", ""))
+            orElse: () => MapEntry("", ""))
         .value;
 
-    return new ListCard(
-        key: new Key(uuid.v1()),
+    return ListCard(
+        key: Key(uuid.v1()),
         channelPictureImagePath: assetPath,
         video: video);
   }

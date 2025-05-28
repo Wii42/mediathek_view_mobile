@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const oldStandardBaseTextStyle =
-    const TextStyle(fontFamily: 'Poppins', color: Colors.white);
+    TextStyle(fontFamily: 'Poppins', color: Colors.white);
 final buttonTextStyle = oldStandardBaseTextStyle.copyWith(
     fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.w800);
 final hintTextStyle = oldStandardBaseTextStyle.copyWith(

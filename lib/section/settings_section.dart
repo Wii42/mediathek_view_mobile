@@ -102,7 +102,7 @@ class SettingsSection extends StatelessWidget {
   }
 
   Future<void> _launchURL(Uri url) async {
-    if (await canLaunchUrl(url) || true) {
+    if (await canLaunchUrl(url) || true) { //  || true is a workaround for android
       await launchUrl(url);
     } else {
       logger.warning('Could not launch $url');

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:logging/logging.dart';
 
-import 'DownloadController.dart';
-import 'DownloadValue.dart';
+import 'download_controller.dart';
+import 'download_value.dart';
 
 typedef TriggerParentStateReload = void Function();
 
@@ -24,7 +24,7 @@ class DownloadProgressBar extends StatefulWidget {
       this.isOnDetailScreen = false, this.triggerParentStateReload, super.key});
 
   @override
-  _DownloadProgressBarState createState() => _DownloadProgressBarState();
+  State<DownloadProgressBar> createState() => _DownloadProgressBarState();
 }
 
 class _DownloadProgressBarState extends State<DownloadProgressBar> {
@@ -113,7 +113,7 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
   void updateDownloadState() {
     _latestDownloadValue = downloadController!.value;
     widget.logger.info(
-        "DownloadProgressBar status " + _latestDownloadValue!.status.toString());
+        "DownloadProgressBar status ${_latestDownloadValue!.status}");
 
     if (widget.triggerParentStateReload != null &&
         _latestDownloadValue!.isComplete) {

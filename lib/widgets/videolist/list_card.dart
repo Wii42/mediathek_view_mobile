@@ -27,8 +27,7 @@ class ListCard extends StatefulWidget {
   final Video video;
 
   ListCard(
-      {Key? key, required this.channelPictureImagePath, required this.video})
-      : super(key: key);
+      {super.key, required this.channelPictureImagePath, required this.video});
 
   @override
   State<StatefulWidget> createState() {
@@ -172,11 +171,11 @@ class _ListCardState extends State<ListCard> {
         final card = ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
           child: Container(
-            child: cardContent,
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.rectangle,
             ),
+            child: cardContent,
           ),
         );
 

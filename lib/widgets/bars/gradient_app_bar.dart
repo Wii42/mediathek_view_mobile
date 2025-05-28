@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/appbar_state_container.dart';
 import 'package:flutter_ws/util/device_information.dart';
@@ -22,9 +21,11 @@ class GradientAppBar extends StatelessWidget {
       this.filterMenu,
       this.isFilterMenuOpen,
       this.currentAmountOfVideosInList,
-      this.totalAmountOfVideosForSelection);
+      this.totalAmountOfVideosForSelection,
+      {super.key});
 
-  List<SearchFilter>? get searchFilters => filterMenu.searchFilters!.values.toList();
+  List<SearchFilter>? get searchFilters =>
+      filterMenu.searchFilters!.values.toList();
 
   @override
   Widget build(BuildContext context) {

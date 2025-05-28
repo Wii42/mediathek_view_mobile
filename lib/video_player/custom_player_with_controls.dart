@@ -1,7 +1,5 @@
-import 'dart:ui';
 
 import 'package:chewie/chewie.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:video_player/video_player.dart';

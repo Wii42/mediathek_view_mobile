@@ -12,8 +12,8 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import 'download/DownloadController.dart';
-import 'download/DownloadValue.dart';
+import 'download/download_controller.dart';
+import 'download/download_value.dart';
 
 const ERROR_MSG = "Löschen fehlgeschlagen";
 
@@ -34,7 +34,8 @@ class DownloadSwitch extends StatefulWidget {
       this.isDownloadedAlready,
       this.downloadManager,
       this.filesize,
-      this.isTablet, {super.key});
+      this.isTablet,
+      {super.key});
 
   @override
   State<DownloadSwitch> createState() {
@@ -189,21 +190,21 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
     if (isAlreadyDownloaded ||
         _latestDownloadValue!.status == DownloadTaskStatus.complete) {
-      return widget.filesize != null && widget.filesize!.length > 0
+      return widget.filesize != null && widget.filesize!.isNotEmpty
           ? "Löschen (${widget.filesize})"
           : "Löschen";
     } else if (_latestDownloadValue!.status == DownloadTaskStatus.running &&
-        _latestDownloadValue!.progress.toInt() == -1)
+        _latestDownloadValue!.progress.toInt() == -1) {
       return "";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.running)
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.running) {
       return "${_latestDownloadValue!.progress.toInt()}%";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.paused)
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.paused) {
       return "${_latestDownloadValue!.progress.toInt()}%";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.enqueued)
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.enqueued) {
       return "Waiting...";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.failed)
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.failed) {
       return "Download failed";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.undefined ||
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.undefined ||
         _latestDownloadValue!.status == DownloadTaskStatus.canceled) {
       return widget.filesize != null && widget.filesize!.isNotEmpty
           ? "Download (${widget.filesize})"

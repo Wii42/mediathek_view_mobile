@@ -89,7 +89,7 @@ class _VideoListViewState extends State<VideoListView> {
               style: TextStyle(fontSize: 25),
             ),
           ),
-          Container(
+          SizedBox(
             height: 50,
             child: ListView(
               shrinkWrap: true,

@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/widgets/videolist/circular_progress_with_text.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
-import 'TVPlayerController.dart';
+import 'tv_player_controller.dart';
 
 class AvailableTVsDialog extends StatefulWidget {
   final TvPlayerController? tvPlayerController;
@@ -27,6 +26,7 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
       setState(() {});
     };
   }
+
   @override
   void initState() {
     super.initState();
@@ -42,13 +42,12 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
 
   @override
   Widget build(BuildContext context) {
-
     var availableTVs = tvPlayerController!.value.availableTvs
         .map((tv) => SimpleDialogOption(
               child: Text(tv,
                   style: TextStyle(color: Colors.white, fontSize: 18.0)),
               onPressed: () {
-                logger.info("Connecting to Samsung TV" + tv);
+                logger.info("Connecting to Samsung TV $tv");
 
                 // initialize tvPlayer controller
                 if (!widget.tvPlayerController!
@@ -56,7 +55,9 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
                   widget.tvPlayerController!.initialize();
                 }
 
-                context.watch<AppState>().samsungTVCastManager
+                context
+                    .watch<AppState>()
+                    .samsungTVCastManager
                     .checkIfTvIsSupported(tv);
                 Navigator.pop(context, true);
               },
@@ -65,13 +66,15 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
     if (tvPlayerController!.value.playbackOnTvStarted) {
       availableTVs.add(SimpleDialogOption(
         child: ElevatedButton(
-          child: Text("Verbindung trennen",
-              style: TextStyle(color: Colors.white, fontSize: 20.0)),
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xffffbf00))),
+          style: ButtonStyle(
+              backgroundColor:
+                  WidgetStateProperty.all<Color>(Color(0xffffbf00))),
           onPressed: () {
             tvPlayerController!.disconnect();
             Navigator.pop(context, true);
           },
+          child: Text("Verbindung trennen",
+              style: TextStyle(color: Colors.white, fontSize: 20.0)),
         ),
       ));
     }

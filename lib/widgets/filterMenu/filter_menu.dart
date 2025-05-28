@@ -8,9 +8,9 @@ import 'package:flutter_ws/widgets/filterMenu/video_length_slider.dart';
 import 'package:logging/logging.dart';
 
 class FilterMenu extends StatefulWidget {
-  final onFilterUpdated;
-  final onSingleFilterTapped;
-  final onChannelsSelected;
+  final void Function(SearchFilter) onFilterUpdated;
+  final void Function(String) onSingleFilterTapped;
+  final void Function() onChannelsSelected;
   final Map<String, SearchFilter>? searchFilters;
 
   const FilterMenu(
@@ -71,7 +71,7 @@ class _FilterMenuState extends State<FilterMenu> {
       mainAxisSize: MainAxisSize.max,
 //            crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Container(
+        SizedBox(
             width: 80.0,
             child: Padding(
                 padding: EdgeInsets.only(right: 15.0),
@@ -101,21 +101,21 @@ class _FilterMenuState extends State<FilterMenu> {
     );
   }
 
-  handleTapOnFilter(String id) {
-    logger.fine("Filter with id " + id.toString() + " was tapped");
+  void handleTapOnFilter(String id) {
+    logger.fine("Filter with id $id was tapped");
     widget.onSingleFilterTapped(id);
   }
 
   Widget getFilterMenuRow(
       String filterId, String displayText, TextEditingController? controller,{required ThemeData theme}) {
-    var _filterTextFocus = FocusNode();
+    var filterTextFocus = FocusNode();
 
     Row row = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Container(
+        SizedBox(
           width: 80.0,
           child: Padding(
             padding: EdgeInsets.only(right: 15.0),
@@ -131,7 +131,7 @@ class _FilterMenuState extends State<FilterMenu> {
         ),
         Expanded(
           child: TextField(
-            focusNode: _filterTextFocus,
+            focusNode: filterTextFocus,
             onSubmitted: (String value) {
               widget.onFilterUpdated(
                 SearchFilter(
@@ -161,8 +161,8 @@ class _FilterMenuState extends State<FilterMenu> {
       ],
     );
 
-    _filterTextFocus.addListener(() {
-      if (!_filterTextFocus.hasFocus) {
+    filterTextFocus.addListener(() {
+      if (!filterTextFocus.hasFocus) {
         String currentValueOfFilter = controller!.text;
         widget.onFilterUpdated(
           SearchFilter(
@@ -190,12 +190,9 @@ class _FilterMenuState extends State<FilterMenu> {
     String filterValue =
         channelSelection.map((String channel) => channel).join(";");
 
-    String displayText = "Sender: " + channelSelection.length.toString();
+    String displayText = "Sender: ${channelSelection.length}";
 
-    logger.fine("Sender filter: value: " +
-        filterValue +
-        " DisplayText: " +
-        displayText);
+    logger.fine("Sender filter: value: $filterValue DisplayText: $displayText");
 
     SearchFilter channelFilter = SearchFilter(
         filterId: "Sender",
@@ -206,7 +203,7 @@ class _FilterMenuState extends State<FilterMenu> {
     widget.onFilterUpdated(channelFilter);
   }
 
-  getRangeSliderRow() {
+  Row getRangeSliderRow() {
     SearchFilter lengthFilter;
     if (widget.searchFilters!["Länge"] != null) {
       lengthFilter = SearchFilter(
@@ -223,7 +220,7 @@ class _FilterMenuState extends State<FilterMenu> {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Container(
+        SizedBox(
           width: 80.0,
           child: Padding(
             padding: EdgeInsets.only(right: 5.0),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/database/video_progress_entity.dart';
@@ -227,8 +226,8 @@ class VideoWidgetState extends State<VideoWidget> {
         .getVideoProgressEntity(widget.video.id)
         .then((entity) {
       widget.logger.info("Video has playback progress: ${widget.video.title!}");
-      if (this.videoProgressEntity == null && mounted) {
-        this.videoProgressEntity = entity;
+      if (videoProgressEntity == null && mounted) {
+        videoProgressEntity = entity;
         setState(() {});
       }
     });

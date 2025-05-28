@@ -12,7 +12,7 @@ import 'package:flutter_ws/video_player/custom_video_controls.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
 
-import 'TVPlayerController.dart';
+import 'tv_player_controller.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
   Video video;

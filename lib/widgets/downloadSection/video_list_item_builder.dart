@@ -105,8 +105,8 @@ class VideoListItemBuilder {
     return ActionChip(
       avatar: Icon(Icons.delete_forever, color: Colors.white),
       label: Text(
-        filesize != null && filesize.length > 0
-            ? "Löschen (" + filesize + ")"
+        filesize != null && filesize.isNotEmpty
+            ? "Löschen ($filesize)"
             : "Löschen",
         style: TextStyle(fontSize: 20.0),
       ),

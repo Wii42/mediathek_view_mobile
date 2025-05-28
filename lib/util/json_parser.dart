@@ -13,11 +13,11 @@ class JSONParser {
     List<dynamic> unparsedResultList = resultUnparsed["results"];
     var unparsedQueryResult = resultUnparsed["queryInfo"];
 
-    QueryInfo queryInfo = new QueryInfo.fromJson(unparsedQueryResult);
+    QueryInfo queryInfo = QueryInfo.fromJson(unparsedQueryResult);
     List<Video> videos =
-        unparsedResultList.map((video) => new Video.fromMap(video)).toList();
+        unparsedResultList.map((video) => Video.fromMap(video)).toList();
 
-    QueryResult result = new QueryResult();
+    QueryResult result = QueryResult();
     result.queryInfo = queryInfo;
     result.videos = videos;
 
@@ -26,7 +26,7 @@ class JSONParser {
 
   static IndexingInfo parseIndexingEvent(String rawData) {
     Map parsedBody = jsonDecode(rawData);
-    IndexingInfo info = new IndexingInfo.fromJson(parsedBody as Map<String, dynamic>);
+    IndexingInfo info = IndexingInfo.fromJson(parsedBody as Map<String, dynamic>);
 
     info.parsingProgress = (info.parserProgress! * 100).round();
     info.indexingProgress = (info.indexerProgress! * 100).round();

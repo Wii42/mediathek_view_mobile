@@ -8,10 +8,10 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:logging/logging.dart';
 
-import 'TvVideoPlayerValue.dart';
+import 'tv_video_player_value.dart';
 
 class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
-  final Logger logger = new Logger('TVPlayerController');
+  final Logger logger = Logger('TVPlayerController');
   bool _isDisposed = false;
 
   SamsungTVCastManager samsungTVCastManager;
@@ -33,17 +33,12 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   TvPlayerController(
     List<String> availableTvs,
-    SamsungTVCastManager samsungTVCastManager,
-    DatabaseManager databaseManager,
-    String? dataSource,
-    Video video,
-    Duration startAt,
-  )   : this.samsungTVCastManager = samsungTVCastManager,
-        this.databaseManager = databaseManager,
-        this.dataSource = dataSource,
-        this.video = video,
-        this.startAt = startAt,
-        super(
+    this.samsungTVCastManager,
+    this.databaseManager,
+    this.dataSource,
+    this.video,
+    this.startAt,
+  )   : super(
             TvVideoPlayerValue(position: startAt, availableTvs: availableTvs));
 
   // start listening for TVs (active during the whole player lifetime
@@ -145,12 +140,12 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
     playRequestSend = true;
     if (startingPosition != null) {
-      this.startAt = startingPosition;
+      startAt = startingPosition;
     }
     samsungTVCastManager.play(
-      this.dataSource,
-      this.video.title,
-      this.startAt,
+      dataSource,
+      video.title,
+      startAt,
     );
   }
 
@@ -199,10 +194,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       tvConnectionSubscription = tvReadinessStream.listen((raw) {
         String connectionStatus = raw['status'];
         String tvName = raw['name'];
-        logger.info("Samsung TV: received connection status " +
-            connectionStatus +
-            " for TV " +
-            tvName);
+        logger.info("Samsung TV: received connection status $connectionStatus for TV $tvName");
         switch (connectionStatus) {
           case TvStatus.IS_SUPPORTED:
             {
@@ -223,7 +215,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         }
       }, onError: (e) {
         logger.severe(
-            "Samsung TV connection status returned an error: " + e.toString());
+            "Samsung TV connection status returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV connection status event channel is done.");
       }, cancelOnError: false);
@@ -242,7 +234,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       var stream = samsungTVCastManager.getTvPlayerStream()!;
       tvPlayerSubscription = stream.listen((raw) {
         String playerStatus = raw['status'];
-        logger.info("Samsung TV: status: " + playerStatus);
+        logger.info("Samsung TV: status: $playerStatus");
         // reset, to be able to send another play request
         playRequestSend = false;
         switch (playerStatus) {
@@ -272,8 +264,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
             }
         }
       }, onError: (e) {
-        logger.severe("Samsung TV  player event channel returned an error: " +
-            e.toString());
+        logger.severe("Samsung TV  player event channel returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV connection status event channel is done.");
       }, cancelOnError: false);
@@ -292,21 +283,19 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       var stream = samsungTVCastManager.getTvPlaybackPositionStream()!;
       tvPlaybackPositionSubscription = stream.listen((raw) {
         int playbackPosition = raw['playbackPosition'];
-        logger.info("Samsung TV video playback position " +
-            playbackPosition.toString());
+        logger.info("Samsung TV video playback position $playbackPosition");
 
         // insert position
         databaseManager.updatePlaybackPosition(
-            video, new Duration(milliseconds: playbackPosition).inMilliseconds);
+            video, Duration(milliseconds: playbackPosition).inMilliseconds);
 
         value = value.copyWith(
             playbackOnTvStarted: true,
             isPlaying: true,
-            position: new Duration(milliseconds: playbackPosition));
+            position: Duration(milliseconds: playbackPosition));
       }, onError: (e) {
         logger.severe(
-            "Samsung TV video playback position event channel returned an error: " +
-                e.toString());
+            "Samsung TV video playback position event channel returned an error: $e");
       }, onDone: () {
         logger.info(
             "Samsung TV video playback position status event channel is done.");
@@ -328,7 +317,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       var stream = samsungTVCastManager.getFoundTVStream()!;
       foundTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
-        logger.info("discovered TV with name " + tvName);
+        logger.info("discovered TV with name $tvName");
         if (!value.availableTvs.contains(tvName)) {
           List<String> avail = [];
           avail.addAll(value.availableTvs);
@@ -336,8 +325,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
           value = value.copyWith(availableTvs: avail);
         }
       }, onError: (e) {
-        logger.severe("Samsung TV discovery - found TV's returned an error: " +
-            e.toString());
+        logger.severe("Samsung TV discovery - found TV's returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV discovery (found) event channel is done.");
       }, cancelOnError: false);
@@ -356,7 +344,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       var stream = samsungTVCastManager.getLostTVStream()!;
       lostTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
-        logger.info("lost TV with name " + tvName);
+        logger.info("lost TV with name $tvName");
         if (value.availableTvs.contains(tvName)) {
           List<String> avail = [];
           avail.addAll(value.availableTvs);
@@ -364,8 +352,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
           value = value.copyWith(availableTvs: avail);
         }
       }, onError: (e) {
-        logger.severe("Samsung TV discovery - lost TV's returned an error: " +
-            e.toString());
+        logger.severe("Samsung TV discovery - lost TV's returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV discovery (lost) event channel is done.");
       }, cancelOnError: true);

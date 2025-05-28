@@ -4,7 +4,7 @@ import 'package:flutter_ws/widgets/filterMenu/video_length_slider.dart';
 import 'package:logging/logging.dart';
 
 class VideoListUtil {
-  static final Logger logger = new Logger('VideoListUtil');
+  static final Logger logger = Logger('VideoListUtil');
 
   /*
   Sanitizes:
@@ -24,14 +24,7 @@ class VideoListUtil {
     for (int i = 0; i < newVideos.length; i++) {
       Video currentVideo = newVideos[i];
 
-      logger.info("Video ID : " +
-          currentVideo.id! +
-          " URL: " +
-          currentVideo.url_video! +
-          " Duration: " +
-          currentVideo.duration.toString() +
-          " Size: " +
-          currentVideo.size.toString());
+      logger.info("Video ID : ${currentVideo.id!} URL: ${currentVideo.url_video!} Duration: ${currentVideo.duration} Size: ${currentVideo.size}");
       bool hasDuplicate =
           _hasDuplicate(i, newVideos, currentVideos, currentVideo);
       if (hasDuplicate == false) {
@@ -66,7 +59,7 @@ class VideoListUtil {
   static Video httpUrlToHttps(Video video) {
     if (video.url_video!.startsWith('http://srfvodhd-vh.akamaihd.net') ||
         video.url_video!.startsWith('http://hdvodsrforigin-f.akamaihd.net')) {
-      video.url_video = 'https' + video.url_video!.substring(4);
+      video.url_video = 'https${video.url_video!.substring(4)}';
     }
     return video;
   }
@@ -99,7 +92,7 @@ class VideoListUtil {
     });
     int diff = videoLengthBeforeRemoval - videos.length;
     logger.info(
-        "Removed " + diff.toString() + " videos due to length constraints");
+        "Removed $diff videos due to length constraints");
     return videos;
   }
 }

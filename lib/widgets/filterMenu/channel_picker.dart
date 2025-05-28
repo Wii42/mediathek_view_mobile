@@ -7,25 +7,25 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:logging/logging.dart';
 
 class ChannelPickerDialog extends StatefulWidget {
-  final Logger logger = new Logger('ChannelPickerDialog');
+  final Logger logger = Logger('ChannelPickerDialog');
   final SearchFilter? filterPreSelection;
-  ChannelPickerDialog(this.filterPreSelection);
+  ChannelPickerDialog(this.filterPreSelection, {super.key});
 
   @override
   ChannelPickerDialogState createState() {
     logger.fine("Creating state for channel picker");
     Set<String> selectedChannels = extractChannelNamesFromCurrentFilter();
-    Set<Channel> channels = new Set();
+    Set<Channel> channels = {};
 
     Channels.channelMap.forEach((channelName, assetName) => channels.add(
-        new Channel(
+        Channel(
             channelName, assetName, selectedChannels.contains(channelName))));
 
-    return new ChannelPickerDialogState(channels);
+    return ChannelPickerDialogState(channels);
   }
 
   Set<String> extractChannelNamesFromCurrentFilter() {
-    Set<String> selectedChannels = new Set();
+    Set<String> selectedChannels = {};
 
     if (filterPreSelection != null &&
         filterPreSelection!.filterValue.isNotEmpty &&
@@ -38,7 +38,7 @@ class ChannelPickerDialog extends StatefulWidget {
         filterPreSelection!.filterValue.contains(";")) {
       //multiple filters already
       selectedChannels = filterPreSelection!.filterValue.split(";").toSet();
-      logger.fine(selectedChannels.length.toString() + " filters pre-selected");
+      logger.fine("${selectedChannels.length} filters pre-selected");
     }
     return selectedChannels;
   }
@@ -49,20 +49,20 @@ class ChannelPickerDialogState extends State<ChannelPickerDialog> {
   ChannelPickerDialogState(this.channels);
 
   Widget itemBuilder(BuildContext context, int index) {
-    return new ChannelListTile(channels.elementAt(index));
+    return ChannelListTile(channels.elementAt(index));
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[800],
-      body: new Column(
+      body: Column(
         children: <Widget>[
-          new AppBar(
-            title: new Text('Wähle Sender', style: sectionHeadingTextStyle),
-            backgroundColor: new Color(0xffffbf00),
-            leading: new IconButton(
-              icon: new Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
+          AppBar(
+            title: Text('Wähle Sender', style: sectionHeadingTextStyle),
+            backgroundColor: Color(0xffffbf00),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, size: 30.0, color: Colors.white),
               onPressed: () {
                 //return channels when user pressed back
                 return Navigator.pop(
@@ -74,8 +74,8 @@ class ChannelPickerDialogState extends State<ChannelPickerDialog> {
               },
             ),
           ),
-          new Flexible(
-            child: new ListView.builder(
+          Flexible(
+            child: ListView.builder(
                 itemBuilder: itemBuilder, itemCount: channels.length),
           ),
         ],

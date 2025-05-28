@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoadingListPage extends StatelessWidget {
+  const LoadingListPage({super.key});
+
   int determineNumberOfNeededTilesToFillScreen(
       BuildContext context, double listRowHeight) {
     double height = MediaQuery.of(context).size.height;
@@ -125,12 +127,12 @@ class LoadingListPage extends StatelessWidget {
 
   Container getListCard(Container cardContent) {
     return Container(
-      child: cardContent,
       margin: EdgeInsets.only(left: 20.0),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.rectangle,
       ),
+      child: cardContent,
     );
   }
 

@@ -9,7 +9,6 @@ class _InheritedStateContainer extends InheritedWidget {
   final StateContainerAppBarState data;
 
   const _InheritedStateContainer({
-    super.key,
     required this.data,
     required super.child,
   });

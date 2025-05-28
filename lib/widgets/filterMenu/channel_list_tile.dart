@@ -7,39 +7,38 @@ class ChannelListTile extends StatefulWidget {
 
   ChannelListTile(Channel product)
       : channel = product,
-        super(key: new ObjectKey(product));
+        super(key: ObjectKey(product));
 
   @override
   ChannelListTileState createState() {
-    return new ChannelListTileState(channel);
+    return ChannelListTileState();
   }
 }
 
 class ChannelListTileState extends State<ChannelListTile> {
-  final Channel channel;
+  Channel get channel => widget.channel;
 
-  ChannelListTileState(this.channel);
+  ChannelListTileState();
 
   @override
   Widget build(BuildContext context) {
-    return new ListTile(
+    return ListTile(
         onTap: () {
           setState(() {
             channel.isCheck = !channel.isCheck!;
           });
         },
-        leading: new CircleAvatar(
+        leading: CircleAvatar(
           backgroundColor: Colors.grey,
-          child: new Image(
-              image: new AssetImage("assets/img/" + channel.avatarImage)),
+          child: Image(image: AssetImage("assets/img/${channel.avatarImage}")),
         ),
-        title: new Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new Expanded(child: new Text(channel.name, style: body2TextStyle)),
-            new Checkbox(
+            Expanded(child: Text(channel.name, style: body2TextStyle)),
+            Checkbox(
                 value: channel.isCheck,
                 activeColor: Colors.grey[800],
                 onChanged: (bool? value) {

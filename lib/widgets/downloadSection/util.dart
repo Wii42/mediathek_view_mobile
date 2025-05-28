@@ -30,7 +30,7 @@ class Util {
             (entry) =>
                 channel.contains(entry.key.toUpperCase()) ||
                 entry.key.toUpperCase().contains(channel),
-            orElse: () => new MapEntry("", ""))
+            orElse: () => MapEntry("", ""))
         .value;
     return assetPath;
   }
@@ -41,16 +41,16 @@ class Util {
       double width,
       double headingFontSize,
       double metaFontSize) {
-    return new Padding(
+    return Padding(
       padding: EdgeInsets.only(right: 5.0, left: 2.0),
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        child: new Container(
+        child: Container(
           color: Colors.grey[100],
           width: width,
           child: Stack(
             children: <Widget>[
-              new VideoPreviewAdapter(
+              VideoPreviewAdapter(
                 Video.fromMap(playbackProgress.toMap()),
                 // always show previews for already watched videos
                 // should be already generated

@@ -106,7 +106,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
               return;
             }
             // request preview
-            requestPreview(context, appState, videoListState);
+            requestPreview(appState, videoListState);
           });
         }
 
@@ -132,18 +132,17 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     );
   }
 
-  void requestPreview(
-      BuildContext context, AppState appState, VideoListState videoListState) {
+  void requestPreview(AppState appState, VideoListState videoListState) {
     appState.databaseManager.getDownloadedVideo(widget.video.id).then((entity) {
       if (entity == null && !widget.previewNotDownloadedVideos) {
         return;
       }
       requestThumbnailPicture(
-          context, entity, widget.video, appState, videoListState);
+          entity, widget.video, appState, videoListState);
     });
   }
 
-  void requestThumbnailPicture(BuildContext context, VideoEntity? entity,
+  void requestThumbnailPicture( VideoEntity? entity,
       Video video, AppState appState, VideoListState videoListState) {
     String? url = VideoUtil.getVideoPath(appState, entity, video);
 
