@@ -109,6 +109,7 @@ class HomePageState extends State<MyHomePage>
   int _page = 0;
 
   //Tabs
+  late VideoSearchListSection videoSearchListSection;
   static DownloadSection? downloadSection;
   SettingsSection? aboutSection;
 
@@ -156,6 +157,9 @@ class HomePageState extends State<MyHomePage>
 
     setupCountly();
 
+    videoSearchListSection = VideoSearchListSection(
+        videoListKey: videoListKey, statusBarKey: statusBarKey);
+
     super.initState();
   }
 
@@ -184,18 +188,19 @@ class HomePageState extends State<MyHomePage>
       body: TabBarView(
         controller: _controller,
         children: <Widget>[
-          getVideoSearchListWidget(),
+          videoSearchListSection,
           downloadSection!,
           aboutSection ?? SettingsSection()
         ],
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-            // sets the background color of the `BottomNavigationBar`
+          // sets the background color of the `BottomNavigationBar`
             canvasColor: Colors.black,
             // sets the active color of the `BottomNavigationBar` if `Brightness` is light
             primaryColor: Colors.red,
-            textTheme: Theme.of(context)
+            textTheme: Theme
+                .of(context)
                 .textTheme
                 .copyWith(bodySmall: const TextStyle(color: Colors.yellow))),
         // sets the inactive color of the `BottomNavigationBar`
@@ -240,12 +245,6 @@ class HomePageState extends State<MyHomePage>
     );
   }
 
-  Widget getVideoSearchListWidget() {
-    logger.fine("Rendering Video Search list");
-    return VideoSearchListSection(
-        videoListKey: videoListKey, statusBarKey: statusBarKey);
-  }
-
   // Called when the user presses on of the BottomNavigationBarItems. Does not get triggered by a users swipe.
   void navigationTapped(int page) {
     logger.info("New Navigation Tapped: ---> Page $page");
@@ -275,7 +274,7 @@ class HomePageState extends State<MyHomePage>
               Countly.instance.views.startView("Downloads");
               break;
             case 2:
-              // do something else
+            // do something else
               Countly.instance.views.startView("Settings");
               break;
           }
@@ -309,7 +308,7 @@ class HomePageState extends State<MyHomePage>
     logger.info("setup countly -2");
 
     if (appWideState!.sharedPreferences
-            .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_API) &&
+        .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_API) &&
         appWideState!.sharedPreferences
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
       logger.info("setup countly -4");
@@ -348,7 +347,10 @@ class HomePageState extends State<MyHomePage>
       //key: keys[1],
       Image.network(
         "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
-        height: MediaQuery.of(context).size.height * 0.4,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height * 0.4,
         fit: BoxFit.contain,
       ),
       entryAnimation: EntryAnimation.topLeft,

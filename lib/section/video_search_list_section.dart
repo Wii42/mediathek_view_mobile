@@ -29,7 +29,7 @@ class VideoSearchListSection extends StatefulWidget {
 }
 
 class _VideoSearchListSectionState extends State<VideoSearchListSection>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final Logger logger = Logger('VideoSearchListSection');
 
   late APIQuery api;
@@ -60,6 +60,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: _handleListRefresh,
@@ -241,4 +242,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     HapticFeedback.mediumImpact();
     _createQueryWithClearedVideoList();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
