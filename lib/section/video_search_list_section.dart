@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ws/global_state/filter_menu_state.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import '../api/api_query.dart';
-import '../global_state/appbar_state_container.dart';
 import '../model/query_result.dart';
 import '../model/video.dart';
 import '../util/json_parser.dart';
@@ -36,16 +36,18 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
   TextEditingController searchFieldController = TextEditingController();
 
   List<Video> videos = [];
-  Map<String, SearchFilter> searchFilters = {};
 
   String currentUserQueryInput = "";
   int? totalQueryResults = 0;
   int lastAmountOfVideosRetrieved = -1;
   bool apiError = false;
   bool refreshOperationRunning = false;
-  bool? scrolledToEndOfList = false;
+  bool scrolledToEndOfList = false;
+  bool initialQueryNeeded = true;
 
   Completer<Null>? refreshCompleter;
+
+  Map<String, SearchFilter> get searchFilters => context.read<FilterMenuState>().searchFilters;
 
   @override
   void initState() {
@@ -53,9 +55,17 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     searchFieldController.addListener(inputListener);
 
     api = APIQuery(onDataReceived: onSearchResponse, onError: onAPISearchError);
-    api.search(currentUserQueryInput, searchFilters);
 
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(initialQueryNeeded){
+      api.search(currentUserQueryInput, searchFilters);
+      initialQueryNeeded = false;
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -69,19 +79,17 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
           child: CustomScrollView(
             slivers: <Widget>[
               SliverToBoxAdapter(
-                child: ChangeNotifierProvider<FilterMenuState>(
-                  create: (_) => FilterMenuState(),
-                  child: GradientAppBar(
-                      this,
-                      searchFieldController,
-                      FilterMenu(
-                        searchFilters: searchFilters,
-                        onFilterUpdated: _filterMenuUpdatedCallback,
-                        onSingleFilterTapped: _singleFilterTappedCallback,
-                        onChannelsSelected: () {},
-                      ),
-                      videos.length,
-                      totalQueryResults),
+                child: GradientAppBar(
+                  this,
+                  searchFieldController,
+                  FilterMenu(
+                    searchFilters: searchFilters,
+                    onFilterUpdated: _filterMenuUpdatedCallback,
+                    onSingleFilterTapped: _singleFilterTappedCallback,
+                    onChannelsSelected: () {},
+                  ),
+                  videos.length,
+                  totalQueryResults,
                 ),
               ),
               VideoListView(
@@ -205,6 +213,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
   void onQueryEntries() {
     api.search(currentUserQueryInput, searchFilters);
   }
+
 
   // ----------CALLBACKS: FILTER MENU----------------
 

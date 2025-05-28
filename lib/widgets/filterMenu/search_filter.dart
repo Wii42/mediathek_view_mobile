@@ -5,11 +5,11 @@ class SearchFilter extends StatelessWidget {
   final String filterId;
 
   //Der Wert nachdem gefiltert wird
-  String filterValue;
+  final String filterValue;
   final void Function(String) handleTabCallback;
   final String? displayText;
 
-  SearchFilter(
+  const SearchFilter(
       {super.key,
       required this.filterId,
       required this.filterValue,
@@ -54,5 +54,14 @@ class SearchFilter extends StatelessWidget {
             ),
           ),
         ));
+  }
+
+  SearchFilter copyWith(String newFilterValue){
+    return SearchFilter(
+      filterId: filterId,
+      filterValue: newFilterValue,
+      handleTabCallback: handleTabCallback,
+      displayText: displayText,
+    );
   }
 }

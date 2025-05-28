@@ -3,18 +3,18 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 
 class VideoLengthSlider extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
-  final SearchFilter searchFilter;
+  final SearchFilter initialSearchFilter;
   late final double initialStart;
   late final double initialEnd;
 
   static const double MAXIMUM_FILTER_LENGTH = 60;
 
-  VideoLengthSlider(this.onFilterUpdated, this.searchFilter, {super.key}) {
-    if (searchFilter.filterValue.isEmpty) {
+  VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter, {super.key}) {
+    if (initialSearchFilter.filterValue.isEmpty) {
       initialStart = 0.0;
       initialEnd = MAXIMUM_FILTER_LENGTH;
     } else {
-      List<String> split = searchFilter.filterValue.split("-");
+      List<String> split = initialSearchFilter.filterValue.split("-");
       initialStart = double.parse(split.elementAt(0));
       initialEnd = double.parse(split.elementAt(1));
     }
@@ -27,9 +27,16 @@ class VideoLengthSlider extends StatefulWidget {
 
 class _RangeSliderState extends State<VideoLengthSlider> {
   late RangeValues _values;
+  late SearchFilter searchFilter;
 
   _RangeSliderState(RangeValues rangeValues) {
     _values = rangeValues;
+  }
+
+  @override
+  void initState() {
+    searchFilter = widget.initialSearchFilter;
+    super.initState();
   }
 
   @override
@@ -52,8 +59,8 @@ class _RangeSliderState extends State<VideoLengthSlider> {
       min: 0.0,
       divisions: 10,
       onChangeEnd: (values) {
-        widget.searchFilter.filterValue = "${_values.start.round()}-${_values.end.round()}";
-        widget.onFilterUpdated(widget.searchFilter);
+        searchFilter = searchFilter.copyWith("${_values.start.round()}-${_values.end.round()}");
+        widget.onFilterUpdated(searchFilter);
       },
     );
   }

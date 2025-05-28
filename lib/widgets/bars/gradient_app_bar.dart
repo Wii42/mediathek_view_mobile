@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/appbar_state_container.dart';
+import 'package:flutter_ws/global_state/filter_menu_state.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/filterMenu/filter_menu.dart';
