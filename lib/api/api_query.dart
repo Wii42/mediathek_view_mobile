@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
@@ -14,9 +11,7 @@ class APIQuery {
 
   static int skip = 0;
   static const int defaultQueryAmount = 60;
-
-  static Timer? continoousPingTimer;
-  ConnectionState connectionState = ConnectionState.none;
+  Uri requestUri = Uri.parse('https://mediathekviewweb.de/api/query');
 
   APIQuery({required this.onDataReceived, required this.onError});
 
@@ -71,13 +66,13 @@ class APIQuery {
   void execute(String query) {
     http
         .post(
-          Uri.parse('https://mediathekviewweb.de/api/query'),
+          requestUri,
           body: query,
         )
         .catchError((err) => onError(err))
         .then((value) {
       //logger.info("Response: " + value.body);
-      onDataReceived(value.body.toString());
+      onDataReceived(value.body);
         });
   }
 }
