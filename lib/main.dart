@@ -316,7 +316,8 @@ class HomePageState extends State<MyHomePage>
           child: CustomScrollView(
             slivers: <Widget>[
               SliverToBoxAdapter(
-                child: FilterBarSharedState(
+                child: ChangeNotifierProvider<FilterMenuState>(
+                  create: (_)=> FilterMenuState(),
                   child: GradientAppBar(
                       this,
                       searchFieldController,
@@ -326,7 +327,6 @@ class HomePageState extends State<MyHomePage>
                         onSingleFilterTapped: _singleFilterTappedCallback,
                         onChannelsSelected: () {},
                       ),
-                      false,
                       videos!.length,
                       totalQueryResults),
                 ),

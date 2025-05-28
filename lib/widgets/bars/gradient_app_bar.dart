@@ -5,11 +5,11 @@ import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/filterMenu/filter_menu.dart';
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 
 class GradientAppBar extends StatelessWidget {
   final Logger logger = Logger('GradientAppBar');
   final TextEditingController? controller;
-  final bool isFilterMenuOpen;
   final int currentAmountOfVideosInList;
   final int? totalAmountOfVideosForSelection;
   final FilterMenu filterMenu;
@@ -19,7 +19,6 @@ class GradientAppBar extends StatelessWidget {
       this.mixin,
       this.controller,
       this.filterMenu,
-      this.isFilterMenuOpen,
       this.currentAmountOfVideosInList,
       this.totalAmountOfVideosForSelection,
       {super.key});
@@ -31,9 +30,7 @@ class GradientAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     logger.fine("Rendering App Bar");
 
-    StateContainerAppBarState state = FilterBarSharedState.of(context);
-
-    bool isFilterMenuOpen = getFilterMenuState(context);
+    FilterMenuState state = Provider.of<FilterMenuState>(context);
 
     return Container(
       padding: const EdgeInsets.only(left: 16.0, right: 32.0),
@@ -76,11 +73,11 @@ class GradientAppBar extends StatelessWidget {
                             )),
                         labelStyle: hintTextStyle.copyWith(color: Colors.white),
                         icon: IconButton(
-                          color: isFilterMenuOpen ? Colors.red : Colors.black,
+                          color: state.isFilterMenuOpen ? Colors.red : Colors.black,
                           icon: Icon(Icons.search),
                           iconSize: 30.0,
                           onPressed: () {
-                            state.updateAppBarState();
+                            state.toggleFilterMenu();
                           },
                         ),
                         isDense: true,
@@ -126,7 +123,7 @@ class GradientAppBar extends StatelessWidget {
           AnimatedSize(
             duration: Duration(milliseconds: 300),
             //vsync: mixin,
-            child: isFilterMenuOpen
+            child: state.isFilterMenuOpen
                 ? Padding(
                     padding: EdgeInsets.only(bottom: 10.0, top: 10.0),
                     child: filterMenu,
@@ -136,11 +133,5 @@ class GradientAppBar extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  bool getFilterMenuState(BuildContext context) {
-    StateContainerAppBarState state = FilterBarSharedState.of(context);
-    FilterMenuState? videoListState = state.filterMenuState;
-    return videoListState != null && videoListState.isFilterMenuOpen;
   }
 }
