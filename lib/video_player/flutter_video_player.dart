@@ -137,8 +137,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
         Uri.parse(videoUrl!),
       );
 
-      Map<String, Object> event = {"key": "PLAY_VIDEO_NETWORK", "count": 1};
-      Countly.recordEvent(event);
+      Countly.instance.events.recordEvent("PLAY_VIDEO_NETWORK", null, 1);
 
       return;
     }
@@ -168,8 +167,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       },
     );
 
-    Map<String, Object> event = {"key": "PLAY_VIDEO_DOWNLOADED", "count": 1};
-    Countly.recordEvent(event);
+    Countly.instance.events.recordEvent("PLAY_VIDEO_DOWNLOADED", null, 1);
 
     videoController = VideoPlayerController.file(file);
   }

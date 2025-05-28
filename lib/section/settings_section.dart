@@ -162,8 +162,10 @@ class _SettingsStateState extends State<SettingsState> {
                         String? countlyAPI =
                         appWideState.sharedPreferences.getString(
                             HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API);
-                        return CountlyUtil.initializeCountly(
-                            widget.logger, countlyAPI, countlyAppKey, value);
+                        if (countlyAppKey != null && countlyAPI != null) {
+                          return CountlyUtil.initializeCountly(
+                              widget.logger, countlyAPI, countlyAppKey, value);
+                        }
                       }
                       CountlyUtil.loadCountlyInformationFromGithub(
                           widget.logger, appWideState, value);

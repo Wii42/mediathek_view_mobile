@@ -172,7 +172,7 @@ class DownloadSectionState extends State<DownloadSection> {
             settings: RouteSettings(name: "WatchHistory"),
             fullscreenDialog: true));
 
-        Countly.recordView("WatchHistory");
+        Countly.instance.views.startView("WatchHistory");
       },
     );
 

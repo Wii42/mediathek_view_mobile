@@ -17,8 +17,7 @@ class CountlyUtil {
       return;
     }
 
-    var responseList =
-        LineSplitter().convert(utf8.decode(response.bodyBytes));
+    var responseList = LineSplitter().convert(utf8.decode(response.bodyBytes));
     // in this simple format it is assumed that the countly API is on line 1,
     // the APP_KEY on line 2 and the tampering salt und line 3
     String countlyAPI = responseList.elementAt(0);
@@ -36,33 +35,33 @@ class CountlyUtil {
     initializeCountly(logger, countlyAPI, countlyAppKey, consentGiven);
   }
 
-  static void initializeCountly(Logger logger, String? countlyAPI,
-      String? countlyAppKey, bool consentGiven) {
-    Countly.isInitialized().then((bool isInitialized) {
-      Countly.setLoggingEnabled(true);
-      Countly.enableCrashReporting();
-      Countly.setRequiresConsent(true);
+  static void initializeCountly(Logger logger, String countlyAPI,
+      String countlyAppKey, bool consentGiven) async {
+    bool isInitialized = await Countly.isInitialized();
+    CountlyConfig countlyConfig = CountlyConfig(countlyAPI, countlyAppKey);
+    countlyConfig.setLoggingEnabled(true);
+    countlyConfig.enableCrashReporting();
+    countlyConfig.setRequiresConsent(true);
 
-      if (isInitialized && consentGiven && countlySessionStarted) {
-        logger.info("Countly already running");
-        return;
-      } else if (isInitialized && consentGiven) {
-        startCountly(logger);
-        return;
-      } else if (isInitialized && !consentGiven) {
+    if (isInitialized && consentGiven && countlySessionStarted) {
+      logger.info("Countly already running");
+      return;
+    } else if (isInitialized && consentGiven) {
+      startCountly(logger);
+      return;
+    } else if (isInitialized && !consentGiven) {
+      countlyRejected(logger);
+      return;
+    }
+
+    // Countly.enableParameterTamperingProtection(countlyTamperingProtection);
+    // Features which is required before init should be call here
+    Countly.initWithConfig(countlyConfig).then((value) {
+      if (!consentGiven) {
         countlyRejected(logger);
         return;
       }
-
-      // Countly.enableParameterTamperingProtection(countlyTamperingProtection);
-      // Features which is required before init should be call here
-      Countly.init(countlyAPI!, countlyAppKey!).then((value) {
-        if (!consentGiven) {
-          countlyRejected(logger);
-          return;
-        }
-        startCountly(logger);
-      });
+      startCountly(logger);
     });
   }
 
@@ -76,8 +75,7 @@ class CountlyUtil {
 
   static void countlyRejected(Logger logger) {
     Countly.giveConsent(["events"]);
-    Map<String, Object> event = {"key": "REPORTING_TURNED_OFF", "count": 1};
-    Countly.recordEvent(event).then((value) {
+    Countly.instance.events.recordEvent("REPORTING_TURNED_OFF", null, 1).then((value) {
       Countly.removeAllConsent();
       Countly.clearAllTraces();
       Countly.stop();

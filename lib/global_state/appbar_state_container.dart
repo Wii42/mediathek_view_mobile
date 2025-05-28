@@ -23,10 +23,10 @@ class FilterBarSharedState extends StatefulWidget {
   final Widget child;
   final FilterMenuState? videoListState;
 
-  const FilterBarSharedState({Key? key,
+  const FilterBarSharedState({super.key,
     required this.child,
     this.videoListState,
-  }) : super(key: key);
+  });
 
   static StateContainerAppBarState of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_InheritedStateContainer>()!

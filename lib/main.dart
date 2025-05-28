@@ -380,14 +380,14 @@ class HomePageState extends State<MyHomePage>
         if (initialized) {
           switch (_controller!.index) {
             case 0:
-              Countly.recordView("Mediathek");
+              Countly.instance.views.startView("Mediathek");
               break;
             case 1:
-              Countly.recordView("Downloads");
+              Countly.instance.views.startView("Downloads");
               break;
             case 2:
               // do something else
-              Countly.recordView("Settings");
+              Countly.instance.views.startView("Settings");
               break;
           }
         }
@@ -575,9 +575,10 @@ class HomePageState extends State<MyHomePage>
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_API);
       String? countlyAppKey = appWideState!.sharedPreferences
           .getString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
-
-      logger.info("Loaded Countly data from shared preferences");
-      CountlyUtil.initializeCountly(logger, countlyAPI, countlyAppKey, true);
+      if (countlyAPI != null && countlyAppKey != null) {
+        logger.info("Loaded Countly data from shared preferences");
+        CountlyUtil.initializeCountly(logger, countlyAPI, countlyAppKey, true);
+      }
       return;
     }
 

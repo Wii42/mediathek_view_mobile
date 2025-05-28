@@ -145,8 +145,7 @@ class DownloadManager {
   }
 
   void handleCompletedDownload(String? taskId, VideoEntity entity) {
-    Map<String, Object> event = {"key": "DOWNLOAD_COMPLETED", "count": 1};
-    Countly.recordEvent(event);
+    Countly.instance.events.recordEvent("DOWNLOAD_COMPLETED", null, 1);
 
     FlutterDownloader.loadTasksWithRawQuery(
             query: "$SQL_GET_SINGEL_TASK'$taskId'")
@@ -190,8 +189,7 @@ class DownloadManager {
   void handleFailedDownload(VideoEntity entity) {
     _deleteVideo(entity);
 
-    Map<String, Object> event = {"key": "DOWNLOAD_FAILED", "count": 1};
-    Countly.recordEvent(event);
+    Countly.instance.events.recordEvent("DOWNLOAD_FAILED", null, 1);
 
     //notify listeners
     Iterable<MapEntry<int?, OnCanceled>> entries = onFailedListeners[entity.id];
@@ -232,11 +230,7 @@ class DownloadManager {
           downloadFile(rememberedFailedVideoDownload);
         } else {
           logger.info("Filesystem Permission denied by User");
-          Map<String, Object> event = {
-            "key": "FILESYSTEM_PERMISSION_DENIED",
-            "count": 1
-          };
-          Countly.recordEvent(event);
+          Countly.instance.events.recordEvent("FILESYSTEM_PERMISSION_DENIED", null, 1);
         }
       },
       onError: (e) {
@@ -377,8 +371,7 @@ class DownloadManager {
   // Remove from task schema and cancel download if running
   Future _cancelDownload(String taskId) {
     logger.fine("Deleting Task with id $taskId");
-    Map<String, Object> event = {"key": "CANCEL_DOWNLOAD", "count": 1};
-    Countly.recordEvent(event);
+    Countly.instance.events.recordEvent("CANCEL_DOWNLOAD", null, 1);
 
     return FlutterDownloader.cancel(taskId: taskId).then((_) =>
         FlutterDownloader.remove(taskId: taskId, shouldDeleteContent: false));
@@ -531,8 +524,7 @@ class DownloadManager {
 
     DatabaseManager databaseManager = appState.databaseManager;
 
-    Map<String, Object> event = {"key": "DOWNLOAD_VIDEO", "count": 1};
-    Countly.recordEvent(event);
+    Countly.instance.events.recordEvent("DOWNLOAD_VIDEO", null, 1);
 
     /*
     First check if there is already a VideoEntity.

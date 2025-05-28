@@ -158,8 +158,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
             tvPlayerController!.video;
         SnackbarActions.showSuccess(scaffoldMessenger, "Verbunden");
 
-        Map<String, Object> event = {"key": "PLAY_VIDEO_ON_TV", "count": 1};
-        Countly.recordEvent(event);
+        Countly.instance.events.recordEvent("PLAY_VIDEO_ON_TV", null, 1);
 
         // show controls for a short time and then hide
         _cancelAndRestartTimer();
@@ -192,11 +191,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         appWideState?.isCurrentlyPlayingOnTV = false;
         SnackbarActions.showError(scaffoldMessenger, "Verbindung nicht möglich.");
 
-        Map<String, Object> event = {
-          "key": "PLAY_VIDEO_ON_TV_FAILED",
-          "count": 1
-        };
-        Countly.recordEvent(event);
+        Countly.instance.events.recordEvent("PLAY_VIDEO_ON_TV_FAILED", null, 1);
       }
 
       if (_latestTvPlayerValue!.isCurrentlyCheckingTV) {
