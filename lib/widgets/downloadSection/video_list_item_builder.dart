@@ -67,7 +67,8 @@ class VideoListItemBuilder {
       deleteButton = Positioned(
         top: 12.0,
         left: 5.0,
-        child: getRemoveButton(index, context, video.id, filesize(video.size)),
+        child: getRemoveButton(index, context, video.id,
+            video.size != null ? filesize(video.size) : null),
       );
     }
 
@@ -101,7 +102,7 @@ class VideoListItemBuilder {
   }
 
   ActionChip getRemoveButton(
-      int index, BuildContext context, String? id, String filesize) {
+      int index, BuildContext context, String? id, String? filesize) {
     return ActionChip(
       avatar: Icon(Icons.delete_forever, color: Colors.white),
       label: Text(
@@ -121,23 +122,23 @@ class VideoListItemBuilder {
       padding: EdgeInsets.all(10),
     );
 
-    Center(
-      child: FloatingActionButton(
-        heroTag: null, // explicitly set to null
-        mini: true,
-        onPressed: () {
-          if (showDeleteButton) {
-            onRemoveVideo?.call(context, id);
-          }
-        },
-        backgroundColor: Colors.red[800],
-        highlightElevation: 10.0,
-        isExtended: true,
-        foregroundColor: Colors.black,
-        elevation: 7.0,
-        tooltip: "Delete",
-        child: Icon(Icons.delete_forever, color: Colors.white),
-      ),
-    );
+    //Center(
+    //  child: FloatingActionButton(
+    //    heroTag: null, // explicitly set to null
+    //    mini: true,
+    //    onPressed: () {
+    //      if (showDeleteButton) {
+    //        onRemoveVideo?.call(context, id);
+    //      }
+    //    },
+    //    backgroundColor: Colors.red[800],
+    //    highlightElevation: 10.0,
+    //    isExtended: true,
+    //    foregroundColor: Colors.black,
+    //    elevation: 7.0,
+    //    tooltip: "Delete",
+    //    child: Icon(Icons.delete_forever, color: Colors.white),
+    //  ),
+    //);
   }
 }
