@@ -224,7 +224,6 @@ class CustomChewieController extends ChangeNotifier {
 
 class _ChewieControllerProvider extends InheritedWidget {
   const _ChewieControllerProvider({
-    super.key,
     required this.controller,
     required super.child,
   });

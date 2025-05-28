@@ -77,7 +77,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     super.dispose();
   }
 
-  String? getVideoUrl(Video video, VideoEntity? entity) {
+  String? getVideoUrl(Video? video, VideoEntity? entity) {
     if (video != null) {
       if (video.url_video_hd != null && video.url_video_hd!.isNotEmpty) {
         return video.url_video_hd;

@@ -6,10 +6,10 @@ import 'package:flutter_ws/widgets/videolist/video_preview_adapter.dart';
 import 'package:logging/logging.dart';
 
 class VideoListItemBuilder {
-  final Logger logger = new Logger('VideoListView');
+  final Logger logger = Logger('VideoListView');
 
   // called when the user pressed on the remove button
-  var onRemoveVideo;
+  void Function(BuildContext, String?)? onRemoveVideo;
 
   List<Video>? videos = [];
 
@@ -17,7 +17,7 @@ class VideoListItemBuilder {
   bool showDeleteButton;
   bool openDetailPage;
 
-  var queryEntries;
+  void Function()? queryEntries;
 
   // for mean video list
   int? amountOfVideosFetched;
@@ -37,7 +37,7 @@ class VideoListItemBuilder {
     // only required for the main video list to request more entries when reaching end of list
     if (queryEntries != null) {
       if (index + pageThreshold > videos!.length) {
-        queryEntries();
+        queryEntries?.call();
       }
 
       if (currentQuerySkip! + pageThreshold >= totalResultSize! &&
@@ -45,11 +45,11 @@ class VideoListItemBuilder {
         logger.info("ResultList - reached last position of result list.");
       } else if (videos!.length == index + 1) {
         logger.info("Reached last position in list for query");
-        return new Container(
+        return Container(
             alignment: Alignment.center,
             width: 20.0,
-            child: new CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 strokeWidth: 3.0));
       }
     }
@@ -60,28 +60,28 @@ class VideoListItemBuilder {
       return video.channel != null &&
               video.channel!.toUpperCase().contains(entry.key.toUpperCase()) ||
           entry.key.toUpperCase().contains(video.channel!.toUpperCase());
-    }, orElse: () => new MapEntry("", "")).value;
+    }, orElse: () => MapEntry("", "")).value;
 
-    Widget deleteButton = new Container();
+    Widget deleteButton = Container();
     if (showDeleteButton) {
-      deleteButton = new Positioned(
+      deleteButton = Positioned(
         top: 12.0,
         left: 5.0,
         child: getRemoveButton(index, context, video.id, filesize(video.size)),
       );
     }
 
-    Widget listRow = new Container(
-      padding: new EdgeInsets.symmetric(horizontal: 3.0),
+    Widget listRow = Container(
+      padding: EdgeInsets.symmetric(horizontal: 3.0),
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          child: new Stack(
+          child: Stack(
             children: <Widget>[
-              new Positioned(
-                child: new Container(
+              Positioned(
+                child: Container(
                     color: Colors.white,
-                    child: new VideoPreviewAdapter(
+                    child: VideoPreviewAdapter(
                       video,
                       previewNotDownloadedVideos,
                       true,
@@ -102,9 +102,9 @@ class VideoListItemBuilder {
 
   ActionChip getRemoveButton(
       int index, BuildContext context, String? id, String filesize) {
-    return new ActionChip(
-      avatar: new Icon(Icons.delete_forever, color: Colors.white),
-      label: new Text(
+    return ActionChip(
+      avatar: Icon(Icons.delete_forever, color: Colors.white),
+      label: Text(
         filesize != null && filesize.length > 0
             ? "Löschen (" + filesize + ")"
             : "Löschen",
@@ -113,7 +113,7 @@ class VideoListItemBuilder {
       labelStyle: TextStyle(color: Colors.white),
       onPressed: () {
         if (showDeleteButton) {
-          onRemoveVideo(context, id);
+          onRemoveVideo?.call(context, id);
         }
       },
       backgroundColor: Colors.green,
@@ -121,13 +121,13 @@ class VideoListItemBuilder {
       padding: EdgeInsets.all(10),
     );
 
-    new Center(
-      child: new FloatingActionButton(
+    Center(
+      child: FloatingActionButton(
         heroTag: null, // explicitly set to null
         mini: true,
         onPressed: () {
           if (showDeleteButton) {
-            onRemoveVideo(context, id);
+            onRemoveVideo?.call(context, id);
           }
         },
         backgroundColor: Colors.red[800],
@@ -136,7 +136,7 @@ class VideoListItemBuilder {
         foregroundColor: Colors.black,
         elevation: 7.0,
         tooltip: "Delete",
-        child: new Icon(Icons.delete_forever, color: Colors.white),
+        child: Icon(Icons.delete_forever, color: Colors.white),
       ),
     );
   }

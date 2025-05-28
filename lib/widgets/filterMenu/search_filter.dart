@@ -1,52 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 class SearchFilter extends StatelessWidget {
   //E.g Thema/Titel
-  String filterId;
+  final String filterId;
 
   //Der Wert nachdem gefiltert wird
   String filterValue;
-  var handleTabCallback;
-  String? displayText;
+  final void Function(String) handleTabCallback;
+  final String? displayText;
 
   SearchFilter(
-      {Key? key,
+      {super.key,
       required this.filterId,
       required this.filterValue,
       required this.handleTabCallback,
-      this.displayText})
-      : super(key: key);
+      this.displayText});
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
-        padding: new EdgeInsets.only(left: 10.0, top: 2.0),
-        child: new GestureDetector(
+    return Padding(
+        padding: EdgeInsets.only(left: 10.0, top: 2.0),
+        child: GestureDetector(
           onTap: () {
             handleTabCallback(filterId);
           },
-          child: new Container(
+          child: Container(
             height: 25.0,
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.black,
               shape: BoxShape.rectangle,
-              borderRadius: new BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             padding: const EdgeInsets.only(right: 5.0, left: 5.0),
-            child: new Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new Padding(
-                  padding: new EdgeInsets.only(right: 5.0),
-                  child: new Icon(Icons.clear, size: 22.0, color: Colors.red),
+                Padding(
+                  padding: EdgeInsets.only(right: 5.0),
+                  child: Icon(Icons.clear, size: 22.0, color: Colors.red),
                 ),
-                new Text(
+                Text(
                     displayText == null || displayText!.isEmpty
                         ? filterId
                         : displayText!,
-                    style: new TextStyle(
+                    style: TextStyle(
                         fontSize: 12.0,
                         color: Colors.white,
                         fontWeight: FontWeight.w700),

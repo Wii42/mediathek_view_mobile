@@ -683,8 +683,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   Widget _buildRemaining(Color iconColor) {
-    final position = _latestFlutterPlayerValue != null &&
-            _latestFlutterPlayerValue!.duration != null
+    final position = _latestFlutterPlayerValue != null
         ? _latestFlutterPlayerValue!.duration -
             _latestFlutterPlayerValue!.position
         : Duration(seconds: 0);

@@ -1,4 +1,3 @@
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -19,15 +18,15 @@ import 'download/DownloadValue.dart';
 const ERROR_MSG = "Löschen fehlgeschlagen";
 
 class DownloadSwitch extends StatefulWidget {
-  final Logger logger = new Logger('DownloadSwitch');
+  final Logger logger = Logger('DownloadSwitch');
 
   final Video video;
   final bool? isTablet;
   final DownloadManager downloadManager;
 
-  bool isDownloadedAlready;
-  bool isCurrentlyDownloading;
-  String filesize;
+  final bool isDownloadedAlready;
+  final bool isCurrentlyDownloading;
+  final String? filesize;
 
   DownloadSwitch(
       this.video,
@@ -35,11 +34,11 @@ class DownloadSwitch extends StatefulWidget {
       this.isDownloadedAlready,
       this.downloadManager,
       this.filesize,
-      this.isTablet);
+      this.isTablet, {super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return new DownloadSwitchState(new Uuid());
+  State<DownloadSwitch> createState() {
+    return DownloadSwitchState(Uuid());
   }
 }
 
@@ -49,6 +48,9 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   late bool isLivestreamVideo;
   DownloadValue? _latestDownloadValue;
   DownloadController? downloadController;
+
+  late bool isDownloadedAlready;
+  late bool isCurrentlyDownloading;
 
   DownloadSwitchState(this.uuid);
 
@@ -64,6 +66,8 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   @override
   void initState() {
+    isDownloadedAlready = widget.isDownloadedAlready;
+    isCurrentlyDownloading = widget.isCurrentlyDownloading;
     isLivestreamVideo = VideoUtil.isLivestreamVideo(widget.video);
     subscribeToDownloadUpdates(
         widget.video.id, widget.video.title, widget.downloadManager);
@@ -73,7 +77,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   void subscribeToDownloadUpdates(
       String? videoId, String? videoTitle, DownloadManager downloadManager) {
     downloadController =
-        new DownloadController(videoId, videoTitle, downloadManager);
+        DownloadController(videoId, videoTitle, downloadManager);
     _latestDownloadValue = downloadController!.value;
     downloadController!.addListener(updateDownloadState);
     downloadController!.initialize();
@@ -91,12 +95,12 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    Widget download = new Container();
+    Widget download = Container();
     if (!isLivestreamVideo) {
       ActionChip downloadChip = ActionChip(
         avatar: getAvatar(),
-        label: new Text(
-          getVideoDownloadText(widget.isDownloadedAlready),
+        label: Text(
+          getVideoDownloadText(isDownloadedAlready),
           style: TextStyle(fontSize: 20.0),
         ),
         labelStyle: TextStyle(color: Colors.white),
@@ -109,8 +113,8 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
       if (isDownloading()) {
         ActionChip cancleDownloadChip = ActionChip(
-          avatar: new Icon(Icons.cancel, color: Colors.white),
-          label: new Text(
+          avatar: Icon(Icons.cancel, color: Colors.white),
+          label: Text(
             "Cancel",
             style: TextStyle(fontSize: 20.0),
           ),
@@ -119,29 +123,27 @@ class DownloadSwitchState extends State<DownloadSwitch> {
           backgroundColor: Colors.red,
           elevation: 20,
         );
-        download = new Row(
+        download = Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               cancleDownloadChip,
-              new Container(width: 25),
+              Container(width: 25),
               downloadChip,
             ]);
       }
     }
 
-    return new Row(
-      key: new Key(uuid.v1()),
+    return Row(
+      key: Key(uuid.v1()),
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        new Container(
-          key: new Key(uuid.v1()),
+        Container(
+          key: Key(uuid.v1()),
           //padding: new EdgeInsets.only(left: 40.0, right: 12.0),
           child: download,
         ),
-        downloadFailed()
-            ? new Icon(Icons.warning, color: Colors.red)
-            : new Container(),
+        downloadFailed() ? Icon(Icons.warning, color: Colors.red) : Container(),
       ],
     );
   }
@@ -152,13 +154,13 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     }
 
     if (_latestDownloadValue!.status == DownloadTaskStatus.complete ||
-        widget.isDownloadedAlready) {
+        isDownloadedAlready) {
       deleteVideo();
       return;
     }
 
     widget.logger
-        .info("Triggering download for video with id " + widget.video.id!);
+        .info("Triggering download for video with id ${widget.video.id!}");
     downloadVideo();
   }
 
@@ -167,7 +169,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
       return false;
     }
 
-    return _latestDownloadValue!.status != null &&
+    return _latestDownloadValue?.status != null &&
         _latestDownloadValue!.status == DownloadTaskStatus.failed;
   }
 
@@ -186,50 +188,51 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     }
 
     if (isAlreadyDownloaded ||
-        _latestDownloadValue!.status == DownloadTaskStatus.complete)
-      return widget.filesize != null && widget.filesize.length > 0
-          ? "Löschen (" + widget.filesize + ")"
+        _latestDownloadValue!.status == DownloadTaskStatus.complete) {
+      return widget.filesize != null && widget.filesize!.length > 0
+          ? "Löschen (${widget.filesize})"
           : "Löschen";
-    else if (_latestDownloadValue!.status == DownloadTaskStatus.running &&
+    } else if (_latestDownloadValue!.status == DownloadTaskStatus.running &&
         _latestDownloadValue!.progress.toInt() == -1)
       return "";
     else if (_latestDownloadValue!.status == DownloadTaskStatus.running)
-      return "" + _latestDownloadValue!.progress.toInt().toString() + "%";
+      return "${_latestDownloadValue!.progress.toInt()}%";
     else if (_latestDownloadValue!.status == DownloadTaskStatus.paused)
-      return "" + _latestDownloadValue!.progress.toInt().toString() + "%";
+      return "${_latestDownloadValue!.progress.toInt()}%";
     else if (_latestDownloadValue!.status == DownloadTaskStatus.enqueued)
       return "Waiting...";
     else if (_latestDownloadValue!.status == DownloadTaskStatus.failed)
       return "Download failed";
     else if (_latestDownloadValue!.status == DownloadTaskStatus.undefined ||
-        _latestDownloadValue!.status == DownloadTaskStatus.canceled)
-      return widget.filesize != null && widget.filesize.length > 0
-          ? "Download (" + widget.filesize + ")"
+        _latestDownloadValue!.status == DownloadTaskStatus.canceled) {
+      return widget.filesize != null && widget.filesize!.isNotEmpty
+          ? "Download (${widget.filesize})"
           : "Download";
+    }
     return "Unknown status";
   }
 
   Color getChipBackgroundColor() {
-    if (widget.isDownloadedAlready) {
+    if (isDownloadedAlready) {
       return Colors.green;
     } else if (_latestDownloadValue!.status == DownloadTaskStatus.complete) {
       return Colors.green;
     } else {
-      return new Color(0xffffbf00);
+      return Color(0xffffbf00);
     }
   }
 
   Widget getAvatar() {
-    if (permissionDenied != null && permissionDenied == true) {
-      return new Icon(Icons.error, color: Colors.red);
+    if (permissionDenied == true) {
+      return Icon(Icons.error, color: Colors.red);
     } else if (isDownloading()) {
       return CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white));
-    } else if (widget.isDownloadedAlready ||
+    } else if (isDownloadedAlready ||
         _latestDownloadValue!.status == DownloadTaskStatus.complete) {
-      return new Icon(Icons.cancel, color: Colors.red);
+      return Icon(Icons.cancel, color: Colors.red);
     } else {
-      return new Icon(Icons.file_download, color: Colors.green);
+      return Icon(Icons.file_download, color: Colors.green);
     }
   }
 
@@ -264,8 +267,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     // if user grants permission, start downloading right away
     if (appState.hasFilesystemPermission) {
       appState.downloadManager
-          .checkAndRequestFilesystemPermissions(
-              appState, widget.video);
+          .checkAndRequestFilesystemPermissions(appState, widget.video);
       return;
     }
 
@@ -273,10 +275,8 @@ class DownloadSwitchState extends State<DownloadSwitch> {
         .downloadFile(widget.video)
         .then((video) => widget.logger.info("Downloaded request successfull"),
             onError: (e) {
-      widget.logger.severe("Error starting download: " +
-          widget.video.title! +
-          ". Error:  " +
-          e.toString());
+      widget.logger.severe(
+          "Error starting download: ${widget.video.title!}. Error:  $e");
     });
   }
 
@@ -286,13 +286,13 @@ class DownloadSwitchState extends State<DownloadSwitch> {
         .then((bool deletedSuccessfully) {
       if (!deletedSuccessfully) {
         widget.logger
-            .severe("Failed to delete video with title " + widget.video.title!);
+            .severe("Failed to delete video with title ${widget.video.title!}");
       }
 
       downloadController!.value = downloadController!.value
           .copyWith(status: DownloadTaskStatus.undefined, progress: null);
-      widget.isDownloadedAlready = false;
-      widget.isCurrentlyDownloading = false;
+      isDownloadedAlready = false;
+      isCurrentlyDownloading = false;
     });
   }
 
@@ -303,7 +303,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
       if (status != null) {
         if (mounted) {
           setState(() {
-            _latestDownloadValue = new DownloadValue(
+            _latestDownloadValue = DownloadValue(
                 videoId: widget.video.id, progress: -1, status: status.status);
           });
         }
@@ -312,7 +312,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
       if (mounted) {
         setState(() {
-          _latestDownloadValue = new DownloadValue(
+          _latestDownloadValue = DownloadValue(
               videoId: widget.video.id,
               progress: -1,
               status: DownloadTaskStatus.undefined);

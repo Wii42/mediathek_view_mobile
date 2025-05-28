@@ -7,25 +7,25 @@ import 'channel_thumbnail.dart';
 class MetaInfoListTile {
   static ListTile getVideoMetaInformationListTile(
       BuildContext context,
-      String duration,
+      String? duration,
       String title,
       int? timestamp,
       String assetPath,
       bool isDownloaded) {
-    return new ListTile(
-      trailing: new Text(
+    return ListTile(
+      trailing: Text(
         duration != null ? Calculator.calculateDuration(duration) : "",
         style: videoMetadataTextStyle.copyWith(color: Colors.white),
       ),
       leading: assetPath.isNotEmpty
-          ? new ChannelThumbnail(assetPath, isDownloaded)
-          : new Container(),
-      title: new Text(
+          ? ChannelThumbnail(assetPath, isDownloaded)
+          : Container(),
+      title: Text(
         title,
         style:
             Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
       ),
-      subtitle: new Text(
+      subtitle: Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
         style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
       ),

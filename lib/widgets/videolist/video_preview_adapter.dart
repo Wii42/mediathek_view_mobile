@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/database_manager.dart';
 import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
@@ -14,16 +13,15 @@ class VideoPreviewAdapter extends StatefulWidget {
   final Logger logger = Logger('VideoPreviewAdapter');
   final Video video;
   final String? defaultImageAssetPath;
-  bool previewNotDownloadedVideos;
-  bool isVisible;
-  bool openDetailPage;
+  final bool previewNotDownloadedVideos;
+  final bool isVisible;
+  final bool openDetailPage;
 
   // if width not set, set to full width
-  Size? size;
+  final Size? size;
 
   // force to this specific aspect ratio
-  double? presetAspectRatio;
-  Image? previewImage;
+  final double? presetAspectRatio;
 
   VideoPreviewAdapter(
     // always hand over video. Download section needs to convert to video.
@@ -31,7 +29,7 @@ class VideoPreviewAdapter extends StatefulWidget {
     this.video,
     this.previewNotDownloadedVideos,
     this.isVisible,
-    this.openDetailPage, {
+    this.openDetailPage, {super.key,
     this.defaultImageAssetPath,
     this.size,
     this.presetAspectRatio,
@@ -45,6 +43,14 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
   VideoEntity? videoEntity;
   VideoProgressEntity? videoProgressEntity;
   bool isCurrentlyDownloading = false;
+  Image? previewImage;
+
+  Size get size {
+    if (widget.size != null) {
+      return widget.size!;
+    }
+    return MediaQuery.of(context).size;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +62,13 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
           return Container();
         }
 
-        if (videoListState.previewImages
-                .containsKey(widget.video.id)) {
+        if (videoListState.previewImages.containsKey(widget.video.id)) {
           widget.logger.info(
               "Getting preview image from memory for: ${widget.video.title!}");
-          widget.previewImage =
-              videoListState.previewImages[widget.video.id];
+          previewImage = videoListState.previewImages[widget.video.id];
         }
 
-        if (widget.previewImage != null) {
+        if (previewImage != null) {
           widget.logger
               .info("Preview for video is set: ${widget.video.title!}");
         } else {
@@ -88,14 +92,14 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
           }
         });
 
-        if (widget.previewImage == null) {
+        if (previewImage == null) {
           appState.videoPreviewManager
               .getImagePreview(widget.video.id!, videoListState)
               .then((image) {
             if (image != null) {
               widget.logger
                   .info("Thumbnail found  for video: ${widget.video.title!}");
-              widget.previewImage = image;
+              previewImage = image;
               if (mounted) {
                 setState(() {});
               }
@@ -104,10 +108,6 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
             // request preview
             requestPreview(context, appState, videoListState);
           });
-        }
-
-        if (widget.size == null) {
-          widget.size = MediaQuery.of(context).size;
         }
 
         return Column(
@@ -120,9 +120,9 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
                 widget.video,
                 isCurrentlyDownloading,
                 widget.openDetailPage,
-                previewImage: widget.previewImage,
+                previewImage: previewImage,
                 defaultImageAssetPath: widget.defaultImageAssetPath,
-                size: widget.size,
+                size: size,
                 presetAspectRatio: widget.presetAspectRatio,
               ),
             )
@@ -132,19 +132,19 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     );
   }
 
-  void requestPreview(BuildContext context, AppState appState, VideoListState videoListState) {
-    appState.databaseManager
-        .getDownloadedVideo(widget.video.id)
-        .then((entity) {
+  void requestPreview(
+      BuildContext context, AppState appState, VideoListState videoListState) {
+    appState.databaseManager.getDownloadedVideo(widget.video.id).then((entity) {
       if (entity == null && !widget.previewNotDownloadedVideos) {
         return;
       }
-      requestThumbnailPicture(context, entity, widget.video, appState, videoListState);
+      requestThumbnailPicture(
+          context, entity, widget.video, appState, videoListState);
     });
   }
 
-  void requestThumbnailPicture(
-      BuildContext context, VideoEntity? entity, Video video, AppState appState, VideoListState videoListState) {
+  void requestThumbnailPicture(BuildContext context, VideoEntity? entity,
+      Video video, AppState appState, VideoListState videoListState) {
     String? url = VideoUtil.getVideoPath(appState, entity, video);
 
     appState.videoPreviewManager.startPreviewGeneration(
@@ -167,7 +167,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     appState.videoPreviewManager
         .getImagePreview(widget.video.id!, videoListState)
         .then((image) {
-      widget.previewImage = image;
+      previewImage = image;
       if (mounted) {
         setState(() {});
       }

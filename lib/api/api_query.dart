@@ -76,10 +76,8 @@ class APIQuery {
         )
         .catchError((err) => onError(err))
         .then((value) {
-      if (value != null) {
-        //logger.info("Response: " + value.body);
-        onDataReceived(value.body.toString());
-      }
-    });
+      //logger.info("Response: " + value.body);
+      onDataReceived(value.body.toString());
+        });
   }
 }

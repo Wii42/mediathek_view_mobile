@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 
 class VideoLengthSlider extends StatefulWidget {
-  late var onFilterUpdated;
-  late SearchFilter searchFilter;
-  late double initialStart;
-  late double initialEnd;
+  final void Function(SearchFilter) onFilterUpdated;
+  final SearchFilter searchFilter;
+  late final double initialStart;
+  late final double initialEnd;
 
   static const double MAXIMUM_FILTER_LENGTH = 60;
 
-  VideoLengthSlider(onFilterUpdated, SearchFilter lengthFilter) {
-    this.onFilterUpdated = onFilterUpdated;
-    this.searchFilter = lengthFilter;
-    if (lengthFilter.filterValue == null || lengthFilter.filterValue.isEmpty) {
+  VideoLengthSlider(this.onFilterUpdated, this.searchFilter, {super.key}) {
+    if (searchFilter.filterValue.isEmpty) {
       initialStart = 0.0;
       initialEnd = MAXIMUM_FILTER_LENGTH;
     } else {
@@ -23,7 +21,7 @@ class VideoLengthSlider extends StatefulWidget {
   }
 
   @override
-  _RangeSliderState createState() =>
+  State<VideoLengthSlider> createState() =>
       _RangeSliderState(RangeValues(initialStart, initialEnd));
 }
 
@@ -46,17 +44,15 @@ class _RangeSliderState extends State<VideoLengthSlider> {
       activeColor: Colors.black,
       inactiveColor: Colors.grey,
       labels: RangeLabels(
-          _values.start.round().toString() + " min",
+          "${_values.start.round()} min",
           _values.end < VideoLengthSlider.MAXIMUM_FILTER_LENGTH
-              ? _values.end.round().toString() + " min"
+              ? "${_values.end.round()} min"
               : "max"),
       max: VideoLengthSlider.MAXIMUM_FILTER_LENGTH,
       min: 0.0,
       divisions: 10,
       onChangeEnd: (values) {
-        widget.searchFilter.filterValue = _values.start.round().toString() +
-            "-" +
-            _values.end.round().toString();
+        widget.searchFilter.filterValue = "${_values.start.round()}-${_values.end.round()}";
         widget.onFilterUpdated(widget.searchFilter);
       },
     );

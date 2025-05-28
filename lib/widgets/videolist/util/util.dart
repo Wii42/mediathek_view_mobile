@@ -16,7 +16,7 @@ const ERROR_MSG_DOWNLOAD_FAILED = "Download fehlgeschlagen";
 
 class Util {
   static Future<bool> playVideoPreChecks(
-      BuildContext context, VideoEntity? entity, Video video) async {
+      BuildContext context, VideoEntity? entity, Video? video) async {
     if (entity == null) {
       var connectivityResult = await (Connectivity().checkConnectivity());
       if (connectivityResult.contains(ConnectivityResult.none)) {

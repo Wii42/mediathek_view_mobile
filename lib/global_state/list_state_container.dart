@@ -161,7 +161,7 @@ class AppState extends ChangeNotifier {
       await thumbnailDirectory.create(recursive: true).catchError((error) =>
           logger.info("Failed to create thumbnail directory $error"));
     }
-    print("Local directory and thumbnail directory initialized");
+    logger.fine("Local directory and thumbnail directory initialized");
   }
 
   void prefillFavoritedChannels() async {

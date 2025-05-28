@@ -2,26 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Heading extends StatelessWidget {
-  String heading;
-  double fontSize;
-  double paddingLeft;
-  double paddingTop;
-  double paddingBottom;
+  final String heading;
+  final double fontSize;
+  final EdgeInsets padding;
 
-  Heading(this.heading, this.fontSize, this.paddingLeft, this.paddingTop,
-      this.paddingBottom);
+  const Heading(this.heading, {required this.fontSize, required this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: EdgeInsets.only(
-          left: paddingLeft, top: paddingTop, bottom: paddingBottom),
-      sliver: new SliverList(
-        delegate: new SliverChildListDelegate(
+      padding: padding,
+      sliver: SliverList(
+        delegate: SliverChildListDelegate(
           [
-            new Text(
+            Text(
               heading,
-              style: new TextStyle(
+              style: TextStyle(
                   fontSize: fontSize,
                   color: Colors.white,
                   fontWeight: FontWeight.w800),

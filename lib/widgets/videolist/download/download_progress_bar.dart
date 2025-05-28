@@ -9,19 +9,19 @@ typedef TriggerParentStateReload = void Function();
 
 class DownloadProgressBar extends StatefulWidget {
   final Logger logger = Logger('DownloadProgressBar');
-  int downloadManagerIdentifier = 1;
-  String? videoId;
-  String? videoTitle;
-  bool isOnDetailScreen;
-  DownloadManager downloadManager;
+  final int downloadManagerIdentifier = 1;
+  final String? videoId;
+  final String? videoTitle;
+  final bool isOnDetailScreen;
+  final DownloadManager downloadManager;
 
   // this is an optional function that is called by the progress bar
   // indicating that a download has complete. This is a workaround so that the parent
   // widget does not have to subscribe video downloads separately
-  TriggerParentStateReload? triggerParentStateReload;
+  final TriggerParentStateReload? triggerParentStateReload;
 
-  DownloadProgressBar(this.videoId, this.videoTitle, this.downloadManager,
-      this.isOnDetailScreen, this.triggerParentStateReload, {Key? key}) : super(key: key);
+  DownloadProgressBar({required this.videoId, required this.videoTitle, required this.downloadManager,
+      this.isOnDetailScreen = false, this.triggerParentStateReload, super.key});
 
   @override
   _DownloadProgressBarState createState() => _DownloadProgressBarState();
@@ -66,7 +66,7 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
   Widget getProgressIndicator(double progress) {
     return Container(
         constraints: BoxConstraints.expand(height: 7.0),
-        child: progress == null || progress == -1
+        child: progress == -1
             ? LinearProgressIndicator(
                 valueColor:
                     AlwaysStoppedAnimation<Color?>(Colors.green[700]),

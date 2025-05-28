@@ -67,10 +67,8 @@ class _ListCardState extends State<ListCard> {
         loadCurrentStatusFromDatabase(widget.video.id, appState);
 
         bool isExtendet = false;
-        if (videoListState != null) {
-          Set<String?> extendetTiles = videoListState.extendedListTiles;
-          isExtendet = extendetTiles.contains(widget.video.id);
-        }
+        Set<String?> extendetTiles = videoListState.extendedListTiles;
+        isExtendet = extendetTiles.contains(widget.video.id);
 
         Uuid uuid = Uuid();
 

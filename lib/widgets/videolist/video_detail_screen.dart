@@ -22,13 +22,13 @@ import 'meta_info_list_tile.dart';
 class VideoDetailScreen extends StatefulWidget {
   final Logger logger = Logger('VideoDetailScreen');
 
-  Image? image;
-  Video video;
-  VideoEntity? entity;
-  bool isDownloading;
-  bool isDownloaded;
-  String? heroUuid;
-  String? defaultImageAssetPath;
+  final Image image;
+  final Video video;
+  final VideoEntity? entity;
+  final bool isDownloading;
+  final bool isDownloaded;
+  final String? heroUuid;
+  final String? defaultImageAssetPath;
 
   VideoDetailScreen(
       this.image,
@@ -73,11 +73,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     GestureDetector image = getImageSurface(totalImageWidth, height, appState);
 
     Widget downloadProgressBar = DownloadProgressBar(
-        widget.video.id,
-        widget.video.title,
-        appState.downloadManager,
-        true,
-        null);
+        videoId: widget.video.id,
+        videoTitle: widget.video.title,
+        downloadManager: appState.downloadManager,
+        isOnDetailScreen: true,);
 
     Widget layout;
     if (isTablet && orientation == Orientation.landscape) {
@@ -286,7 +285,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              Hero(tag: widget.heroUuid!, child: widget.image!),
+              Hero(tag: widget.heroUuid!, child: widget.image),
               Positioned(
                 bottom: 0,
                 left: 0.0,
@@ -352,10 +351,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   ListTile getBottomBar(BuildContext context, String assetPath, String title,
-      String lenght, int timestamp, bool isDownloaded) {
+      String length, int timestamp, bool isDownloaded) {
     return ListTile(
       trailing: Text(
-        lenght != null ? Calculator.calculateDuration(lenght) : "",
+        Calculator.calculateDuration(length),
         style: videoMetadataTextStyle.copyWith(color: Colors.white),
       ),
       leading: assetPath.isNotEmpty
@@ -367,7 +366,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
       ),
       subtitle: Text(
-        timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
+        Calculator.calculateTimestamp(timestamp),
         style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
       ),
     );

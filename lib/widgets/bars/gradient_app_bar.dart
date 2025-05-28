@@ -14,9 +14,7 @@ class GradientAppBar extends StatelessWidget {
   final int currentAmountOfVideosInList;
   final int? totalAmountOfVideosForSelection;
   final FilterMenu filterMenu;
-  List<SearchFilter>? searchFilters;
-  late StateContainerAppBarState state;
-  TickerProviderStateMixin mixin;
+  final TickerProviderStateMixin mixin;
 
   GradientAppBar(
       this.mixin,
@@ -26,12 +24,13 @@ class GradientAppBar extends StatelessWidget {
       this.currentAmountOfVideosInList,
       this.totalAmountOfVideosForSelection);
 
+  List<SearchFilter>? get searchFilters => filterMenu.searchFilters!.values.toList();
+
   @override
   Widget build(BuildContext context) {
     logger.fine("Rendering App Bar");
 
-    state = FilterBarSharedState.of(context);
-    searchFilters = filterMenu.searchFilters!.values.toList();
+    StateContainerAppBarState state = FilterBarSharedState.of(context);
 
     bool isFilterMenuOpen = getFilterMenuState(context);
 
@@ -139,6 +138,7 @@ class GradientAppBar extends StatelessWidget {
   }
 
   bool getFilterMenuState(BuildContext context) {
+    StateContainerAppBarState state = FilterBarSharedState.of(context);
     FilterMenuState? videoListState = state.filterMenuState;
     return videoListState != null && videoListState.isFilterMenuOpen;
   }

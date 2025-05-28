@@ -79,7 +79,7 @@ class DatabaseManager {
 
   Future<Set<VideoEntity>> getAllDownloadedVideos() async {
     //Downloaded videos have a filename set when the download finished, otherwise they are current downloads
-    List<Map> result = await db!.query(
+    List<Map>? result = await db?.query(
       VideoEntity.TABLE_NAME,
       columns: getColums(),
       where: "${VideoEntity.fileNameColumn} != ?",

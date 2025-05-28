@@ -90,7 +90,7 @@ class DownloadSectionState extends State<DownloadSection> {
   }
 
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
-  void deleteDownload(BuildContext context, String id) {
+  void deleteDownload(BuildContext context, String? id) {
     widget.logger.info("Deleting video with title id: $id");
     widget.appWideState.downloadManager
         .deleteVideo(id)
@@ -101,7 +101,7 @@ class DownloadSectionState extends State<DownloadSection> {
         return;
       }
       SnackbarActions.showErrorWithTryAgain(context, ERROR_MSG, TRY_AGAIN_MSG,
-          widget.appWideState.downloadManager.deleteVideo, id);
+          widget.appWideState.downloadManager.deleteVideo, id ?? "");
     });
   }
 
@@ -193,7 +193,7 @@ class DownloadSectionState extends State<DownloadSection> {
     widget.logger.info("Cross axis count: $crossAxisCount");
     if (videosWithPlaybackProgress.isNotEmpty) {
       recentlyViewedHeading =
-          Heading("Kürzlich angesehen", 25.0, 20.0, 5.0, 16.0);
+          Heading("Kürzlich angesehen", fontSize: 25.0, padding: EdgeInsets.only(left:20, top: 5, bottom: 16));
 
       List<Widget> watchHistoryItems = Util.getWatchHistoryItems(
           videosWithPlaybackProgress, size.width / crossAxisCount);
@@ -226,8 +226,8 @@ class DownloadSectionState extends State<DownloadSection> {
       child: Container(),
     );
 
-    if (downloadedVideos != null && downloadedVideos.isNotEmpty) {
-      downloadHeading = Heading("Meine Downloads", 25.0, 20.0, 20.0, 0.0);
+    if (downloadedVideos.isNotEmpty) {
+      downloadHeading = Heading("Meine Downloads", fontSize: 25.0, padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom:0.0));
 
       var videoListItemBuilder = VideoListItemBuilder.name(
           downloadedVideos.toList(), true, true, false,

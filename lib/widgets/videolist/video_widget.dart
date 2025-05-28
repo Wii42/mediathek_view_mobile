@@ -16,21 +16,22 @@ import 'meta_info_list_tile.dart';
 class VideoWidget extends StatefulWidget {
   final Logger logger = Logger('VideoWidget');
   final AppState appWideState;
-  Video video;
-  String? mimeType;
-  String? defaultImageAssetPath;
-  Image? previewImage;
-  Size? size;
-  double? presetAspectRatio;
+  final Video video;
+  final String? mimeType;
+  final String? defaultImageAssetPath;
+  final Image? previewImage;
+  final Size? size;
+  final double? presetAspectRatio;
 
-  bool isDownloading;
-  bool openDetailPage;
+  final bool isDownloading;
+  final bool openDetailPage;
 
   VideoWidget(
     this.appWideState,
     this.video,
     this.isDownloading,
     this.openDetailPage, {
+    super.key,
     this.previewImage,
     this.mimeType,
     this.defaultImageAssetPath,
@@ -71,11 +72,11 @@ class VideoWidgetState extends State<VideoWidget> {
         widget.previewImage, totalWidth, widget.presetAspectRatio);
 
     Widget downloadProgressBar = DownloadProgressBar(
-      widget.video.id,
-      widget.video.title,
-      widget.appWideState!.downloadManager,
-      false,
-      checkIfAlreadyDownloaded,
+      videoId: widget.video.id,
+      videoTitle: widget.video.title,
+      downloadManager: widget.appWideState.downloadManager,
+      isOnDetailScreen: false,
+      triggerParentStateReload: checkIfAlreadyDownloaded,
     );
 
     Image placeholderImage = Image.asset(

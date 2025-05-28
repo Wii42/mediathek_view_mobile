@@ -6,49 +6,58 @@ import 'package:flutter_ws/widgets/filterMenu/filtermenu_channel_edit_button.dar
 import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:flutter_ws/widgets/filterMenu/video_length_slider.dart';
 import 'package:logging/logging.dart';
-import 'package:meta/meta.dart';
 
-class FilterMenu extends StatelessWidget {
-  final Logger logger = new Logger('FilterMenu');
-  var onFilterUpdated;
-  var onSingleFilterTapped;
-  var onChannelsSelected;
-  Map<String, SearchFilter>? searchFilters;
-  late ThemeData theme;
+class FilterMenu extends StatefulWidget {
+  final onFilterUpdated;
+  final onSingleFilterTapped;
+  final onChannelsSelected;
+  final Map<String, SearchFilter>? searchFilters;
 
-  FilterMenu(
-      {Key? key,
+  const FilterMenu(
+      {super.key,
       required this.onFilterUpdated,
       required this.searchFilters,
       required this.onSingleFilterTapped,
-      required this.onChannelsSelected})
-      : super(key: key);
+      required this.onChannelsSelected});
 
-  TextEditingController? _titleFieldController;
-  TextEditingController? _themaFieldController;
+  @override
+  State<FilterMenu> createState() => _FilterMenuState();
+}
+
+class _FilterMenuState extends State<FilterMenu> {
+  final Logger logger = Logger('FilterMenu');
+
+  late TextEditingController _titleFieldController;
+
+  late TextEditingController _themaFieldController;
+
+  @override
+  void initState() {
+    _titleFieldController = widget.searchFilters!.containsKey('Titel')
+        ? TextEditingController(text: widget.searchFilters!['Titel']!.filterValue)
+        : TextEditingController();
+
+    _themaFieldController = widget.searchFilters!.containsKey('Thema')
+        ? TextEditingController(text: widget.searchFilters!['Thema']!.filterValue)
+        : TextEditingController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    theme = Theme.of(context);
+    ThemeData theme = Theme.of(context);
     logger.fine("Rendering filter Menu");
-    _titleFieldController = searchFilters!.containsKey('Titel')
-        ? new TextEditingController(text: searchFilters!['Titel']!.filterValue)
-        : new TextEditingController();
 
-    _themaFieldController = searchFilters!.containsKey('Thema')
-        ? new TextEditingController(text: searchFilters!['Thema']!.filterValue)
-        : new TextEditingController();
-
-    return new Container(
-      decoration: new BoxDecoration(
+    return Container(
+      decoration: BoxDecoration(
         color: Color(0xffffbf00),
       ),
-      child: new Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          getFilterMenuRow("Thema", "Thema", _themaFieldController),
-          getFilterMenuRow("Titel", "Titel", _titleFieldController),
+          getFilterMenuRow("Thema", "Thema", _themaFieldController, theme: theme),
+          getFilterMenuRow("Titel", "Titel", _titleFieldController, theme: theme),
           getChannelRow(context),
           getRangeSliderRow(),
         ],
@@ -57,26 +66,26 @@ class FilterMenu extends StatelessWidget {
   }
 
   Row getChannelRow(BuildContext context) {
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
 //            crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        new Container(
+        Container(
             width: 80.0,
-            child: new Padding(
-                padding: new EdgeInsets.only(right: 15.0),
-                child: new Text(
+            child: Padding(
+                padding: EdgeInsets.only(right: 15.0),
+                child: Text(
                   "Sender",
-                  style: new TextStyle(
+                  style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w700),
                   textAlign: TextAlign.start,
                 ))),
-        searchFilters!["Sender"] == null ||
-                searchFilters!["Sender"]!.filterValue.isEmpty
-            ? new Switch(
+        widget.searchFilters!["Sender"] == null ||
+                widget.searchFilters!["Sender"]!.filterValue.isEmpty
+            ? Switch(
                 value: false,
                 onChanged: (bool isEnabled) {
                   if (isEnabled) {
@@ -84,9 +93,9 @@ class FilterMenu extends StatelessWidget {
                     _openAddEntryDialog(context);
                   }
                 })
-            : new FilterMenuChannelEditButton(
+            : FilterMenuChannelEditButton(
                 handleTabCallback: _openAddEntryDialog,
-                icon: new Icon(Icons.edit, size: 50.0),
+                icon: Icon(Icons.edit, size: 50.0),
                 displayText: "Sender"),
       ],
     );
@@ -94,25 +103,25 @@ class FilterMenu extends StatelessWidget {
 
   handleTapOnFilter(String id) {
     logger.fine("Filter with id " + id.toString() + " was tapped");
-    onSingleFilterTapped(id);
+    widget.onSingleFilterTapped(id);
   }
 
   Widget getFilterMenuRow(
-      String filterId, String displayText, TextEditingController? controller) {
-    var _filterTextFocus = new FocusNode();
+      String filterId, String displayText, TextEditingController? controller,{required ThemeData theme}) {
+    var _filterTextFocus = FocusNode();
 
-    Row row = new Row(
+    Row row = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        new Container(
+        Container(
           width: 80.0,
-          child: new Padding(
-            padding: new EdgeInsets.only(right: 15.0),
-            child: new Text(
+          child: Padding(
+            padding: EdgeInsets.only(right: 15.0),
+            child: Text(
               displayText,
-              style: new TextStyle(
+              style: TextStyle(
                   color: Colors.white,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w700),
@@ -120,30 +129,30 @@ class FilterMenu extends StatelessWidget {
             ),
           ),
         ),
-        new Expanded(
-          child: new TextField(
+        Expanded(
+          child: TextField(
             focusNode: _filterTextFocus,
             onSubmitted: (String value) {
-              onFilterUpdated(
-                new SearchFilter(
+              widget.onFilterUpdated(
+                SearchFilter(
                     filterId: filterId,
                     filterValue: value,
                     handleTabCallback: handleTapOnFilter),
               );
             },
-            style: new TextStyle(
+            style: TextStyle(
                 color: Colors.white,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w700),
             controller: controller,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
-              contentPadding: new EdgeInsets.only(bottom: 0.0),
+              contentPadding: EdgeInsets.only(bottom: 0.0),
 //              counterStyle: buttonTextStyle,
               hintStyle: theme.textTheme.headlineMedium,
             ),
@@ -155,8 +164,8 @@ class FilterMenu extends StatelessWidget {
     _filterTextFocus.addListener(() {
       if (!_filterTextFocus.hasFocus) {
         String currentValueOfFilter = controller!.text;
-        onFilterUpdated(
-          new SearchFilter(
+        widget.onFilterUpdated(
+          SearchFilter(
               filterId: filterId,
               filterValue: currentValueOfFilter,
               handleTabCallback: handleTapOnFilter),
@@ -164,14 +173,14 @@ class FilterMenu extends StatelessWidget {
       }
     });
 
-    return new Padding(padding: new EdgeInsets.only(bottom: 10.0), child: row);
+    return Padding(padding: EdgeInsets.only(bottom: 10.0), child: row);
   }
 
   Future _openAddEntryDialog(BuildContext context) async {
     Set<String> channelSelection =
-        (await Navigator.of(context).push(new MaterialPageRoute<Set<String>>(
+        (await Navigator.of(context).push(MaterialPageRoute<Set<String>>(
             builder: (BuildContext context) {
-              return new ChannelPickerDialog(searchFilters!["Sender"]);
+              return ChannelPickerDialog(widget.searchFilters!["Sender"]);
             },
             fullscreenDialog: true,
             settings: RouteSettings(name: "ChannelPicker"))))!;
@@ -188,39 +197,39 @@ class FilterMenu extends StatelessWidget {
         " DisplayText: " +
         displayText);
 
-    SearchFilter channelFilter = new SearchFilter(
+    SearchFilter channelFilter = SearchFilter(
         filterId: "Sender",
         filterValue: filterValue,
         displayText: displayText,
         handleTabCallback: handleTapOnFilter);
 
-    onFilterUpdated(channelFilter);
+    widget.onFilterUpdated(channelFilter);
   }
 
   getRangeSliderRow() {
     SearchFilter lengthFilter;
-    if (searchFilters!["Länge"] != null) {
-      lengthFilter = new SearchFilter(
+    if (widget.searchFilters!["Länge"] != null) {
+      lengthFilter = SearchFilter(
           filterId: "Länge",
-          filterValue: searchFilters!["Länge"]!.filterValue,
+          filterValue: widget.searchFilters!["Länge"]!.filterValue,
           handleTabCallback: handleTapOnFilter);
     } else {
-      lengthFilter = new SearchFilter(
+      lengthFilter = SearchFilter(
           filterId: "Länge", handleTabCallback: handleTapOnFilter, filterValue: "",);
     }
 
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        new Container(
+        Container(
           width: 80.0,
-          child: new Padding(
-            padding: new EdgeInsets.only(right: 5.0),
-            child: new Text(
+          child: Padding(
+            padding: EdgeInsets.only(right: 5.0),
+            child: Text(
               "Länge",
-              style: new TextStyle(
+              style: TextStyle(
                   color: Colors.white,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w700),
@@ -228,9 +237,16 @@ class FilterMenu extends StatelessWidget {
             ),
           ),
         ),
-        new Flexible(
-            child: new VideoLengthSlider(onFilterUpdated, lengthFilter)),
+        Flexible(
+            child: VideoLengthSlider(widget.onFilterUpdated, lengthFilter)),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _titleFieldController.dispose();
+    _themaFieldController.dispose();
+    super.dispose();
   }
 }

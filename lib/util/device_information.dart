@@ -51,6 +51,7 @@ class DeviceInformation {
       logger.severe("Running NOT on Android or IOS - OS unknown. Return default: Android");
       return TargetPlatform.android;
     }
+    return null;
   }
 
   static bool isTablet(BuildContext context) {

@@ -8,22 +8,20 @@ import 'package:flutter_ws/widgets/videolist/channel_thumbnail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VideoDescription extends StatelessWidget {
-  Video video;
-  String channelPictureImagePath;
-  double verticalOffset;
-  late BuildContext context;
+  final Video video;
+  final String channelPictureImagePath;
+  final double verticalOffset;
 
-  VideoDescription(
-      this.video, this.channelPictureImagePath, this.verticalOffset);
+  const VideoDescription(
+      this.video, this.channelPictureImagePath, this.verticalOffset, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     return Padding(
       padding: EdgeInsets.only(top: verticalOffset - 15.0),
       child: Stack(
         children: <Widget>[
-          GestureDetector(child: getBody()),
+          GestureDetector(child: getBody(context)),
           Padding(
             padding: const EdgeInsets.only(left: 9.0),
             child: channelPictureImagePath.isNotEmpty
@@ -35,7 +33,8 @@ class VideoDescription extends StatelessWidget {
     );
   }
 
-  Widget getBody() {
+  Widget getBody(BuildContext context) {
+    TextTheme textTheme = Theme.of(context).textTheme;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -60,7 +59,7 @@ class VideoDescription extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     getVerticalDividerLine(bottom: 15.0),
-                    getCaption("Titel"),
+                    getCaption("Titel", textTheme),
                     Text(
                       video.title!,
                       style: Theme.of(context)
@@ -70,7 +69,7 @@ class VideoDescription extends StatelessWidget {
                     ),
                     //getSpacedContentRow(video.title),
                     getDivider(),
-                    getCaption("Thema"),
+                    getCaption("Thema", textTheme),
                     Text(
                       video.topic!,
                       style: Theme.of(context)
@@ -79,7 +78,7 @@ class VideoDescription extends StatelessWidget {
                           copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
-                    getCaption("Länge"),
+                    getCaption("Länge", textTheme),
                     Text(
                       Calculator.calculateDuration(video.duration),
                       style: Theme.of(context)
@@ -88,7 +87,7 @@ class VideoDescription extends StatelessWidget {
                           copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
-                    getCaption("Ausgestrahlt"),
+                    getCaption("Ausgestrahlt", textTheme),
                     Text(
                       Calculator.calculateTimestamp(video.timestamp!),
                       style: Theme.of(context)
@@ -100,7 +99,7 @@ class VideoDescription extends StatelessWidget {
                         ? getDivider()
                         : Container(),
                     video.description != null && video.description!.isNotEmpty
-                        ? getCaption("Beschreibung")
+                        ? getCaption("Beschreibung", textTheme)
                         : Container(),
                     video.description != null && video.description!.isNotEmpty
                         ? Text('"${video.description}"',
@@ -115,7 +114,7 @@ class VideoDescription extends StatelessWidget {
                         ? TextButton(
                       style: TextButton.styleFrom(backgroundColor: Colors.grey[800]),
                             child: Text('Website', style: body2TextStyle),
-                            onPressed: () => _launchURL(video.url_website!),
+                            onPressed: () => _launchURL(Uri.parse(video.url_website!)),
                           )
                         : Container(),
                     getVerticalDividerLine(top: 15.0),
@@ -135,10 +134,10 @@ class VideoDescription extends StatelessWidget {
     );
   }
 
-  Text getCaption(String caption) {
+  Text getCaption(String caption, TextTheme textTheme) {
     return Text(
       caption,
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+      style: textTheme.titleLarge?.copyWith(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
     );
   }
@@ -153,9 +152,9 @@ class VideoDescription extends StatelessWidget {
     );
   }
 
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     }
   }
 }
