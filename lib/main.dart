@@ -2,31 +2,18 @@ import 'dart:async';
 
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_ws/api/api_query.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
-import 'package:flutter_ws/model/indexing_info.dart';
-import 'package:flutter_ws/model/query_result.dart';
-import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
+import 'package:flutter_ws/section/video_search_list_section.dart';
 import 'package:flutter_ws/util/countly.dart';
-import 'package:flutter_ws/util/json_parser.dart';
 import 'package:flutter_ws/util/text_styles.dart';
-import 'package:flutter_ws/widgets/bars/gradient_app_bar.dart';
-import 'package:flutter_ws/widgets/bars/status_bar.dart';
-import 'package:flutter_ws/widgets/filterMenu/filter_menu.dart';
-import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:flutter_ws/widgets/introSlider/intro_slider.dart';
-import 'package:flutter_ws/widgets/videolist/video_list_view.dart';
-import 'package:flutter_ws/widgets/videolist/videolist_util.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-
-import 'global_state/appbar_state_container.dart';
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -34,21 +21,21 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     AppState appState = AppState();
     await appState.ensureInitialized();
-    runApp(MultiProvider(providers: [
-      ChangeNotifierProvider<AppState>.value(value: appState),
-      ChangeNotifierProvider<VideoListState>(create: (_) => VideoListState())
-    ], child: MyApp(),));
+    runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AppState>.value(value: appState),
+        ChangeNotifierProvider<VideoListState>(create: (_) => VideoListState())
+      ],
+      child: MyApp(),
+    ));
   }, Countly.recordDartError);
 }
 
 class MyApp extends StatelessWidget {
-  final TextEditingController textEditingController = TextEditingController();
-
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     const title = 'MediathekViewMobile';
 
     //Setup global log levels
@@ -84,7 +71,6 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(
         key: Key(uuid.v1()),
         title: title,
-        textEditingController: textEditingController,
       ),
     );
   }
@@ -92,15 +78,10 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   final String title;
-  final TextEditingController? textEditingController;
   final PageController? pageController;
   final Logger logger = Logger('Main');
 
-  MyHomePage(
-      {super.key,
-      required this.title,
-      this.pageController,
-      this.textEditingController});
+  MyHomePage({super.key, required this.title, this.pageController});
 
   @override
   State<MyHomePage> createState() => HomePageState();
@@ -108,38 +89,15 @@ class MyHomePage extends StatefulWidget {
 
 class HomePageState extends State<MyHomePage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  List<Video>? videos;
   Logger get logger => widget.logger;
 
   //global state
   AppState? appWideState;
 
-  //AppBar
-  IconButton? buttonOpenFilterMenu;
-  String? currentUserQueryInput;
-
-  //Filter Menu
-  late Map<String, SearchFilter> searchFilters;
-  bool? filterMenuOpen;
-  bool? filterMenuChannelFilterIsOpen;
-
-  // API
-  static late APIQuery api;
-  IndexingInfo? indexingInfo;
-  late bool refreshOperationRunning;
-  bool? apiError;
-  late Completer<Null> refreshCompleter;
-
   //Keys
   Key? videoListKey;
   Key? statusBarKey;
   Key? indexingBarKey;
-
-  //mock
-  static Timer? mockTimer;
-
-  //Statusbar
-  StatusBar? statusBar;
 
   TabController? _controller;
 
@@ -150,14 +108,7 @@ class HomePageState extends State<MyHomePage>
   /// 3: about
   int _page = 0;
 
-  //search
-  TextEditingController? get searchFieldController => widget.textEditingController;
-  bool? scrolledToEndOfList;
-  int? lastAmountOfVideosRetrieved;
-  int? totalQueryResults = 0;
-
   //Tabs
-  Widget? videoSearchList;
   static DownloadSection? downloadSection;
   SettingsSection? aboutSection;
 
@@ -185,19 +136,6 @@ class HomePageState extends State<MyHomePage>
 
   @override
   void initState() {
-    videos = [];
-    searchFilters = {};
-    filterMenuOpen = false;
-    filterMenuChannelFilterIsOpen = false;
-    apiError = false;
-    indexingInfo = null;
-    lastAmountOfVideosRetrieved = -1;
-    refreshOperationRunning = false;
-    scrolledToEndOfList = false;
-    currentUserQueryInput = "";
-    inputListener() => handleSearchInput();
-    searchFieldController!.addListener(inputListener);
-
     //register Observer to react to android/ios lifecycle events
     WidgetsBinding.instance.addObserver(this);
 
@@ -213,9 +151,6 @@ class HomePageState extends State<MyHomePage>
     videoListKey = Key(uuid.v1());
     statusBarKey = Key(uuid.v1());
     indexingBarKey = Key(uuid.v1());
-
-    api = APIQuery(onDataReceived: onSearchResponse, onError: onAPISearchError);
-    api.search(currentUserQueryInput, searchFilters);
 
     checkForFirstStart();
 
@@ -260,10 +195,10 @@ class HomePageState extends State<MyHomePage>
             canvasColor: Colors.black,
             // sets the active color of the `BottomNavigationBar` if `Brightness` is light
             primaryColor: Colors.red,
-            textTheme: Theme.of(context).textTheme.copyWith(
-                bodySmall: const TextStyle(
-                    color: Colors
-                        .yellow))), // sets the inactive color of the `BottomNavigationBar`
+            textTheme: Theme.of(context)
+                .textTheme
+                .copyWith(bodySmall: const TextStyle(color: Colors.yellow))),
+        // sets the inactive color of the `BottomNavigationBar`
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _page,
@@ -307,54 +242,8 @@ class HomePageState extends State<MyHomePage>
 
   Widget getVideoSearchListWidget() {
     logger.fine("Rendering Video Search list");
-
-    Widget videoSearchList = SafeArea(
-      child: RefreshIndicator(
-        onRefresh: _handleListRefresh,
-        child: Container(
-          color: Colors.grey[800],
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverToBoxAdapter(
-                child: ChangeNotifierProvider<FilterMenuState>(
-                  create: (_)=> FilterMenuState(),
-                  child: GradientAppBar(
-                      this,
-                      searchFieldController,
-                      FilterMenu(
-                        searchFilters: searchFilters,
-                        onFilterUpdated: _filterMenuUpdatedCallback,
-                        onSingleFilterTapped: _singleFilterTappedCallback,
-                        onChannelsSelected: () {},
-                      ),
-                      videos!.length,
-                      totalQueryResults),
-                ),
-              ),
-              VideoListView(
-                key: videoListKey,
-                videos: videos,
-                amountOfVideosFetched: lastAmountOfVideosRetrieved,
-                queryEntries: onQueryEntries,
-                currentQuerySkip: api.getCurrentSkip(),
-                totalResultSize: totalQueryResults,
-                mixin: this,
-                refreshList: [],
-              ),
-              SliverToBoxAdapter(
-                child: StatusBar(
-                    key: statusBarKey,
-                    apiError: apiError,
-                    videoListIsEmpty: videos!.isEmpty,
-                    lastAmountOfVideosRetrieved: lastAmountOfVideosRetrieved,
-                    firstAppStartup: lastAmountOfVideosRetrieved! < 0),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-    return videoSearchList;
+    return VideoSearchListSection(
+        videoListKey: videoListKey, statusBarKey: statusBarKey);
   }
 
   // Called when the user presses on of the BottomNavigationBarItems. Does not get triggered by a users swipe.
@@ -399,145 +288,7 @@ class HomePageState extends State<MyHomePage>
     }
   }
 
-  Future<Null> _handleListRefresh() async {
-    logger.fine("Refreshing video list ...");
-    refreshOperationRunning = true;
-    //the completer will be completed when there are results & the flag == true
-    refreshCompleter = Completer<Null>();
-    _createQueryWithClearedVideoList();
-
-    return refreshCompleter.future;
-  }
-
-  // ----------CALLBACKS: WebsocketController----------------
-
-  void onAPISearchError(Error error) {
-    logger.info("Received an error from thr API.$error");
-
-    // TODO show status bar with error
-
-    // http 503 -> indexing
-    // http 500 -> internal error
-    // http 400 -> invalid query
-  }
-
-  void onSearchResponse(String data) {
-    if (refreshOperationRunning) {
-      refreshOperationRunning = false;
-      refreshCompleter.complete();
-      videos!.clear();
-      logger.fine("Refresh operation finished.");
-      HapticFeedback.lightImpact();
-    }
-    print("start");
-    QueryResult queryResult = JSONParser.parseQueryResult(data);
-    print("finished");
-
-    List<Video> newVideosFromQuery = queryResult.videos as List<Video>;
-    totalQueryResults = queryResult.queryInfo.totalResults;
-    lastAmountOfVideosRetrieved = newVideosFromQuery.length;
-    logger.info("received videos: $lastAmountOfVideosRetrieved");
-
-    int videoListLengthOld = videos!.length;
-    videos = VideoListUtil.sanitizeVideos(newVideosFromQuery, videos!);
-    int newVideosCount = videos!.length - videoListLengthOld;
-    logger.info("received new videos: $newVideosCount");
-
-    if (newVideosCount == 0 && scrolledToEndOfList == false) {
-      logger.info("Scrolled to end of list & mounted: $mounted");
-      scrolledToEndOfList = true;
-      if (mounted) {
-        setState(() {});
-      }
-      return;
-    } else if (newVideosCount != 0) {
-      // client side result filtering
-      if (searchFilters["Länge"] != null) {
-        videos =
-            VideoListUtil.applyLengthFilter(videos!, searchFilters["Länge"]!);
-      }
-      int newVideosCount = videos!.length - videoListLengthOld;
-
-      logger.info(
-          'Received $newVideosCount new video(s). Amount of videos in list ${videos!.length}');
-
-      lastAmountOfVideosRetrieved = newVideosCount;
-      scrolledToEndOfList == false;
-      if (mounted) setState(() {});
-    }
-  }
-
-  // ----------CALLBACKS: From List View ----------------
-
-  void onQueryEntries() {
-    api.search(currentUserQueryInput, searchFilters);
-  }
-
-  // ---------- SEARCH Input ----------------
-
-  void handleSearchInput() {
-    if (currentUserQueryInput == searchFieldController!.text) {
-      logger.fine(
-          "Current Query Input equals new query input - not querying again!");
-      return;
-    }
-
-    _createQueryWithClearedVideoList();
-  }
-
-  void _createQuery() {
-    currentUserQueryInput = searchFieldController!.text;
-
-    api.search(currentUserQueryInput, searchFilters);
-  }
-
-  void _createQueryWithClearedVideoList() {
-    logger.fine("Clearing video list");
-    videos!.clear();
-    api.resetSkip();
-
-    if (mounted) setState(() {});
-    _createQuery();
-  }
-
-  // ----------CALLBACKS: FILTER MENU----------------
-
-  void _filterMenuUpdatedCallback(SearchFilter newFilter) {
-    //called whenever a filter in the menu gets a value
-    if (searchFilters[newFilter.filterId] != null) {
-      if (searchFilters[newFilter.filterId]!.filterValue !=
-          newFilter.filterValue) {
-        logger.fine(
-            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters[newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
-
-        HapticFeedback.mediumImpact();
-
-        searchFilters.remove(newFilter.filterId);
-        if (newFilter.filterValue.isNotEmpty) {
-          searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
-        }
-        //updates state internally
-        _createQueryWithClearedVideoList();
-      }
-    } else if (newFilter.filterValue.isNotEmpty) {
-      logger.fine(
-          "New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
-
-      HapticFeedback.mediumImpact();
-
-      searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
-      _createQueryWithClearedVideoList();
-    }
-  }
-
-  void _singleFilterTappedCallback(String id) {
-    //remove filter from list and refresh state to trigger build of app bar and list!
-    searchFilters.remove(id);
-    HapticFeedback.mediumImpact();
-    _createQueryWithClearedVideoList();
-  }
-
-  // ----------LIFECYCLE----------------
+  //// ----------LIFECYCLE----------------
 
   Future<void> checkForFirstStart() async {
     prefs = await SharedPreferences.getInstance();
