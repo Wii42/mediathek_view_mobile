@@ -22,16 +22,17 @@ class FlutterVideoPlayer extends StatefulWidget {
 
   final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(BuildContext context, this.appSharedState, this.initialVideo,
-      this.initialVideoEntity, this.initialProgressEntity,
+  FlutterVideoPlayer(BuildContext context, this.appSharedState,
+      this.initialVideo, this.initialVideoEntity, this.initialProgressEntity,
       {super.key});
 
   DatabaseManager get databaseManager => appSharedState.databaseManager;
 
   String? get videoId => initialVideo.id ?? initialVideoEntity?.id;
 
-  bool get isInitiallyPlayingDifferentVideoOnTV => (appSharedState.isCurrentlyPlayingOnTV &&
-      videoId != appSharedState.tvCurrentlyPlayingVideo!.id);
+  bool get isInitiallyPlayingDifferentVideoOnTV =>
+      (appSharedState.isCurrentlyPlayingOnTV &&
+          videoId != appSharedState.tvCurrentlyPlayingVideo!.id);
 
   @override
   State<FlutterVideoPlayer> createState() => _FlutterVideoPlayerState();
@@ -39,6 +40,7 @@ class FlutterVideoPlayer extends StatefulWidget {
 
 class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   String? videoUrl;
+
   // castNewVideoToTV indicates that the currently playing video on the TV
   // should be replaced
   bool castNewVideoToTV = false;
@@ -55,7 +57,8 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     video = widget.initialVideo;
     videoEntity = widget.initialVideoEntity;
     progressEntity = widget.initialProgressEntity;
-    isAlreadyPlayingDifferentVideoOnTV = widget.isInitiallyPlayingDifferentVideoOnTV;
+    isAlreadyPlayingDifferentVideoOnTV =
+        widget.isInitiallyPlayingDifferentVideoOnTV;
     videoUrl = getVideoUrl(widget.initialVideo, widget.initialVideoEntity);
     super.initState();
   }
@@ -109,14 +112,12 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           : Duration(milliseconds: 0),
     );
 
-    if (widget.appSharedState.targetPlatform ==
-        TargetPlatform.android) {
+    if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
       tvVideoController!.startTvDiscovery();
     }
 
     // replace the currently playing video on TV
-    if (widget.appSharedState.isCurrentlyPlayingOnTV &&
-        castNewVideoToTV) {
+    if (widget.appSharedState.isCurrentlyPlayingOnTV && castNewVideoToTV) {
       widget.appSharedState.samsungTVCastManager.stop();
       tvVideoController!.initialize();
       tvVideoController!.startPlayingOnTV();
@@ -147,8 +148,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
 
     String path;
-    if (widget.appSharedState.targetPlatform ==
-        TargetPlatform.android) {
+    if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
       path =
           "${widget.initialVideoEntity!.filePath!}/${widget.initialVideoEntity!.fileName!}";
     } else {
@@ -188,11 +188,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           iconColor: Color(0xffffbf00)),
       fullScreenByDefault: true,
       allowedScreenSleep: false,
-      isCurrentlyPlayingOnTV:
-          widget.appSharedState.isCurrentlyPlayingOnTV,
+      isCurrentlyPlayingOnTV: widget.appSharedState.isCurrentlyPlayingOnTV,
       video: widget.initialVideo,
       aspectRatio: 16 / 9,
-      systemOverlaysAfterFullScreen: []
+      //systemOverlaysAfterFullScreen: []
     ); // != null
     //? widget.video
     //: Video.fromMap(widget.videoEntity!.toMap()));
@@ -212,17 +211,14 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             isAlreadyPlayingDifferentVideoOnTV = false;
             // replace widget.video with the currently playing video
             // to not interrupt the video playback
-            video =
-                widget.appSharedState.tvCurrentlyPlayingVideo!;
+            video = widget.appSharedState.tvCurrentlyPlayingVideo!;
 
             // get the video entity
-            videoEntity = await widget
-                .appSharedState.databaseManager
+            videoEntity = await widget.appSharedState.databaseManager
                 .getDownloadedVideo(widget.videoId);
 
             // get the video progress
-            progressEntity = await widget
-                .appSharedState.databaseManager
+            progressEntity = await widget.appSharedState.databaseManager
                 .getVideoProgressEntity(widget.initialVideo.id);
 
             // start initializing players with the video playing on the TV
