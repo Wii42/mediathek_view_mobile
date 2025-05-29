@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 
 class ChannelPickerDialog extends StatefulWidget {
   final Logger logger = Logger('ChannelPickerDialog');
-  final SearchFilter? filterPreSelection;
+  final SearchFilter<Set<String>>? filterPreSelection;
   ChannelPickerDialog(this.filterPreSelection, {super.key});
 
   @override
@@ -25,21 +25,8 @@ class ChannelPickerDialog extends StatefulWidget {
   }
 
   Set<String> extractChannelNamesFromCurrentFilter() {
-    Set<String> selectedChannels = {};
-
-    if (filterPreSelection != null &&
-        filterPreSelection!.filterValue.isNotEmpty &&
-        !filterPreSelection!.filterValue.contains(";")) {
-      //only one filter in pre-selection
-      logger.fine("One filter pre-selected");
-      selectedChannels.add(filterPreSelection!.filterValue);
-    } else if (filterPreSelection != null &&
-        filterPreSelection!.filterValue.isNotEmpty &&
-        filterPreSelection!.filterValue.contains(";")) {
-      //multiple filters already
-      selectedChannels = filterPreSelection!.filterValue.split(";").toSet();
-      logger.fine("${selectedChannels.length} filters pre-selected");
-    }
+    Set<String> selectedChannels = filterPreSelection?.filterValue ?? {};
+    logger.fine("${selectedChannels.length} filters pre-selected");
     return selectedChannels;
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class SearchFilter extends StatelessWidget {
+class SearchFilter<T extends Object> extends StatelessWidget {
   //E.g Thema/Titel
   final String filterId;
 
   //Der Wert nachdem gefiltert wird
-  final String filterValue;
+  final T filterValue;
   final void Function(String) handleTabCallback;
   final String? displayText;
 
@@ -56,8 +56,8 @@ class SearchFilter extends StatelessWidget {
         ));
   }
 
-  SearchFilter copyWith(String newFilterValue){
-    return SearchFilter(
+  SearchFilter copyWith(T newFilterValue) {
+    return SearchFilter<T>(
       filterId: filterId,
       filterValue: newFilterValue,
       handleTabCallback: handleTabCallback,

@@ -1,6 +1,7 @@
-import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
+
+import '../global_state/filter_menu_state.dart';
 
 class APIQuery {
   final Logger logger = Logger('WebsocketController');
@@ -15,38 +16,44 @@ class APIQuery {
 
   APIQuery({required this.onDataReceived, required this.onError});
 
-  void search(String? genericQuery, Map<String, SearchFilter> searchFilters) {
+  void search(String? genericQuery, SearchFilters searchFilters) {
     List<String> queryFilters = [];
 
     logger.info("Query skip: $skip");
 
-    if (searchFilters.containsKey('Titel') &&
-        searchFilters['Titel']!.filterValue.isNotEmpty) {
-      queryFilters.add('{"fields":["title"],"query":"${searchFilters['Titel']!.filterValue.toLowerCase()}"}');
+    if (searchFilters.title != null &&
+        searchFilters.title!.filterValue.isNotEmpty) {
+      queryFilters.add(
+          '{"fields":["title"],"query":"${searchFilters.title!.filterValue.toLowerCase()}"}');
     }
 
-    if (searchFilters.containsKey('Thema') &&
-        searchFilters['Thema']!.filterValue.isNotEmpty &&
+    if (searchFilters.topic != null &&
+        searchFilters.topic!.filterValue.isNotEmpty &&
         genericQuery != null &&
         genericQuery.isNotEmpty) {
       //generics -> title only
-      queryFilters.add(
-          '{"fields":["title"],"query":"${genericQuery.toLowerCase()}"}');
+      queryFilters
+          .add('{"fields":["title"],"query":"${genericQuery.toLowerCase()}"}');
     } else if (genericQuery != null && genericQuery.isNotEmpty) {
-      queryFilters.add('{"fields":["topic","title"],"query":"${genericQuery.toLowerCase()}"}');
+      queryFilters.add(
+          '{"fields":["topic","title"],"query":"${genericQuery.toLowerCase()}"}');
     }
 
-    if (searchFilters.containsKey('Thema') &&
-        searchFilters['Thema']!.filterValue.isNotEmpty) {
-      queryFilters.add('{"fields":["topic"],"query":"${searchFilters['Thema']!.filterValue.toLowerCase()}"}');
+    if (searchFilters.topic != null &&
+        searchFilters.topic!.filterValue.isNotEmpty) {
+      queryFilters.add(
+          '{"fields":["topic"],"query":"${searchFilters.topic!.filterValue.toLowerCase()}"}');
     }
 
-    if (searchFilters.containsKey('Sender')) {
-      searchFilters['Sender']!.filterValue.split(";").forEach((channel) =>
-          queryFilters.add('{"fields":["channel"],"query":"${channel.toLowerCase()}"}'));
+    if (searchFilters.channels != null) {
+      for (var channel in searchFilters.channels!.filterValue) {
+        queryFilters
+            .add('{"fields":["channel"],"query":"${channel.toLowerCase()}"}');
+      }
     }
 
-    String request = '{"queries":[${queryFilters.join(',')}],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
+    String request =
+        '{"queries":[${queryFilters.join(',')}],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
 
     logger.info("Firing request: $request");
 
@@ -66,13 +73,13 @@ class APIQuery {
   void execute(String query) {
     http
         .post(
-          requestUri,
-          body: query,
-        )
+      requestUri,
+      body: query,
+    )
         .catchError((err) => onError(err))
         .then((value) {
       //logger.info("Response: " + value.body);
       onDataReceived(value.body);
-        });
+    });
   }
 }

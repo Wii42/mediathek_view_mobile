@@ -65,10 +65,9 @@ class VideoListUtil {
   }
 
   static List<Video> applyLengthFilter(
-      List<Video> videos, SearchFilter searchFilter) {
-    List<String> split = searchFilter.filterValue.split("-");
-    double minLength = double.parse(split.elementAt(0));
-    double maxLength = double.parse(split.elementAt(1));
+      List<Video> videos, SearchFilter<(double, double)> searchFilter) {
+    double minLength, maxLength;
+    (minLength, maxLength) = searchFilter.filterValue;
 
     bool discardMaxLength = false;
     if (maxLength == VideoLengthSlider.MAXIMUM_FILTER_LENGTH) {

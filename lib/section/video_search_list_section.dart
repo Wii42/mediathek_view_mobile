@@ -47,7 +47,8 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
 
   Completer<Null>? refreshCompleter;
 
-  Map<String, SearchFilter> get searchFilters => context.read<FilterMenuState>().searchFilters;
+  SearchFilters get searchFilters =>
+      context.read<FilterMenuState>().searchFilters;
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
 
   @override
   void didChangeDependencies() {
-    if(initialQueryNeeded){
+    if (initialQueryNeeded) {
       api.search(currentUserQueryInput, searchFilters);
       initialQueryNeeded = false;
     }
@@ -193,9 +194,9 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       return;
     } else if (newVideosCount != 0) {
       // client side result filtering
-      if (searchFilters["Länge"] != null) {
+      if (searchFilters.videoLength != null) {
         videos =
-            VideoListUtil.applyLengthFilter(videos, searchFilters["Länge"]!);
+            VideoListUtil.applyLengthFilter(videos, searchFilters.videoLength!);
       }
       int newVideosCount = videos.length - videoListLengthOld;
 
@@ -214,27 +215,37 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     api.search(currentUserQueryInput, searchFilters);
   }
 
-
   // ----------CALLBACKS: FILTER MENU----------------
 
-  void _filterMenuUpdatedCallback(SearchFilter newFilter) {
+  void _filterMenuUpdatedCallback<T extends Object>(SearchFilter<T> newFilter) {
+    bool isNotEmpty = true;
+    if (newFilter is SearchFilter<String>) {
+      isNotEmpty = (newFilter as SearchFilter<String>).filterValue.isNotEmpty;
+    } else if (newFilter is SearchFilter<List<String>>) {
+      isNotEmpty =
+          (newFilter as SearchFilter<List<String>>).filterValue.isNotEmpty;
+    } else if (newFilter is SearchFilter<(double, double)>) {
+      isNotEmpty = (newFilter as SearchFilter<(double, double)>).filterValue !=
+          const (-1.0, -1.0);
+    }
+
     //called whenever a filter in the menu gets a value
-    if (searchFilters[newFilter.filterId] != null) {
-      if (searchFilters[newFilter.filterId]!.filterValue !=
+    if (searchFilters.getById(newFilter.filterId) != null) {
+      if (searchFilters.getById(newFilter.filterId)!.filterValue !=
           newFilter.filterValue) {
         logger.fine(
-            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters[newFilter.filterId]!.filterValue} New : ${newFilter.filterValue}");
+            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters.getById(newFilter.filterId)!.filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
-        searchFilters.remove(newFilter.filterId);
-        if (newFilter.filterValue.isNotEmpty) {
+        searchFilters.removeById(newFilter.filterId);
+        if (isNotEmpty) {
           searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
         }
         //updates state internally
         _createQueryWithClearedVideoList();
       }
-    } else if (newFilter.filterValue.isNotEmpty) {
+    } else if (isNotEmpty) {
       logger.fine(
           "New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
 
@@ -243,11 +254,12 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
       _createQueryWithClearedVideoList();
     }
+    print("SearchFilters: ${searchFilters.toList()}");
   }
 
   void _singleFilterTappedCallback(String id) {
     //remove filter from list and refresh state to trigger build of app bar and list!
-    searchFilters.remove(id);
+    searchFilters.removeById(id);
     HapticFeedback.mediumImpact();
     _createQueryWithClearedVideoList();
   }

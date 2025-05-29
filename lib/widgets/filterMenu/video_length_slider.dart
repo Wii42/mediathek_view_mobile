@@ -3,20 +3,22 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 
 class VideoLengthSlider extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
-  final SearchFilter initialSearchFilter;
+  final SearchFilter<(double, double)> initialSearchFilter;
   late final double initialStart;
   late final double initialEnd;
 
   static const double MAXIMUM_FILTER_LENGTH = 60;
 
-  VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter, {super.key}) {
-    if (initialSearchFilter.filterValue.isEmpty) {
+  VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter,
+      {super.key}) {
+    if (initialSearchFilter.filterValue == (-1.0, -1.0)) {
       initialStart = 0.0;
       initialEnd = MAXIMUM_FILTER_LENGTH;
     } else {
-      List<String> split = initialSearchFilter.filterValue.split("-");
-      initialStart = double.parse(split.elementAt(0));
-      initialEnd = double.parse(split.elementAt(1));
+      double start, end;
+      (start, end) = initialSearchFilter.filterValue;
+      initialStart = start;
+      initialEnd = end;
     }
   }
 
@@ -59,7 +61,7 @@ class _RangeSliderState extends State<VideoLengthSlider> {
       min: 0.0,
       divisions: 10,
       onChangeEnd: (values) {
-        searchFilter = searchFilter.copyWith("${_values.start.round()}-${_values.end.round()}");
+        searchFilter = searchFilter.copyWith((_values.start, _values.end));
         widget.onFilterUpdated(searchFilter);
       },
     );

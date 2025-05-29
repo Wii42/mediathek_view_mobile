@@ -24,7 +24,7 @@ class GradientAppBar extends StatelessWidget {
       {super.key});
 
   List<SearchFilter>? get searchFilters =>
-      filterMenu.searchFilters!.values.toList();
+      filterMenu.searchFilters.toList();
 
   @override
   Widget build(BuildContext context) {

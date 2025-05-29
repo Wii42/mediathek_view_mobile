@@ -7,11 +7,13 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 import 'package:flutter_ws/widgets/filterMenu/video_length_slider.dart';
 import 'package:logging/logging.dart';
 
+import '../../global_state/filter_menu_state.dart';
+
 class FilterMenu extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
   final void Function(String) onSingleFilterTapped;
   final void Function() onChannelsSelected;
-  final Map<String, SearchFilter>? searchFilters;
+  final SearchFilters searchFilters;
 
   const FilterMenu(
       {super.key,
@@ -33,12 +35,12 @@ class _FilterMenuState extends State<FilterMenu> {
 
   @override
   void initState() {
-    _titleFieldController = widget.searchFilters!.containsKey('Titel')
-        ? TextEditingController(text: widget.searchFilters!['Titel']!.filterValue)
+    _titleFieldController = widget.searchFilters.title != null
+        ? TextEditingController(text: widget.searchFilters.title!.filterValue)
         : TextEditingController();
 
-    _themaFieldController = widget.searchFilters!.containsKey('Thema')
-        ? TextEditingController(text: widget.searchFilters!['Thema']!.filterValue)
+    _themaFieldController = widget.searchFilters.topic != null
+        ? TextEditingController(text: widget.searchFilters.topic!.filterValue)
         : TextEditingController();
     super.initState();
   }
@@ -56,8 +58,10 @@ class _FilterMenuState extends State<FilterMenu> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          getFilterMenuRow("Thema", "Thema", _themaFieldController, theme: theme),
-          getFilterMenuRow("Titel", "Titel", _titleFieldController, theme: theme),
+          getFilterMenuRow("Thema", "Thema", _themaFieldController,
+              theme: theme),
+          getFilterMenuRow("Titel", "Titel", _titleFieldController,
+              theme: theme),
           getChannelRow(context),
           getRangeSliderRow(),
         ],
@@ -83,8 +87,8 @@ class _FilterMenuState extends State<FilterMenu> {
                       fontWeight: FontWeight.w700),
                   textAlign: TextAlign.start,
                 ))),
-        widget.searchFilters!["Sender"] == null ||
-                widget.searchFilters!["Sender"]!.filterValue.isEmpty
+        widget.searchFilters.channels == null ||
+                widget.searchFilters.channels!.filterValue.isEmpty
             ? Switch(
                 value: false,
                 onChanged: (bool isEnabled) {
@@ -107,7 +111,8 @@ class _FilterMenuState extends State<FilterMenu> {
   }
 
   Widget getFilterMenuRow(
-      String filterId, String displayText, TextEditingController? controller,{required ThemeData theme}) {
+      String filterId, String displayText, TextEditingController? controller,
+      {required ThemeData theme}) {
     var filterTextFocus = FocusNode();
 
     Row row = Row(
@@ -134,7 +139,7 @@ class _FilterMenuState extends State<FilterMenu> {
             focusNode: filterTextFocus,
             onSubmitted: (String value) {
               widget.onFilterUpdated(
-                SearchFilter(
+                SearchFilter<String>(
                     filterId: filterId,
                     filterValue: value,
                     handleTabCallback: handleTapOnFilter),
@@ -165,7 +170,7 @@ class _FilterMenuState extends State<FilterMenu> {
       if (!filterTextFocus.hasFocus) {
         String currentValueOfFilter = controller!.text;
         widget.onFilterUpdated(
-          SearchFilter(
+          SearchFilter<String>(
               filterId: filterId,
               filterValue: currentValueOfFilter,
               handleTabCallback: handleTapOnFilter),
@@ -180,23 +185,21 @@ class _FilterMenuState extends State<FilterMenu> {
     Set<String> channelSelection =
         (await Navigator.of(context).push(MaterialPageRoute<Set<String>>(
             builder: (BuildContext context) {
-              return ChannelPickerDialog(widget.searchFilters!["Sender"]);
+              return ChannelPickerDialog(widget.searchFilters.channels);
             },
             fullscreenDialog: true,
             settings: RouteSettings(name: "ChannelPicker"))))!;
 
     logger.fine("Channel selection received");
 
-    String filterValue =
-        channelSelection.map((String channel) => channel).join(";");
-
     String displayText = "Sender: ${channelSelection.length}";
 
-    logger.fine("Sender filter: value: $filterValue DisplayText: $displayText");
+    logger.fine(
+        "Sender filter: value: $channelSelection DisplayText: $displayText");
 
-    SearchFilter channelFilter = SearchFilter(
+    SearchFilter<Set<String>> channelFilter = SearchFilter<Set<String>>(
         filterId: "Sender",
-        filterValue: filterValue,
+        filterValue: channelSelection,
         displayText: displayText,
         handleTabCallback: handleTapOnFilter);
 
@@ -204,15 +207,18 @@ class _FilterMenuState extends State<FilterMenu> {
   }
 
   Row getRangeSliderRow() {
-    SearchFilter lengthFilter;
-    if (widget.searchFilters!["Länge"] != null) {
-      lengthFilter = SearchFilter(
+    SearchFilter<(double, double)> lengthFilter;
+    if (widget.searchFilters.videoLength != null) {
+      lengthFilter = SearchFilter<(double, double)>(
           filterId: "Länge",
-          filterValue: widget.searchFilters!["Länge"]!.filterValue,
+          filterValue: widget.searchFilters.videoLength!.filterValue,
           handleTabCallback: handleTapOnFilter);
     } else {
-      lengthFilter = SearchFilter(
-          filterId: "Länge", handleTabCallback: handleTapOnFilter, filterValue: "",);
+      lengthFilter = SearchFilter<(double, double)>(
+        filterId: "Länge",
+        handleTabCallback: handleTapOnFilter,
+        filterValue: (-1.0, -1.0),
+      );
     }
 
     return Row(
