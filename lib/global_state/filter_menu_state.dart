@@ -6,7 +6,9 @@ class FilterMenuState extends ChangeNotifier {
   bool _isFilterMenuOpen;
   final SearchFilters searchFilters = SearchFilters();
 
-  FilterMenuState([this._isFilterMenuOpen = false]);
+  FilterMenuState([this._isFilterMenuOpen = false]) {
+    searchFilters.addListener(() => notifyListeners());
+  }
 
   bool get isFilterMenuOpen => _isFilterMenuOpen;
 
@@ -17,7 +19,7 @@ class FilterMenuState extends ChangeNotifier {
   }
 }
 
-class SearchFilters {
+class SearchFilters extends ChangeNotifier {
   SearchFilter<String>? topic;
   SearchFilter<String>? title;
   SearchFilter<Set<String>>? channels;
@@ -55,21 +57,25 @@ class SearchFilters {
     if (topic?.filterId == filterId) {
       SearchFilter<T> removed = topic as SearchFilter<T>;
       topic = null;
+      notifyListeners();
       return removed;
     }
     if (title?.filterId == filterId) {
       SearchFilter<T> removed = title as SearchFilter<T>;
       title = null;
+      notifyListeners();
       return removed;
     }
     if (channels?.filterId == filterId) {
       SearchFilter<T> removed = channels as SearchFilter<T>;
       channels = null;
+      notifyListeners();
       return removed;
     }
     if (videoLength?.filterId == filterId) {
       SearchFilter<T> removed = videoLength as SearchFilter<T>;
       videoLength = null;
+      notifyListeners();
       return removed;
     }
     return null;
@@ -80,23 +86,23 @@ class SearchFilters {
     SearchFilter<T>? existingFilter = getById<T>(filterId);
     if (existingFilter != null) {
       return existingFilter;
-    } else {
-      SearchFilter<T> newFilter = ifAbsent();
-      switch (newFilter.filterId) {
-        case "Thema":
-          topic = newFilter as SearchFilter<String>;
-          break;
-        case "Titel":
-          title = newFilter as SearchFilter<String>;
-          break;
-        case "Sender":
-          channels = newFilter as SearchFilter<Set<String>>;
-          break;
-        case "Länge":
-          videoLength = newFilter as SearchFilter<(double, double)>;
-          break;
-      }
-      return newFilter;
     }
+    SearchFilter<T> newFilter = ifAbsent();
+    switch (newFilter.filterId) {
+      case "Thema":
+        topic = newFilter as SearchFilter<String>;
+        break;
+      case "Titel":
+        title = newFilter as SearchFilter<String>;
+        break;
+      case "Sender":
+        channels = newFilter as SearchFilter<Set<String>>;
+        break;
+      case "Länge":
+        videoLength = newFilter as SearchFilter<(double, double)>;
+        break;
+    }
+    notifyListeners();
+    return newFilter;
   }
 }
