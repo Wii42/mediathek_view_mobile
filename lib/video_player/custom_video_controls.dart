@@ -15,10 +15,10 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import 'tv_player_controller.dart';
-import 'tv_video_player_value.dart';
 import 'available_tvs_dialog.dart';
 import 'custom_video_progress_bar.dart';
+import 'tv_player_controller.dart';
+import 'tv_video_player_value.dart';
 
 class CustomVideoControls extends StatefulWidget {
   const CustomVideoControls({
@@ -124,8 +124,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     if (tvPlayerController!.value.playbackOnTvStarted) {
       return;
     }
-    AppState? appWideState =
-        context.read<AppState?>();
+    AppState? appWideState = context.read<AppState?>();
     if (appWideState != null) {
       appWideState.databaseManager
           .updatePlaybackPosition(chewieController!.video!, position);
@@ -134,8 +133,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _updateTvPlayerState() {
     AppState? appWideState = context.read<AppState?>();
-    ScaffoldMessengerState scaffoldMessenger =
-        ScaffoldMessenger.of(context);
+    ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     setState(() {
       if (_latestTvPlayerValue != null &&
           _latestTvPlayerValue!.isCurrentlyCheckingTV &&
@@ -154,8 +152,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           !appWideState.isCurrentlyPlayingOnTV &&
           chewieController!.tvPlayerController!.value.isPlaying) {
         appWideState.isCurrentlyPlayingOnTV = true;
-        appWideState.tvCurrentlyPlayingVideo =
-            tvPlayerController!.video;
+        appWideState.tvCurrentlyPlayingVideo = tvPlayerController!.video;
         SnackbarActions.showSuccess(scaffoldMessenger, "Verbunden");
 
         Countly.instance.events.recordEvent("PLAY_VIDEO_ON_TV", null, 1);
@@ -168,8 +165,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
       // add available tvs to global state - needed when navigation out of the player screen
       if (appWideState != null) {
-        appWideState.availableTvs =
-            _latestTvPlayerValue!.availableTvs;
+        appWideState.availableTvs = _latestTvPlayerValue!.availableTvs;
       }
 
       // case: playback on TV manually disconnected. Start playing locally again
@@ -189,7 +185,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           chewieController!.tvPlayerController!.value.errorDescription !=
               null) {
         appWideState?.isCurrentlyPlayingOnTV = false;
-        SnackbarActions.showError(scaffoldMessenger, "Verbindung nicht möglich.");
+        SnackbarActions.showError(
+            scaffoldMessenger, "Verbindung nicht möglich.");
 
         Countly.instance.events.recordEvent("PLAY_VIDEO_ON_TV_FAILED", null, 1);
       }
@@ -282,18 +279,25 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         isWaitingUntilTVPlaybackStarts ||
         isLagging;
 
-    return GestureDetector(
-      onTap: () {
-        _cancelAndRestartTimer();
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (_, __) {
+        _onExit();
       },
-      child: AbsorbPointer(
-        absorbing: _hideStuff,
-        child: Column(
-          children: <Widget>[
-            _buildTopBar(backgroundColor, iconColor, barHeight, buttonPadding),
-            _buildHitArea(isLoading),
-            _buildBottomBar(backgroundColor, iconColor, barHeight),
-          ],
+      child: GestureDetector(
+        onTap: () {
+          _cancelAndRestartTimer();
+        },
+        child: AbsorbPointer(
+          absorbing: _hideStuff,
+          child: Column(
+            children: <Widget>[
+              _buildTopBar(
+                  backgroundColor, iconColor, barHeight, buttonPadding),
+              _buildHitArea(isLoading),
+              _buildBottomBar(backgroundColor, iconColor, barHeight),
+            ],
+          ),
         ),
       ),
     );
@@ -437,16 +441,11 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                 color: iconColor,
                 iconSize: 20.0,
                 onPressed: () {
-                  flutterPlayerController!.pause();
-                  flutterPlayerController!
-                      .removeListener(_updateFlutterPlayerState);
-                  tvPlayerController!.removeListener(_updateTvPlayerState);
-                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                      overlays: SystemUiOverlay.values);
-
-                  //chewieController.toggleFullScreen();
-                  Navigator.pop(context);
-                  WakelockPlus.disable();
+                  _onExit();
+                  NavigatorState navigator = Navigator.of(context);
+                  if (navigator.canPop()) {
+                    navigator.pop();
+                  }
                 },
               ),
             ),
@@ -454,6 +453,18 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         ),
       ),
     );
+  }
+
+  void _onExit() {
+    flutterPlayerController!.pause();
+    flutterPlayerController!.removeListener(_updateFlutterPlayerState);
+    tvPlayerController!.removeListener(_updateTvPlayerState);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+
+    //chewieController?.toggleFullScreen();
+    WakelockPlus.disable();
+    print("EXIT CUSTOM VIDEO CONTROLS");
   }
 
   Expanded _buildHitArea(bool showLoadingIndicator) {
@@ -486,8 +497,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Image(
-                        image:
-                            AssetImage("assets/launcher/ic_launcher.png"),
+                        image: AssetImage("assets/launcher/ic_launcher.png"),
                       ),
                       Text(
                         "Video wird auf dem TV abgespielt.",

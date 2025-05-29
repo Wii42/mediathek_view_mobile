@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -126,7 +127,8 @@ class CustomChewieController extends ChangeNotifier {
 
   /// When the video playback runs  into an error, you can build a custom
   /// error message.
-  final Widget Function(BuildContext context, String? errorMessage)? errorBuilder;
+  final Widget Function(BuildContext context, String? errorMessage)?
+      errorBuilder;
 
   /// The Aspect Ratio of the Video. Important to get the correct size of the
   /// video!
@@ -175,8 +177,8 @@ class CustomChewieController extends ChangeNotifier {
   final bool? isCurrentlyPlayingOnTV;
 
   static CustomChewieController of(BuildContext context) {
-    final chewieControllerProvider =
-        context.dependOnInheritedWidgetOfExactType<_ChewieControllerProvider>()!;
+    final chewieControllerProvider = context
+        .dependOnInheritedWidgetOfExactType<_ChewieControllerProvider>()!;
 
     return chewieControllerProvider.controller;
   }
