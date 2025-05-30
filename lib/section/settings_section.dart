@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/main.dart';
@@ -44,8 +43,7 @@ class SettingsSection extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: const Icon(Icons.attach_money),
-                    title:
-                        Text('Spenden / Donate', style: aboutSectionTitle),
+                    title: Text('Spenden / Donate', style: aboutSectionTitle),
                     subtitle: const Text(
                         'Dir gefällt die App? Ich würde mich über eine Spende freuen.'),
                   ),
@@ -55,8 +53,8 @@ class SettingsSection extends StatelessWidget {
                       children: <Widget>[
                         TextButton(
                           style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all<Color>(
-                                  Colors.blue)),
+                              backgroundColor:
+                                  WidgetStateProperty.all<Color>(Colors.blue)),
                           child: Text('Paypal', style: body2TextStyle),
                           onPressed: () {
                             _launchURL(payPal);
@@ -102,7 +100,8 @@ class SettingsSection extends StatelessWidget {
   }
 
   Future<void> _launchURL(Uri url) async {
-    if (await canLaunchUrl(url) || true) { //  || true is a workaround for android
+    if (await canLaunchUrl(url) || true) {
+      //  || true is a workaround for android
       await launchUrl(url);
     } else {
       logger.warning('Could not launch $url');
@@ -120,14 +119,9 @@ class SettingsState extends StatefulWidget {
 }
 
 class _SettingsStateState extends State<SettingsState> {
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppState>(
-      builder: (context, appWideState, child) {
-      bool hasCountlyConsent = appWideState.sharedPreferences
-          .getBool(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT)?? false;
-
+    return Consumer<AppState>(builder: (context, appWideState, child) {
       return Card(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -144,32 +138,27 @@ class _SettingsStateState extends State<SettingsState> {
               child: Transform.scale(
                 scale: 1.5,
                 child: Switch(
-                  value: hasCountlyConsent,
-                  onChanged: (value) {
-                    setState(() {
-                      appWideState.sharedPreferences.setBool(
-                          HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT,
-                          value);
+                  value: appWideState.hasCountlyPermission,
+                  onChanged: (value) async {
+                    appWideState.hasCountlyPermission = value;
 
-                      if (appWideState.sharedPreferences.containsKey(
-                          HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
-                          appWideState.sharedPreferences.containsKey(
-                              HomePageState
-                                  .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
-                        String? countlyAppKey = appWideState.sharedPreferences
-                            .getString(HomePageState
-                            .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
-                        String? countlyAPI =
-                        appWideState.sharedPreferences.getString(
-                            HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API);
-                        if (countlyAppKey != null && countlyAPI != null) {
-                          return CountlyUtil.initializeCountly(
-                              widget.logger, countlyAPI, countlyAppKey, value);
-                        }
+                    if (appWideState.sharedPreferences.containsKey(
+                            HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
+                        appWideState.sharedPreferences.containsKey(HomePageState
+                            .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
+                      String? countlyAppKey = appWideState.sharedPreferences
+                          .getString(HomePageState
+                              .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
+                      String? countlyAPI = appWideState.sharedPreferences
+                          .getString(
+                              HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API);
+                      if (countlyAppKey != null && countlyAPI != null) {
+                        return CountlyUtil.initializeCountly(
+                            widget.logger, countlyAPI, countlyAppKey, value);
                       }
-                      CountlyUtil.loadCountlyInformationFromGithub(
-                          widget.logger, appWideState, value);
-                    });
+                    }
+                    CountlyUtil.loadCountlyInformationFromGithub(
+                        widget.logger, appWideState, value);
                   },
                   activeTrackColor: Colors.lightGreenAccent,
                   activeColor: Colors.green,
@@ -180,6 +169,5 @@ class _SettingsStateState extends State<SettingsState> {
         ),
       );
     });
-      }
-
+  }
 }

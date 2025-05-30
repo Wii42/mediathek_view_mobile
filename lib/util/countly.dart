@@ -25,8 +25,7 @@ class CountlyUtil {
 
     logger.info("Loaded Countly data from Github");
 
-    appWideState.sharedPreferences.setBool(
-        HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, consentGiven);
+    appWideState.hasCountlyPermission = consentGiven;
     appWideState.sharedPreferences
         .setString(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
     appWideState.sharedPreferences.setString(
@@ -75,7 +74,9 @@ class CountlyUtil {
 
   static void countlyRejected(Logger logger) {
     Countly.giveConsent(["events"]);
-    Countly.instance.events.recordEvent("REPORTING_TURNED_OFF", null, 1).then((value) {
+    Countly.instance.events
+        .recordEvent("REPORTING_TURNED_OFF", null, 1)
+        .then((value) {
       Countly.removeAllConsent();
       Countly.clearAllTraces();
       Countly.stop();

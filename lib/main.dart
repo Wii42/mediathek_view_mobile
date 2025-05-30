@@ -324,10 +324,7 @@ class HomePageState extends State<MyHomePage>
             .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
       logger.info("setup countly -4");
 
-      bool countlyConsent = appWideState!.sharedPreferences
-          .getBool(SHARED_PREFERENCE_KEY_COUNTLY_CONSENT)!;
-
-      if (!countlyConsent) {
+      if (!appWideState!.hasCountlyPermission) {
         logger.info("Countly - no consent.");
         return;
       }

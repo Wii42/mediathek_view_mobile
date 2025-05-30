@@ -15,6 +15,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../main.dart';
+
 class VideoListState extends ChangeNotifier {
   final Logger logger = Logger('VideoListState');
   final Set<String> _extendedListTiles;
@@ -48,11 +50,11 @@ class AppState extends ChangeNotifier {
   final Logger logger = Logger('AppState');
 
   AppState({
-    this.isCurrentlyPlayingOnTV = false,
+    bool isCurrentlyPlayingOnTV = false,
     this.tvCurrentlyPlayingVideo,
     this.availableTvs = const [],
     this.favoriteChannels = const {},
-  });
+  }) : _isCurrentlyPlayingOnTV = isCurrentlyPlayingOnTV;
 
   TargetPlatform? _targetPlatform;
   late final Directory? localDirectory;
@@ -70,7 +72,7 @@ class AppState extends ChangeNotifier {
 
   // Samsung TV cast
   final SamsungTVCastManager samsungTVCastManager = SamsungTVCastManager();
-  bool isCurrentlyPlayingOnTV;
+  bool _isCurrentlyPlayingOnTV;
   Video? tvCurrentlyPlayingVideo;
   List<String> availableTvs;
 
@@ -85,6 +87,23 @@ class AppState extends ChangeNotifier {
 
   set targetPlatform(TargetPlatform? platform) {
     _targetPlatform = platform;
+    notifyListeners();
+  }
+
+  bool get isCurrentlyPlayingOnTV => _isCurrentlyPlayingOnTV;
+  set isCurrentlyPlayingOnTV(bool isPlaying) {
+    _isCurrentlyPlayingOnTV = isPlaying;
+    notifyListeners();
+  }
+
+  bool get hasCountlyPermission =>
+      sharedPreferences
+          .getBool(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT) ??
+      false;
+
+  set hasCountlyPermission(bool permission) {
+    sharedPreferences.setBool(
+        HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, permission);
     notifyListeners();
   }
 
@@ -105,12 +124,12 @@ class AppState extends ChangeNotifier {
     await Future.wait(
         [getPlatformAndSetDirectory(), initDBAndDownloadManager()]);
 
-
     _initialized = true;
   }
 
   Future<void> initDBAndDownloadManager() async {
-    await initializeDatabase().then((_) => logger.info("Database initialized: ${databaseManager.db != null}"));
+    await initializeDatabase().then((_) =>
+        logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
     downloadManager.startListeningToDownloads(this);
 
