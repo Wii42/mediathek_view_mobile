@@ -2,7 +2,8 @@
 
 This is a fork of the official MediathekViewMobile repository, aiming to migrate the project to using a current version of Flutter and Dart.
 
-Currently, the app is working on Flutter 3.39.3, but not all features are working yet. Video watching in the player is possible for most channels; however, downloading seems not to work, as well as the thumbnails are not showing up.
+Currently, the app is working on Flutter 3.32.0, but not all features are working yet.
+Video watching in the player is possible for most channels; however, downloading seems not to work.
 
 # About MediathekViewMobile
 
@@ -60,7 +61,4 @@ You can install the application via XCode or by executing `flutter run --release
  
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/danielfoehr)
 
-
-#### TODOs:
-- [ ] Reimplement the swiper in the download manager, removed due to missing null safe version of `flutter_swiper`
 

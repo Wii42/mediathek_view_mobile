@@ -60,7 +60,7 @@ class _ListCardState extends State<ListCard> {
   Widget build(BuildContext context) {
     return Consumer2<AppState, VideoListState>(
       builder: (context, appState, videoListState, child) {
-        Orientation orientation = MediaQuery.of(context).orientation;
+        //Orientation orientation = MediaQuery.of(context).orientation;
 
         subscribeToProgressChannel();
         loadCurrentStatusFromDatabase(widget.video.id, appState);
