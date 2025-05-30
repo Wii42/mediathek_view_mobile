@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
@@ -171,6 +172,8 @@ class HomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.white));
     appWideState = Provider.of<AppState>(context, listen: false);
 
     if (isFirstStart) {
