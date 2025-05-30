@@ -254,7 +254,6 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
       _createQueryWithClearedVideoList();
     }
-    print("SearchFilters: ${searchFilters.toList()}");
   }
 
   void _singleFilterTappedCallback(String id) {

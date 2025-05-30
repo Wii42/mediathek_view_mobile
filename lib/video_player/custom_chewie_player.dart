@@ -219,7 +219,6 @@ class CustomChewieController extends ChangeNotifier {
 
   void exitFullScreen() {
     _isFullScreen = false;
-    print("EXITING FULLSCREEN");
     notifyListeners();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: systemOverlaysAfterFullScreen);
