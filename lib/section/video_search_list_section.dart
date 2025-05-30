@@ -88,6 +88,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
                     onFilterUpdated: _filterMenuUpdatedCallback,
                     onSingleFilterTapped: _singleFilterTappedCallback,
                     onChannelsSelected: () {},
+                    fontColor: Colors.black87,
                   ),
                   videos.length,
                   totalQueryResults,

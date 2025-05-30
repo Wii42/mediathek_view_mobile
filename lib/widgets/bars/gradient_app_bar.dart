@@ -15,16 +15,13 @@ class GradientAppBar extends StatelessWidget {
   final FilterMenu filterMenu;
   final TickerProviderStateMixin mixin;
 
-  GradientAppBar(
-      this.mixin,
-      this.controller,
-      this.filterMenu,
-      this.currentAmountOfVideosInList,
-      this.totalAmountOfVideosForSelection,
+  GradientAppBar(this.mixin, this.controller, this.filterMenu,
+      this.currentAmountOfVideosInList, this.totalAmountOfVideosForSelection,
       {super.key});
 
-  List<SearchFilter>? get searchFilters =>
-      filterMenu.searchFilters.toList();
+  List<SearchFilter>? get searchFilters => filterMenu.searchFilters.toList();
+
+  Color get fontColor => filterMenu.fontColor;
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +48,14 @@ class GradientAppBar extends StatelessWidget {
                     padding: EdgeInsets.only(right: 20.0),
                     child: TextField(
                       style: TextStyle(
-                          color: Colors.white,
+                          color: fontColor,
                           fontSize: 18.0,
                           fontWeight: FontWeight.w700),
                       controller: controller,
                       decoration: InputDecoration(
                         hintStyle: TextStyle(
                             fontSize: 18.0,
-                            color: Colors.white,
+                            color: fontColor,
                             fontStyle: FontStyle.italic),
                         suffixIcon: IconButton(
                             color: controller!.text.isNotEmpty
@@ -71,9 +68,11 @@ class GradientAppBar extends StatelessWidget {
                               Icons.clear,
                               size: 30.0,
                             )),
-                        labelStyle: hintTextStyle.copyWith(color: Colors.white),
+                        labelStyle: hintTextStyle.copyWith(color: fontColor),
                         icon: IconButton(
-                          color: state.isFilterMenuOpen ? Colors.red : Colors.black,
+                          color: state.isFilterMenuOpen
+                              ? Colors.red
+                              : Colors.black,
                           icon: Icon(Icons.search),
                           iconSize: 30.0,
                           onPressed: () {
@@ -87,7 +86,7 @@ class GradientAppBar extends StatelessWidget {
                 ),
                 Text(
                   totalAmountOfVideosForSelection.toString(),
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: fontColor),
                 )
               ],
             ),

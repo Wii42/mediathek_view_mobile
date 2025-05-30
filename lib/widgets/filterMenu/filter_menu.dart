@@ -14,13 +14,15 @@ class FilterMenu extends StatefulWidget {
   final void Function(String) onSingleFilterTapped;
   final void Function() onChannelsSelected;
   final SearchFilters searchFilters;
+  final Color fontColor;
 
   const FilterMenu(
       {super.key,
       required this.onFilterUpdated,
       required this.searchFilters,
       required this.onSingleFilterTapped,
-      required this.onChannelsSelected});
+      required this.onChannelsSelected,
+      this.fontColor = Colors.white});
 
   @override
   State<FilterMenu> createState() => _FilterMenuState();
@@ -82,7 +84,7 @@ class _FilterMenuState extends State<FilterMenu> {
                 child: Text(
                   "Sender",
                   style: TextStyle(
-                      color: Colors.white,
+                      color: widget.fontColor,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w700),
                   textAlign: TextAlign.start,
@@ -127,7 +129,7 @@ class _FilterMenuState extends State<FilterMenu> {
             child: Text(
               displayText,
               style: TextStyle(
-                  color: Colors.white,
+                  color: widget.fontColor,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w700),
               textAlign: TextAlign.start,
@@ -146,7 +148,7 @@ class _FilterMenuState extends State<FilterMenu> {
               );
             },
             style: TextStyle(
-                color: Colors.white,
+                color: widget.fontColor,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w700),
             controller: controller,
@@ -233,7 +235,7 @@ class _FilterMenuState extends State<FilterMenu> {
             child: Text(
               "Länge",
               style: TextStyle(
-                  color: Colors.white,
+                  color: widget.fontColor,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w700),
               textAlign: TextAlign.start,
