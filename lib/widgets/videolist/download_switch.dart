@@ -39,13 +39,13 @@ class DownloadSwitch extends StatefulWidget {
 
   @override
   State<DownloadSwitch> createState() {
-    return DownloadSwitchState(Uuid());
+    return DownloadSwitchState();
   }
 }
 
 class DownloadSwitchState extends State<DownloadSwitch> {
   bool permissionDenied = false;
-  Uuid uuid;
+  Uuid uuid = Uuid();
   late bool isLivestreamVideo;
   DownloadValue? _latestDownloadValue;
   DownloadController? downloadController;
@@ -53,7 +53,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   late bool isDownloadedAlready;
   late bool isCurrentlyDownloading;
 
-  DownloadSwitchState(this.uuid);
+  DownloadSwitchState();
 
   @override
   void dispose() {
