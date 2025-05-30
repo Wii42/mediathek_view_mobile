@@ -87,7 +87,8 @@ class DownloadManager {
     send.send([id, status, progress]);
   }
 
-  void handleDownloadProgress(String? taskId, DownloadTaskStatus? status, int? progress) {
+  void handleDownloadProgress(
+      String? taskId, DownloadTaskStatus? status, int? progress) {
     logger.fine(
         "Received download update with status $status and progress $progress");
     String? videoId = cacheTask[taskId];
@@ -205,9 +206,8 @@ class DownloadManager {
     rememberedFailedVideoDownload = video;
 
     //ask for user permission
-    bool successfullyAsked = await appWideState
-        .filesystemPermissionManager
-        .askUserForPermission();
+    bool successfullyAsked =
+        await appWideState.filesystemPermissionManager.askUserForPermission();
 
     if (!successfullyAsked) {
       logger.severe("Failed to ask user for Filesystem Permissions");
@@ -215,9 +215,8 @@ class DownloadManager {
     }
 
     // subscribe to event stream to catch update - if granted by user then start download
-    Stream<dynamic> broadcastStream = appWideState
-        .filesystemPermissionManager
-        .getBroadcastStream()!;
+    Stream<dynamic> broadcastStream =
+        appWideState.filesystemPermissionManager.getBroadcastStream()!;
     broadcastStream.listen(
       (result) {
         String res = result['Granted'];
@@ -230,7 +229,8 @@ class DownloadManager {
           downloadFile(rememberedFailedVideoDownload);
         } else {
           logger.info("Filesystem Permission denied by User");
-          Countly.instance.events.recordEvent("FILESYSTEM_PERMISSION_DENIED", null, 1);
+          Countly.instance.events
+              .recordEvent("FILESYSTEM_PERMISSION_DENIED", null, 1);
         }
       },
       onError: (e) {
@@ -340,7 +340,7 @@ class DownloadManager {
       filepath = Uri.file("${entity.filePath}/${entity.fileName}");
     }
 
-    print("file to be deleted uri: $filepath");
+    logger.fine("file to be deleted uri: $filepath");
     File fileToBeDeleted = File.fromUri(filepath);
 
     if (!await fileToBeDeleted.exists()) {

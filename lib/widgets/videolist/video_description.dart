@@ -13,7 +13,8 @@ class VideoDescription extends StatelessWidget {
   final double verticalOffset;
 
   const VideoDescription(
-      this.video, this.channelPictureImagePath, this.verticalOffset, {super.key});
+      this.video, this.channelPictureImagePath, this.verticalOffset,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class VideoDescription extends StatelessWidget {
                   bottomLeft: const Radius.circular(40.0),
                   bottomRight: const Radius.circular(40.0),
                   topRight: const Radius.circular(40.0)),
-              color: Color(0xffffbf00).withOpacity(0.4),
+              color: Color(0xffffbf00).withAlpha(100),
             ),
             child: Padding(
               padding: const EdgeInsets.only(
@@ -64,8 +65,8 @@ class VideoDescription extends StatelessWidget {
                       video.title!,
                       style: Theme.of(context)
                           .textTheme
-                          .titleLarge?.
-                          copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge
+                          ?.copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     //getSpacedContentRow(video.title),
                     getDivider(),
@@ -74,8 +75,8 @@ class VideoDescription extends StatelessWidget {
                       video.topic!,
                       style: Theme.of(context)
                           .textTheme
-                          .titleLarge?.
-                          copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge
+                          ?.copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
                     getCaption("Länge", textTheme),
@@ -83,8 +84,8 @@ class VideoDescription extends StatelessWidget {
                       Calculator.calculateDuration(video.duration),
                       style: Theme.of(context)
                           .textTheme
-                          .titleLarge?.
-                          copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge
+                          ?.copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     getDivider(),
                     getCaption("Ausgestrahlt", textTheme),
@@ -92,8 +93,8 @@ class VideoDescription extends StatelessWidget {
                       Calculator.calculateTimestamp(video.timestamp!),
                       style: Theme.of(context)
                           .textTheme
-                          .titleLarge?.
-                          copyWith(color: Colors.black, fontSize: 15.0),
+                          .titleLarge
+                          ?.copyWith(color: Colors.black, fontSize: 15.0),
                     ),
                     video.description != null && video.description!.isNotEmpty
                         ? getDivider()
@@ -104,17 +105,22 @@ class VideoDescription extends StatelessWidget {
                     video.description != null && video.description!.isNotEmpty
                         ? Text('"${video.description}"',
                             textAlign: TextAlign.left,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: Colors.black,
-                                fontSize: 15.0,
-                                fontStyle: FontStyle.italic))
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                    color: Colors.black,
+                                    fontSize: 15.0,
+                                    fontStyle: FontStyle.italic))
                         : Container(),
                     getDivider(),
                     video.url_website != null
                         ? TextButton(
-                      style: TextButton.styleFrom(backgroundColor: Colors.grey[800]),
+                            style: TextButton.styleFrom(
+                                backgroundColor: Colors.grey[800]),
                             child: Text('Website', style: body2TextStyle),
-                            onPressed: () => _launchURL(Uri.parse(video.url_website!)),
+                            onPressed: () =>
+                                _launchURL(Uri.parse(video.url_website!)),
                           )
                         : Container(),
                     getVerticalDividerLine(top: 15.0),

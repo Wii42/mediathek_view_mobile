@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:countly_flutter/countly_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
@@ -19,7 +20,6 @@ import 'package:uuid/uuid.dart';
 import 'global_state/filter_menu_state.dart';
 
 void main() async {
-  Logger.root.level = Level.ALL;
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
     AppState appState = AppState();
@@ -44,7 +44,9 @@ class MyApp extends StatelessWidget {
     //Setup global log levels
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((LogRecord rec) {
-      print('${rec.level.name}: ${rec.time}: ${rec.message}');
+      if (kDebugMode) {
+        print('${rec.level.name}: ${rec.time}: ${rec.message}');
+      }
     });
 
     Uuid uuid = Uuid();
@@ -304,7 +306,7 @@ class HomePageState extends State<MyHomePage>
     prefs = await SharedPreferences.getInstance();
     var firstStart = prefs.getBool('firstStart');
     if (firstStart == null) {
-      print("First start");
+      logger.info("First start");
       setState(() {
         isFirstStart = true;
       });

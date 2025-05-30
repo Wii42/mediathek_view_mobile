@@ -67,7 +67,6 @@ class CountlyUtil {
   static void startCountly(Logger logger) {
     //Features dependent on init should be set here, for e.g Push notifications and consent.
     Countly.giveAllConsent();
-    Countly.start();
     countlySessionStarted = true;
     logger.info("COUNTLY STARTED");
   }
@@ -79,7 +78,6 @@ class CountlyUtil {
         .then((value) {
       Countly.removeAllConsent();
       Countly.clearAllTraces();
-      Countly.stop();
       logger.info("Countly removed consent");
       countlySessionStarted = false;
     });

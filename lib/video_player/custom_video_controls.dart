@@ -484,7 +484,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
                     bottomLeft: const Radius.circular(40.0),
                     bottomRight: const Radius.circular(40.0),
                     topRight: const Radius.circular(40.0)),
-                color: Colors.grey.withOpacity(0.4),
+                color: Colors.grey.withAlpha(100),
               ),
               child: Padding(
                 padding: const EdgeInsets.only(

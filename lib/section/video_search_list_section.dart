@@ -171,9 +171,9 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       logger.fine("Refresh operation finished.");
       HapticFeedback.lightImpact();
     }
-    print("start");
+    logger.fine("start");
     QueryResult queryResult = JSONParser.parseQueryResult(data);
-    print("finished");
+    logger.fine("finished");
 
     List<Video> newVideosFromQuery = queryResult.videos as List<Video>;
     totalQueryResults = queryResult.queryInfo.totalResults;
