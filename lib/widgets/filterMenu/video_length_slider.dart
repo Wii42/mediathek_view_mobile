@@ -23,24 +23,23 @@ class VideoLengthSlider extends StatefulWidget {
   }
 
   @override
-  State<VideoLengthSlider> createState() =>
-      _RangeSliderState(RangeValues(initialStart, initialEnd));
+  State<VideoLengthSlider> createState() => _RangeSliderState();
 }
 
 class _RangeSliderState extends State<VideoLengthSlider> {
   late RangeValues _values;
   late SearchFilter searchFilter;
 
-  _RangeSliderState(RangeValues rangeValues) {
-    _values = rangeValues;
-  }
+  _RangeSliderState();
 
   @override
   void initState() {
     searchFilter = widget.initialSearchFilter;
+    _values = RangeValues(widget.initialStart, widget.initialEnd);
     super.initState();
   }
 
+  // TODO: reset the slider to its initial state when the filter is cleared
   @override
   Widget build(BuildContext context) {
     return RangeSlider(
