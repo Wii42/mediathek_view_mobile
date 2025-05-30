@@ -12,8 +12,15 @@ class ChannelPickerDialog extends StatefulWidget {
   ChannelPickerDialog(this.filterPreSelection, {super.key});
 
   @override
-  ChannelPickerDialogState createState() {
-    logger.fine("Creating state for channel picker");
+  ChannelPickerDialogState createState() => ChannelPickerDialogState();
+
+  Set<String> extractChannelNamesFromCurrentFilter() {
+    Set<String> selectedChannels = filterPreSelection?.filterValue ?? {};
+    logger.fine("${selectedChannels.length} filters pre-selected");
+    return selectedChannels;
+  }
+
+  Set<Channel> getSelectedChannels() {
     Set<String> selectedChannels = extractChannelNamesFromCurrentFilter();
     Set<Channel> channels = {};
 
@@ -21,19 +28,20 @@ class ChannelPickerDialog extends StatefulWidget {
         Channel(
             channelName, assetName, selectedChannels.contains(channelName))));
 
-    return ChannelPickerDialogState(channels);
-  }
-
-  Set<String> extractChannelNamesFromCurrentFilter() {
-    Set<String> selectedChannels = filterPreSelection?.filterValue ?? {};
-    logger.fine("${selectedChannels.length} filters pre-selected");
-    return selectedChannels;
+    return channels;
   }
 }
 
 class ChannelPickerDialogState extends State<ChannelPickerDialog> {
-  Set<Channel> channels;
-  ChannelPickerDialogState(this.channels);
+  late Set<Channel> channels;
+  ChannelPickerDialogState();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize channels with the pre-selected filter values
+    channels = widget.getSelectedChannels();
+  }
 
   Widget itemBuilder(BuildContext context, int index) {
     return ChannelListTile(channels.elementAt(index));
