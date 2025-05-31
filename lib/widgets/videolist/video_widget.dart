@@ -121,17 +121,14 @@ class VideoWidgetState extends State<VideoWidget> {
                 bottom: 0,
                 left: 0.0,
                 right: 0.0,
-                child: Opacity(
-                  opacity: 0.7,
-                  child: getBottomBar(
-                      context,
-                      videoProgressEntity,
-                      widget.video.id,
-                      widget.video.durationAsDuration,
-                      widget.video.title!,
-                      widget.video.timestampAsDateTime,
-                      widget.defaultImageAssetPath!),
-                ),
+                child: getBottomBar(
+                    context,
+                    videoProgressEntity,
+                    widget.video.id,
+                    widget.video.durationAsDuration,
+                    widget.video.title!,
+                    widget.video.timestampAsDateTime,
+                    widget.defaultImageAssetPath!),
               ),
               Positioned(
                   bottom: 0.0,
@@ -198,7 +195,7 @@ class VideoWidgetState extends State<VideoWidget> {
     }
   }
 
-  Container getBottomBar(
+  Widget getBottomBar(
       BuildContext context,
       VideoProgressEntity? playbackProgress,
       String? id,
@@ -207,7 +204,7 @@ class VideoWidgetState extends State<VideoWidget> {
       DateTime? timestamp,
       String assetPath) {
     return Container(
-      color: Colors.grey[800],
+      color: Colors.grey[800]?.withAlpha(177),
       child: Column(
         children: <Widget>[
           playbackProgress != null

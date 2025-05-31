@@ -214,18 +214,15 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                   bottom: 0,
                   left: 0.0,
                   right: 0.0,
-                  child: Opacity(
-                    opacity: 0.7,
-                    child: Container(
-                      color: Colors.grey[800],
-                      child: MetaInfoListTile.getVideoMetaInformationListTile(
-                          context,
-                          widget.video.durationAsDuration,
-                          widget.video.title ?? "",
-                          widget.video.timestampAsDateTime,
-                          widget.defaultImageAssetPath!,
-                          widget.entity != null),
-                    ),
+                  child: Container(
+                    color: Colors.grey[800]?.withAlpha(177),
+                    child: MetaInfoListTile.getVideoMetaInformationListTile(
+                        context,
+                        widget.video.durationAsDuration,
+                        widget.video.title ?? "",
+                        widget.video.timestampAsDateTime,
+                        widget.defaultImageAssetPath!,
+                        widget.entity != null),
                   ),
                 ),
                 Positioned(
