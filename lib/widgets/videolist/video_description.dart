@@ -72,7 +72,7 @@ class VideoDescription extends StatelessWidget {
                     getDivider(),
                     getCaption("Thema", textTheme),
                     Text(
-                      video.topic!,
+                      video.topic ?? "",
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -89,13 +89,15 @@ class VideoDescription extends StatelessWidget {
                     ),
                     getDivider(),
                     getCaption("Ausgestrahlt", textTheme),
-                    Text(
-                      Calculator.calculateTimestamp(video.timestamp!),
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: Colors.black, fontSize: 15.0),
-                    ),
+                    if (video.timestamp != null)
+                      Text(
+                        Calculator.calculateTimestamp(
+                            video.timestampAsDateTime!),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(color: Colors.black, fontSize: 15.0),
+                      ),
                     video.description != null && video.description!.isNotEmpty
                         ? getDivider()
                         : Container(),

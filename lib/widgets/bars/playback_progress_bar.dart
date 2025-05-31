@@ -9,7 +9,8 @@ class PlaybackProgressBar extends StatelessWidget {
   final bool backgroundIsTransparent;
 
   PlaybackProgressBar(this.playbackProgressInMilliseconds,
-      this.totalVideoLengthInSeconds, this.backgroundIsTransparent, {super.key});
+      this.totalVideoLengthInSeconds, this.backgroundIsTransparent,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class PlaybackProgressBar extends StatelessWidget {
     }
 
     return Container(
-        constraints: BoxConstraints.expand(height: 10.0),
+        constraints: BoxConstraints.expand(height: 5.0),
         child: LinearProgressIndicator(
             value: calculateProgress(
                 playbackProgressInMilliseconds!, totalVideoLengthInSeconds!),

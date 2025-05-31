@@ -270,35 +270,14 @@ class DownloadSectionState extends State<DownloadSection> {
     );
   }
 
-  Theme getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
-    return Theme(
-      //data: new ThemeData(primarySwatch: Colors.red),
-      data: ThemeData(
-          primarySwatch: MaterialColor(
-        0xffffbf00,
-        const <int, Color>{
-          50: Color(0xFFFAFAFA),
-          100: Color(0xFFF5F5F5),
-          200: Color(0xFFEEEEEE),
-          300: Color(0xFFE0E0E0),
-          350: Color(0xFFD6D6D6),
-          400: Color(0xFFBDBDBD),
-          500: Color(0xFF9E9E9E),
-          600: Color(0xFF757575),
-          700: Color(0xFF616161),
-          800: Color(0xFF424242),
-          850: Color(0xFF303030),
-          900: Color(0xFF212121),
-        },
-      )),
-      child: Swiper(
-        itemBuilder: (BuildContext context, int index) {
-          return watchHistoryItems[index];
-        },
-        itemCount: watchHistoryItems.length,
-        pagination: SwiperPagination(),
-        control: SwiperControl(),
-      ),
+  Widget getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
+    return Swiper(
+      itemBuilder: (BuildContext context, int index) {
+        return watchHistoryItems[index];
+      },
+      itemCount: watchHistoryItems.length,
+      pagination: SwiperPagination(),
+      control: SwiperControl(),
     );
   }
 

@@ -22,14 +22,10 @@ class Calculator {
     }
   }
 
-  static String calculateTimestamp(int timestamp) {
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
-    var minutes =
-        time.minute < 9 ? "0${time.minute}" : time.minute.toString();
+  static String calculateTimestamp(DateTime time) {
+    var minutes = time.minute < 9 ? "0${time.minute}" : time.minute.toString();
     var day = time.day < 9 ? "0${time.day}" : time.day.toString();
-    var month =
-        time.month < 9 ? "0${time.month}" : time.month.toString();
+    var month = time.month < 9 ? "0${time.month}" : time.month.toString();
 
     return "$day.$month.${time.year} um ${time.hour}:$minutes";
   }

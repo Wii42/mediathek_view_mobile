@@ -14,6 +14,9 @@ class Video {
   String? url_video;
   String? url_subtitle;
 
+  DateTime? get timestampAsDateTime => timestamp != null
+      ? DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000, isUtc: true)
+      : null;
 
   Video(this.id);
 

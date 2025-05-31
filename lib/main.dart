@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
     const title = 'MediathekViewMobile';
 
     //Setup global log levels
-    Logger.root.level = Level.INFO;
+    Logger.root.level = Level.WARNING;
     Logger.root.onRecord.listen((LogRecord rec) {
       if (kDebugMode) {
         print('${rec.level.name}: ${rec.time}: ${rec.message}');

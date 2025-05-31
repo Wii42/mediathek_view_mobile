@@ -30,14 +30,9 @@ class VideoDetailScreen extends StatefulWidget {
   final String? heroUuid;
   final String? defaultImageAssetPath;
 
-  VideoDetailScreen(
-      this.image,
-      this.video,
-      this.entity,
-      this.isDownloading,
-      this.isDownloaded,
-      this.heroUuid,
-      this.defaultImageAssetPath, {super.key});
+  VideoDetailScreen(this.image, this.video, this.entity, this.isDownloading,
+      this.isDownloaded, this.heroUuid, this.defaultImageAssetPath,
+      {super.key});
 
   @override
   State<VideoDetailScreen> createState() => _VideoDetailScreenState();
@@ -73,15 +68,16 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     GestureDetector image = getImageSurface(totalImageWidth, height, appState);
 
     Widget downloadProgressBar = DownloadProgressBar(
-        videoId: widget.video.id,
-        videoTitle: widget.video.title,
-        downloadManager: appState.downloadManager,
-        isOnDetailScreen: true,);
+      videoId: widget.video.id,
+      videoTitle: widget.video.title,
+      downloadManager: appState.downloadManager,
+      isOnDetailScreen: true,
+    );
 
     Widget layout;
     if (isTablet && orientation == Orientation.landscape) {
-      layout = buildTabletLandscapeLayout(
-          totalImageWidth, height, image, downloadProgressBar, appState.downloadManager);
+      layout = buildTabletLandscapeLayout(totalImageWidth, height, image,
+          downloadProgressBar, appState.downloadManager);
     } else if (!isTablet && orientation == Orientation.landscape) {
       // mobile landscape -> only provide ability to play video. no title nothing
       layout = Container(color: Colors.grey[900], child: image);
@@ -91,7 +87,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       // first the title underneath
       // then rating
       // then description
-      layout = buildVerticalLayout(image, downloadProgressBar, appState.downloadManager);
+      layout = buildVerticalLayout(
+          image, downloadProgressBar, appState.downloadManager);
     }
 
     return Scaffold(
@@ -111,8 +108,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  Column buildTabletLandscapeLayout(double totalImageWidth, double height,
-      GestureDetector image, Widget downloadProgressBar, DownloadManager downloadManager) {
+  Column buildTabletLandscapeLayout(
+      double totalImageWidth,
+      double height,
+      GestureDetector image,
+      Widget downloadProgressBar,
+      DownloadManager downloadManager) {
     Widget description = getDescription();
 
     double rowPaddingLeft = 10;
@@ -177,8 +178,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  Column buildVerticalLayout(
-      GestureDetector image, Widget downloadProgressBar, DownloadManager downloadManager) {
+  Column buildVerticalLayout(GestureDetector image, Widget downloadProgressBar,
+      DownloadManager downloadManager) {
     Widget sideBar = Container();
 
     if (widget.video.description != null &&
@@ -220,8 +221,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                       child: MetaInfoListTile.getVideoMetaInformationListTile(
                           context,
                           widget.video.duration.toString(),
-                          widget.video.title!,
-                          widget.video.timestamp,
+                          widget.video.title ?? "",
+                          widget.video.timestampAsDateTime,
                           widget.defaultImageAssetPath!,
                           widget.entity != null),
                     ),
@@ -253,8 +254,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         margin: EdgeInsets.only(left: 5),
         child: Column(
           children: <Widget>[
-            Text("Description",
-                style: headerTextStyle.copyWith(fontSize: 30)),
+            Text("Description", style: headerTextStyle.copyWith(fontSize: 30)),
             Text(widget.video.description!,
                 style: subHeaderTextStyle.copyWith(fontSize: 20)),
           ],
@@ -267,7 +267,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  GestureDetector getImageSurface(double totalImageWidth, double height, AppState appState) {
+  GestureDetector getImageSurface(
+      double totalImageWidth, double height, AppState appState) {
     Widget videoProgressBar = Container();
     if (videoProgressEntity != null) {
       videoProgressBar = PlaybackProgressBar(videoProgressEntity!.progress,
@@ -305,8 +306,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       onTap: () async {
         // play video
         if (mounted) {
-          Util.playVideoHandler(context, appState, widget.entity,
-                  widget.video, videoProgressEntity)
+          Util.playVideoHandler(context, appState, widget.entity, widget.video,
+                  videoProgressEntity)
               .then((value) {
             // setting state after the video player popped the Navigator context
             // this reloads the video progress entity to show the playback progress
@@ -351,7 +352,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   ListTile getBottomBar(BuildContext context, String assetPath, String title,
-      String length, int timestamp, bool isDownloaded) {
+      String length, DateTime timestamp, bool isDownloaded) {
     return ListTile(
       trailing: Text(
         Calculator.calculateDuration(length),
@@ -362,12 +363,17 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           : Container(),
       title: Text(
         title,
-        style:
-            Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(color: Colors.white),
       ),
       subtitle: Text(
         Calculator.calculateTimestamp(timestamp),
-        style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
+        style: Theme.of(context)
+            .textTheme
+            .titleLarge!
+            .copyWith(color: Colors.white),
       ),
     );
   }

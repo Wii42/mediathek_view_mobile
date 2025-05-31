@@ -76,7 +76,7 @@ class _ListCardState extends State<ListCard> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(key: Key(uuid.v1()), height: 4.0),
+            //Container(key: Key(uuid.v1()), height: 4.0),
             Flexible(
               key: Key(uuid.v1()),
               child: Container(

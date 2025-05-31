@@ -129,7 +129,7 @@ class VideoWidgetState extends State<VideoWidget> {
                       widget.video.id,
                       widget.video.duration.toString(),
                       widget.video.title!,
-                      widget.video.timestamp,
+                      widget.video.timestampAsDateTime,
                       widget.defaultImageAssetPath!),
                 ),
               ),
@@ -204,7 +204,7 @@ class VideoWidgetState extends State<VideoWidget> {
       String? id,
       String duration,
       String title,
-      int? timestamp,
+      DateTime? timestamp,
       String assetPath) {
     return Container(
       color: Colors.grey[800],

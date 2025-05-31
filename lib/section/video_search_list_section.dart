@@ -165,6 +165,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
   }
 
   void onSearchResponse(String data) {
+    print(data);
     if (refreshOperationRunning) {
       refreshOperationRunning = false;
       refreshCompleter?.complete();
@@ -176,7 +177,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     QueryResult queryResult = JSONParser.parseQueryResult(data);
     logger.fine("finished");
 
-    List<Video> newVideosFromQuery = queryResult.videos as List<Video>;
+    List<Video> newVideosFromQuery = queryResult.videos.toList();
     totalQueryResults = queryResult.queryInfo.totalResults;
     lastAmountOfVideosRetrieved = newVideosFromQuery.length;
     logger.info("received videos: $lastAmountOfVideosRetrieved");
