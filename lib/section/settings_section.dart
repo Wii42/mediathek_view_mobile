@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
-import 'package:flutter_ws/main.dart';
 import 'package:flutter_ws/util/countly.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:logging/logging.dart';
@@ -143,15 +142,15 @@ class _SettingsStateState extends State<SettingsState> {
                     appWideState.hasCountlyPermission = value;
 
                     if (appWideState.sharedPreferences.containsKey(
-                            HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
-                        appWideState.sharedPreferences.containsKey(HomePageState
+                            CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
+                        appWideState.sharedPreferences.containsKey(CountlyUtil
                             .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
                       String? countlyAppKey = appWideState.sharedPreferences
-                          .getString(HomePageState
+                          .getString(CountlyUtil
                               .SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
                       String? countlyAPI = appWideState.sharedPreferences
                           .getString(
-                              HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API);
+                              CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_API);
                       if (countlyAppKey != null && countlyAPI != null) {
                         return CountlyUtil.initializeCountly(
                             widget.logger, countlyAPI, countlyAppKey, value);

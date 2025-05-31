@@ -124,11 +124,8 @@ class HomePageState extends State<MyHomePage>
 
   // Countly
   bool showCountlyGDPRDialog = false;
-  static const COUNTLY_GITHUB =
-      "https://raw.githubusercontent.com/mediathekview/MediathekViewMobile/master/resources/countly/config/endpoint.txt";
-  static const SHARED_PREFERENCE_KEY_COUNTLY_CONSENT = "countly_consent";
-  static const SHARED_PREFERENCE_KEY_COUNTLY_API = "countly_api";
-  static const SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY = "countly_app_key";
+
+  Color backgroundColor = Colors.grey.shade800;
 
   HomePageState();
 
@@ -174,8 +171,10 @@ class HomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.white));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: backgroundColor,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light));
     appWideState = Provider.of<AppState>(context, listen: false);
 
     if (isFirstStart) {
@@ -195,7 +194,7 @@ class HomePageState extends State<MyHomePage>
     downloadSection ??= DownloadSection(appWideState!);
 
     return Scaffold(
-      backgroundColor: Colors.grey[800],
+      backgroundColor: backgroundColor,
       body: TabBarView(
         controller: _controller,
         children: <Widget>[
@@ -321,9 +320,9 @@ class HomePageState extends State<MyHomePage>
     logger.info("setup countly -2");
 
     if (appWideState!.sharedPreferences
-            .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_API) &&
+            .containsKey(CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_API) &&
         appWideState!.sharedPreferences
-            .containsKey(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
+            .containsKey(CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY)) {
       logger.info("setup countly -4");
 
       if (!appWideState!.hasCountlyPermission) {
@@ -332,9 +331,9 @@ class HomePageState extends State<MyHomePage>
       }
 
       String? countlyAPI = appWideState!.sharedPreferences
-          .getString(SHARED_PREFERENCE_KEY_COUNTLY_API);
+          .getString(CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_API);
       String? countlyAppKey = appWideState!.sharedPreferences
-          .getString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
+          .getString(CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY);
       if (countlyAPI != null && countlyAppKey != null) {
         logger.info("Loaded Countly data from shared preferences");
         CountlyUtil.initializeCountly(logger, countlyAPI, countlyAppKey, true);

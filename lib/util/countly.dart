@@ -2,16 +2,21 @@ import 'dart:convert';
 
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
-import 'package:flutter_ws/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
 class CountlyUtil {
+  static final Uri COUNTLY_GITHUB = Uri.parse(
+      "https://raw.githubusercontent.com/mediathekview/MediathekViewMobile/master/resources/countly/config/endpoint.txt");
+  static const String SHARED_PREFERENCE_KEY_COUNTLY_CONSENT = "countly_consent";
+  static const String SHARED_PREFERENCE_KEY_COUNTLY_API = "countly_api";
+  static const String SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY = "countly_app_key";
+
   static bool countlySessionStarted = false;
 
   static Future<void> loadCountlyInformationFromGithub(
       Logger logger, AppState appWideState, bool consentGiven) async {
-    var response = await http.get(Uri.parse(HomePageState.COUNTLY_GITHUB));
+    var response = await http.get(COUNTLY_GITHUB);
     if (response.statusCode != 200) {
       logger.warning("failed to setup countly");
       return;
@@ -27,9 +32,9 @@ class CountlyUtil {
 
     appWideState.hasCountlyPermission = consentGiven;
     appWideState.sharedPreferences
-        .setString(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
-    appWideState.sharedPreferences.setString(
-        HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY, countlyAppKey);
+        .setString(SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
+    appWideState.sharedPreferences
+        .setString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY, countlyAppKey);
 
     initializeCountly(logger, countlyAPI, countlyAppKey, consentGiven);
   }

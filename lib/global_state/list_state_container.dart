@@ -15,7 +15,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
+import '../util/countly.dart';
 
 class VideoListState extends ChangeNotifier {
   final Logger logger = Logger('VideoListState');
@@ -98,12 +98,12 @@ class AppState extends ChangeNotifier {
 
   bool get hasCountlyPermission =>
       sharedPreferences
-          .getBool(HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT) ??
+          .getBool(CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT) ??
       false;
 
   set hasCountlyPermission(bool permission) {
     sharedPreferences.setBool(
-        HomePageState.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, permission);
+        CountlyUtil.SHARED_PREFERENCE_KEY_COUNTLY_CONSENT, permission);
     notifyListeners();
   }
 
