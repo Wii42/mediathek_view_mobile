@@ -4,8 +4,8 @@ import 'package:logging/logging.dart';
 class PlaybackProgressBar extends StatelessWidget {
   final Logger logger = Logger('PlaybackProgressBar');
 
-  final int? playbackProgressInMilliseconds;
-  final int? totalVideoLengthInSeconds;
+  final Duration? playbackProgressInMilliseconds;
+  final Duration? totalVideoLengthInSeconds;
   final bool backgroundIsTransparent;
 
   PlaybackProgressBar(this.playbackProgressInMilliseconds,
@@ -14,7 +14,8 @@ class PlaybackProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (totalVideoLengthInSeconds == null) {
+    if (totalVideoLengthInSeconds == null ||
+        playbackProgressInMilliseconds == null) {
       return Container();
     }
 
@@ -29,9 +30,10 @@ class PlaybackProgressBar extends StatelessWidget {
                 : Colors.red[100]));
   }
 
-  double calculateProgress(
-      int playbackProgressInMilliseconds, int totalVideoLengthInSeconds) {
+  double calculateProgress(Duration playbackProgressInMilliseconds,
+      Duration totalVideoLengthInSeconds) {
     return 1 /
-        ((totalVideoLengthInSeconds * 1000) / playbackProgressInMilliseconds);
+        ((totalVideoLengthInSeconds.inSeconds * 1000) /
+            playbackProgressInMilliseconds.inMilliseconds);
   }
 }

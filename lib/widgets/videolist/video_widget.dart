@@ -127,7 +127,7 @@ class VideoWidgetState extends State<VideoWidget> {
                       context,
                       videoProgressEntity,
                       widget.video.id,
-                      widget.video.duration.toString(),
+                      widget.video.durationAsDuration,
                       widget.video.title!,
                       widget.video.timestampAsDateTime,
                       widget.defaultImageAssetPath!),
@@ -202,7 +202,7 @@ class VideoWidgetState extends State<VideoWidget> {
       BuildContext context,
       VideoProgressEntity? playbackProgress,
       String? id,
-      String duration,
+      Duration? duration,
       String title,
       DateTime? timestamp,
       String assetPath) {
@@ -212,7 +212,7 @@ class VideoWidgetState extends State<VideoWidget> {
         children: <Widget>[
           playbackProgress != null
               ? PlaybackProgressBar(
-                  playbackProgress.progress, int.tryParse(duration), false)
+                  playbackProgress.progressAsDuration, duration, false)
               : Container(),
           MetaInfoListTile.getVideoMetaInformationListTile(
               context, duration, title, timestamp, assetPath, entity != null),

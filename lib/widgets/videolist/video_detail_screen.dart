@@ -220,7 +220,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                       color: Colors.grey[800],
                       child: MetaInfoListTile.getVideoMetaInformationListTile(
                           context,
-                          widget.video.duration.toString(),
+                          widget.video.durationAsDuration,
                           widget.video.title ?? "",
                           widget.video.timestampAsDateTime,
                           widget.defaultImageAssetPath!,
@@ -271,8 +271,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       double totalImageWidth, double height, AppState appState) {
     Widget videoProgressBar = Container();
     if (videoProgressEntity != null) {
-      videoProgressBar = PlaybackProgressBar(videoProgressEntity!.progress,
-          int.tryParse(widget.video.duration.toString()), false);
+      videoProgressBar = PlaybackProgressBar(
+          videoProgressEntity!.progressAsDuration,
+          widget.video.durationAsDuration,
+          false);
     }
 
     return GestureDetector(
@@ -352,7 +354,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   ListTile getBottomBar(BuildContext context, String assetPath, String title,
-      String length, DateTime timestamp, bool isDownloaded) {
+      Duration length, DateTime timestamp, bool isDownloaded) {
     return ListTile(
       trailing: Text(
         Calculator.calculateDuration(length),

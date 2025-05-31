@@ -82,7 +82,7 @@ class VideoEntity {
         video.title,
         video.timestamp,
         0,
-        video.duration,
+        video.duration.toString(),
         video.size,
         video.url_website,
         video.url_video_low,

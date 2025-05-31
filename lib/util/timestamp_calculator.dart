@@ -1,11 +1,11 @@
 class Calculator {
-  static String calculateDuration(var duration) {
+  static String calculateDuration(Duration duration) {
     try {
-      int sekunden = int.parse(duration.toString());
+      int sekunden = duration.inSeconds;
       if (sekunden == 1) {
-        return "1 sekunde";
+        return "1 sek";
       } else if (sekunden < 60) {
-        return "$sekunden sekunden";
+        return "$sekunden sek";
       }
 
       int minuten = (sekunden / 60).floor();

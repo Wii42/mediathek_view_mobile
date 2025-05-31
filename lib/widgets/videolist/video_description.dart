@@ -80,13 +80,14 @@ class VideoDescription extends StatelessWidget {
                     ),
                     getDivider(),
                     getCaption("Länge", textTheme),
-                    Text(
-                      Calculator.calculateDuration(video.duration),
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: Colors.black, fontSize: 15.0),
-                    ),
+                    if (video.durationAsDuration != null)
+                      Text(
+                        Calculator.calculateDuration(video.durationAsDuration!),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(color: Colors.black, fontSize: 15.0),
+                      ),
                     getDivider(),
                     getCaption("Ausgestrahlt", textTheme),
                     if (video.timestamp != null)

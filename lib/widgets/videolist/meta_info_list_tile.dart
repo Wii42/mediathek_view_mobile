@@ -7,7 +7,7 @@ import 'channel_thumbnail.dart';
 class MetaInfoListTile {
   static ListTile getVideoMetaInformationListTile(
       BuildContext context,
-      String? duration,
+      Duration? duration,
       String title,
       DateTime? timestamp,
       String assetPath,

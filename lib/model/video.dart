@@ -5,7 +5,7 @@ class Video {
   String? description;
   String? title;
   int? timestamp;
-  var duration;
+  int? duration;
   int? size;
   String? url_website;
   String? url_video_low;
@@ -18,6 +18,9 @@ class Video {
       ? DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000, isUtc: true)
       : null;
 
+  Duration? get durationAsDuration =>
+      duration != null ? Duration(seconds: duration!) : null;
+
   Video(this.id);
 
   Video.fromMap(Map<String, dynamic> json)
@@ -27,7 +30,7 @@ class Video {
         description = json['description'],
         title = json['title'],
         timestamp = json['timestamp'],
-        duration = json['duration'],
+        duration = int.tryParse(json['duration'].toString()),
         size = json['size'],
         url_website = json['url_website'],
         url_video_low = json['url_video_low'],

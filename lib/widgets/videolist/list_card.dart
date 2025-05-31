@@ -142,9 +142,8 @@ class _ListCardState extends State<ListCard> {
                               // Playback Progress
                               videoProgressEntity != null
                                   ? PlaybackProgressBar(
-                                      videoProgressEntity!.progress,
-                                      int.tryParse(
-                                          widget.video.duration.toString()),
+                                      videoProgressEntity!.progressAsDuration,
+                                      widget.video.durationAsDuration,
                                       true)
                                   : Container(),
                             ],

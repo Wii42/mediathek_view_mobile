@@ -9,7 +9,7 @@ class VideoProgressEntity {
   String? title;
   int? timestamp;
   int? timestampLastViewed;
-  String? duration;
+  int? duration;
   int? size;
   String? url_website;
   String? url_video_low;
@@ -17,6 +17,12 @@ class VideoProgressEntity {
   String? filmlisteTimestamp;
   String? url_video;
   String? url_subtitle;
+
+  Duration? get durationAsDuration =>
+      duration != null ? Duration(seconds: duration!) : null;
+
+  Duration? get progressAsDuration =>
+      progress != null ? Duration(seconds: progress!) : null;
 
   //column names
   static const String idColumn = "id";
