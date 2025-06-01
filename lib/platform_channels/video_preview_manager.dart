@@ -187,8 +187,30 @@ class VideoPreviewManager {
       Uri tsUrl = _buildTsUrl(m3u8Url, tsFragment);
       return tsUrl;
     } else {
+      return _tryGetThumbnailFromM3u8MasterPlaylist(response, m3u8Url);
+    }
+  }
+
+  Future<Uri?>? _tryGetThumbnailFromM3u8MasterPlaylist(
+      http.Response response, Uri m3u8Url) {
+    // find #EXT-X-STREAM-INF tag, and extract associated attributes and url
+    RegExp r = RegExp(r'#EXT-X-STREAM-INF:(.*)\n(.*)\n', multiLine: true);
+    Iterable<RegExpMatch> matches = r.allMatches(response.body);
+    if (matches.isEmpty) {
       logger.severe(
-          "No .ts fragment found in M3U8 file at $m3u8Url. Cannot create thumbnail.");
+          "No .ts fragment found and in M3U8 file (and file is not master playlist) at $m3u8Url. Cannot create thumbnail.");
+      return null;
+    }
+    String? urlFragment =
+        matches.map((match) => match.group(2)).firstWhereOrNull((url) {
+      return (url != null && url.endsWith(".m3u8"));
+    });
+    if (urlFragment != null) {
+      Uri playlistUrl = _buildTsUrl(m3u8Url, urlFragment);
+      return _getPreviewUrlFromM3U8Video(playlistUrl);
+    } else {
+      logger.severe(
+          "No playlist found in M3U8 master playlist at $m3u8Url. Cannot create thumbnail.");
       return null;
     }
   }
