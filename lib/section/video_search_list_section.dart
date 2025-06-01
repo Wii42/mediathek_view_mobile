@@ -231,35 +231,35 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     }
 
     //called whenever a filter in the menu gets a value
-    if (searchFilters.getById(newFilter.filterId) != null) {
-      if (searchFilters.getById(newFilter.filterId)!.filterValue !=
+    if (searchFilters.getByType(newFilter.filterType) != null) {
+      if (searchFilters.getByType(newFilter.filterType)!.filterValue !=
           newFilter.filterValue) {
         logger.fine(
-            "Changed filter text for filter with id ${newFilter.filterId} detected. Old Value: ${searchFilters.getById(newFilter.filterId)!.filterValue} New : ${newFilter.filterValue}");
+            "Changed filter text for filter with id ${newFilter.filterType} detected. Old Value: ${searchFilters.getByType(newFilter.filterType)!.filterValue} New : ${newFilter.filterValue}");
 
         HapticFeedback.mediumImpact();
 
-        searchFilters.removeById(newFilter.filterId);
+        searchFilters.removeByType(newFilter.filterType);
         if (isNotEmpty) {
-          searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+          searchFilters.putIfAbsent(newFilter.filterType, () => newFilter);
         }
         //updates state internally
         _createQueryWithClearedVideoList();
       }
     } else if (isNotEmpty) {
       logger.fine(
-          "New filter with id ${newFilter.filterId} detected with value ${newFilter.filterValue}");
+          "New filter with id ${newFilter.filterType} detected with value ${newFilter.filterValue}");
 
       HapticFeedback.mediumImpact();
 
-      searchFilters.putIfAbsent(newFilter.filterId, () => newFilter);
+      searchFilters.putIfAbsent(newFilter.filterType, () => newFilter);
       _createQueryWithClearedVideoList();
     }
   }
 
-  void _singleFilterTappedCallback(String id) {
+  void _singleFilterTappedCallback(SearchFilterType type) {
     //remove filter from list and refresh state to trigger build of app bar and list!
-    searchFilters.removeById(id);
+    searchFilters.removeByType(type);
     HapticFeedback.mediumImpact();
     _createQueryWithClearedVideoList();
   }

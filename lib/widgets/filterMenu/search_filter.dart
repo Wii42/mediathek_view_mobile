@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 class SearchFilter<T extends Object> extends StatelessWidget {
-  //E.g Thema/Titel
-  final String filterId;
-
   //Der Wert nachdem gefiltert wird
   final T filterValue;
-  final void Function(String) handleTabCallback;
-  final String? displayText;
+  final void Function(SearchFilterType) handleTabCallback;
+  final String displayText;
+
+  /// Used to identify the filter
+  final SearchFilterType filterType;
 
   const SearchFilter(
       {super.key,
-      required this.filterId,
       required this.filterValue,
       required this.handleTabCallback,
-      this.displayText});
+      required this.filterType,
+      required this.displayText});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class SearchFilter<T extends Object> extends StatelessWidget {
         padding: EdgeInsets.only(left: 10.0, top: 2.0),
         child: GestureDetector(
           onTap: () {
-            handleTabCallback(filterId);
+            handleTabCallback(filterType);
           },
           child: Container(
             height: 25.0,
@@ -40,10 +40,7 @@ class SearchFilter<T extends Object> extends StatelessWidget {
                   padding: EdgeInsets.only(right: 5.0),
                   child: Icon(Icons.clear, size: 22.0, color: Colors.red),
                 ),
-                Text(
-                    displayText == null || displayText!.isEmpty
-                        ? filterId
-                        : displayText!,
+                Text(displayText.isEmpty ? filterType.name : displayText,
                     style: TextStyle(
                         fontSize: 12.0,
                         color: Colors.white,
@@ -58,10 +55,18 @@ class SearchFilter<T extends Object> extends StatelessWidget {
 
   SearchFilter copyWith(T newFilterValue) {
     return SearchFilter<T>(
-      filterId: filterId,
       filterValue: newFilterValue,
       handleTabCallback: handleTabCallback,
       displayText: displayText,
+      filterType: filterType,
     );
   }
+}
+
+enum SearchFilterType {
+  topic,
+  title,
+  channels,
+  videoLength,
+  includeFutureVideos;
 }

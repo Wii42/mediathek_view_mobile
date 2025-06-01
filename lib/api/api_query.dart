@@ -73,9 +73,9 @@ class APIQuery {
   void execute(String query) {
     http
         .post(
-      requestUri,
-      body: query,
-    )
+          requestUri,
+          body: query,
+        )
         .catchError((err) => onError(err))
         .then((value) {
       //logger.info("Response: " + value.body);

@@ -11,7 +11,7 @@ import '../../global_state/filter_menu_state.dart';
 
 class FilterMenu extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
-  final void Function(String) onSingleFilterTapped;
+  final void Function(SearchFilterType) onSingleFilterTapped;
   final void Function() onChannelsSelected;
   final SearchFilters searchFilters;
   final Color fontColor;
@@ -60,9 +60,11 @@ class _FilterMenuState extends State<FilterMenu> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          getFilterMenuRow("Thema", "Thema", _themaFieldController,
+          getFilterMenuRow(
+              "Thema", SearchFilterType.topic, _themaFieldController,
               theme: theme),
-          getFilterMenuRow("Titel", "Titel", _titleFieldController,
+          getFilterMenuRow(
+              "Titel", SearchFilterType.title, _titleFieldController,
               theme: theme),
           getChannelRow(context),
           getRangeSliderRow(),
@@ -107,13 +109,13 @@ class _FilterMenuState extends State<FilterMenu> {
     );
   }
 
-  void handleTapOnFilter(String id) {
-    logger.fine("Filter with id $id was tapped");
-    widget.onSingleFilterTapped(id);
+  void handleTapOnFilter(SearchFilterType type) {
+    logger.fine("Filter with type $type was tapped");
+    widget.onSingleFilterTapped(type);
   }
 
-  Widget getFilterMenuRow(
-      String filterId, String displayText, TextEditingController? controller,
+  Widget getFilterMenuRow(String displayText, SearchFilterType filterType,
+      TextEditingController? controller,
       {required ThemeData theme}) {
     var filterTextFocus = FocusNode();
 
@@ -142,9 +144,11 @@ class _FilterMenuState extends State<FilterMenu> {
             onSubmitted: (String value) {
               widget.onFilterUpdated(
                 SearchFilter<String>(
-                    filterId: filterId,
-                    filterValue: value,
-                    handleTabCallback: handleTapOnFilter),
+                  filterValue: value,
+                  displayText: displayText,
+                  handleTabCallback: handleTapOnFilter,
+                  filterType: filterType,
+                ),
               );
             },
             style: TextStyle(
@@ -173,9 +177,11 @@ class _FilterMenuState extends State<FilterMenu> {
         String currentValueOfFilter = controller!.text;
         widget.onFilterUpdated(
           SearchFilter<String>(
-              filterId: filterId,
-              filterValue: currentValueOfFilter,
-              handleTabCallback: handleTapOnFilter),
+            displayText: displayText,
+            filterValue: currentValueOfFilter,
+            handleTabCallback: handleTapOnFilter,
+            filterType: filterType,
+          ),
         );
       }
     });
@@ -200,28 +206,28 @@ class _FilterMenuState extends State<FilterMenu> {
         "Sender filter: value: $channelSelection DisplayText: $displayText");
 
     SearchFilter<Set<String>> channelFilter = SearchFilter<Set<String>>(
-        filterId: "Sender",
         filterValue: channelSelection,
         displayText: displayText,
-        handleTabCallback: handleTapOnFilter);
+        handleTabCallback: handleTapOnFilter,
+        filterType: SearchFilterType.channels);
 
     widget.onFilterUpdated(channelFilter);
   }
 
   Row getRangeSliderRow() {
     SearchFilter<(double, double)> lengthFilter;
+    (double, double) filterValue;
     if (widget.searchFilters.videoLength != null) {
-      lengthFilter = SearchFilter<(double, double)>(
-          filterId: "Länge",
-          filterValue: widget.searchFilters.videoLength!.filterValue,
-          handleTabCallback: handleTapOnFilter);
+      filterValue = widget.searchFilters.videoLength!.filterValue;
     } else {
-      lengthFilter = SearchFilter<(double, double)>(
-        filterId: "Länge",
-        handleTabCallback: handleTapOnFilter,
-        filterValue: (-1.0, -1.0),
-      );
+      filterValue = (-1.0, -1.0);
     }
+    lengthFilter = SearchFilter<(double, double)>(
+      displayText: "Länge",
+      filterValue: filterValue,
+      handleTabCallback: handleTapOnFilter,
+      filterType: SearchFilterType.videoLength,
+    );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
