@@ -181,12 +181,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Column buildVerticalLayout(GestureDetector image, Widget downloadProgressBar,
       DownloadManager downloadManager) {
     Widget sideBar = Container();
-
+    print(widget.video.description);
     if (widget.video.description != null &&
         widget.video.description!.isNotEmpty) {
       sideBar = SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.only(left: 35, top: 10),
+          margin: const EdgeInsets.only(left: 35, top: 10, right: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -211,26 +211,19 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               children: <Widget>[
                 Container(color: Colors.grey[900], child: image),
                 Positioned(
-                  bottom: 0,
-                  left: 0.0,
-                  right: 0.0,
-                  child: Container(
-                    color: Colors.grey[800]?.withAlpha(177),
-                    child: MetaInfoListTile.getVideoMetaInformationListTile(
-                        context,
-                        widget.video.durationAsDuration,
-                        widget.video.title ?? "",
-                        widget.video.timestampAsDateTime,
-                        widget.defaultImageAssetPath!,
-                        widget.entity != null),
-                  ),
-                ),
-                Positioned(
                     bottom: 0.0,
                     left: 0.0,
                     right: 0.0,
                     child: downloadProgressBar)
               ]),
+          MetaInfoListTile.getVideoMetaInformationListTile(
+              context,
+              widget.video.durationAsDuration,
+              widget.video.title ?? "",
+              widget.video.timestampAsDateTime,
+              widget.defaultImageAssetPath!,
+              widget.entity != null),
+          Divider(),
           DownloadSwitch(
               widget.video,
               widget.isDownloading,
