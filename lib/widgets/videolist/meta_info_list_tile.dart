@@ -11,7 +11,8 @@ class MetaInfoListTile {
       String title,
       DateTime? timestamp,
       String assetPath,
-      bool isDownloaded) {
+      bool isDownloaded,
+      {int? titleMaxLines}) {
     return ListTile(
       trailing: Text(
         duration != null ? Calculator.calculateDuration(duration) : "",
@@ -19,13 +20,17 @@ class MetaInfoListTile {
       ),
       leading: assetPath.isNotEmpty
           ? ChannelThumbnail(assetPath, isDownloaded)
-          : Container(),
+          : null,
       title: Text(
         title,
         style: Theme.of(context)
             .textTheme
             .titleMedium
             ?.copyWith(color: Colors.white),
+        maxLines: titleMaxLines,
+        overflow: titleMaxLines != null
+            ? TextOverflow.ellipsis
+            : TextOverflow.visible,
       ),
       subtitle: Text(
         timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",

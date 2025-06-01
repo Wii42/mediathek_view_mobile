@@ -212,7 +212,8 @@ class VideoWidgetState extends State<VideoWidget> {
                   playbackProgress.progressAsDuration, duration, false)
               : Container(),
           MetaInfoListTile.getVideoMetaInformationListTile(
-              context, duration, title, timestamp, assetPath, entity != null),
+              context, duration, title, timestamp, assetPath, entity != null,
+              titleMaxLines: 2),
         ],
       ),
     );
