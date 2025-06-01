@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LoadingListPage extends StatelessWidget {
   const LoadingListPage({super.key});
@@ -23,11 +24,11 @@ class LoadingListPage extends StatelessWidget {
         children: children
             .map(
               (_) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      loadingCard,
-                    ],
-                  ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  loadingCard,
+                ],
+              ),
             )
             .toList(),
       ),
@@ -38,7 +39,7 @@ class LoadingListPage extends StatelessWidget {
   Widget getLoadingCard() {
     final cardContent = getCardContent();
     final card = getListCard(cardContent);
-    Widget dummyChannelThumbnail = getDummyChannelThumbnail();
+    Widget dummyChannelThumbnail = withShimmer(getDummyChannelThumbnail());
 
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -79,12 +80,10 @@ class LoadingListPage extends StatelessWidget {
             ),
           ),
           Container(
-              padding: EdgeInsets.only(left: 40.0, right: 12.0),
-              height: 10),
+              padding: EdgeInsets.only(left: 40.0, right: 12.0), height: 10),
           Flexible(
               child: Container(
-                  margin:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
                   height: 2.0,
                   color: Colors.grey)),
           Container(height: 4.0),
@@ -132,8 +131,15 @@ class LoadingListPage extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.rectangle,
       ),
-      child: cardContent,
+      child: withShimmer(cardContent),
     );
+  }
+
+  Shimmer withShimmer(Container cardContent) {
+    return Shimmer.fromColors(
+        baseColor: Colors.grey,
+        highlightColor: Colors.white,
+        child: cardContent);
   }
 
   Container getDummyChannelThumbnail() {
