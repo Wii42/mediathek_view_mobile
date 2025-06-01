@@ -39,6 +39,7 @@ dependencies:
   filesize: ^2.0.1
   path: ^1.9.1
   provider: ^6.1.5
+  collection: any
 
   flutter:
     sdk: flutter

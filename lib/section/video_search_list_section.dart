@@ -165,7 +165,6 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
   }
 
   void onSearchResponse(String data) {
-    print(data);
     if (refreshOperationRunning) {
       refreshOperationRunning = false;
       refreshCompleter?.complete();

@@ -181,7 +181,6 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Column buildVerticalLayout(GestureDetector image, Widget downloadProgressBar,
       DownloadManager downloadManager) {
     Widget sideBar = Container();
-    print(widget.video.description);
     if (widget.video.description != null &&
         widget.video.description!.isNotEmpty) {
       sideBar = SingleChildScrollView(

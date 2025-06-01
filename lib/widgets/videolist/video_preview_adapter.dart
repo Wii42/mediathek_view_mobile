@@ -29,7 +29,8 @@ class VideoPreviewAdapter extends StatefulWidget {
     this.video,
     this.previewNotDownloadedVideos,
     this.isVisible,
-    this.openDetailPage, {super.key,
+    this.openDetailPage, {
+    super.key,
     this.defaultImageAssetPath,
     this.size,
     this.presetAspectRatio,
@@ -137,15 +138,18 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
       if (entity == null && !widget.previewNotDownloadedVideos) {
         return;
       }
-      requestThumbnailPicture(
-          entity, widget.video, appState, videoListState);
+      requestThumbnailPicture(entity, widget.video, appState, videoListState);
     });
   }
 
-  void requestThumbnailPicture( VideoEntity? entity,
-      Video video, AppState appState, VideoListState videoListState) {
+  void requestThumbnailPicture(VideoEntity? entity, Video video,
+      AppState appState, VideoListState videoListState) {
     String? url = VideoUtil.getVideoPath(appState, entity, video);
-
+    if (url == null) {
+      widget.logger.warning(
+          "No URL found for video: ${video.title!}. Cannot request preview.");
+      return;
+    }
     appState.videoPreviewManager.startPreviewGeneration(
         videoListState,
         widget.video.id,

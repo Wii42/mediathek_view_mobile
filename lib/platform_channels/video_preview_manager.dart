@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -28,7 +30,8 @@ class VideoPreviewManager {
     _appWideState = appWideState;
   }
 
-  Future<Image?> getImagePreview(String videoId, VideoListState videoListState) async {
+  Future<Image?> getImagePreview(
+      String videoId, VideoListState videoListState) async {
     String thumbnailPath =
         getThumbnailPath(_appWideState.localDirectory!, videoId);
 
@@ -47,7 +50,7 @@ class VideoPreviewManager {
       VideoListState videoListState,
       String? videoId,
       String? title,
-      String? url,
+      String url,
       TriggerStateReloadOnPreviewReceived triggerStateReload) async {
     if (videoListState.previewImages.containsKey(videoId)) {
       return null;
@@ -80,25 +83,37 @@ class VideoPreviewManager {
     });
   }
 
-  Future<String?> _createAndPersistThumbnail(String videoId, String? url, VideoListState videoListState) async {
+  Future<String?> _createAndPersistThumbnail(
+      String videoId, String url, VideoListState videoListState) async {
     Uint8List? uint8list;
 
     io.Directory? directory = _appWideState.localDirectory;
 
     String? thumbnailPath;
-    if (directory != null){
+    if (directory != null) {
       thumbnailPath = getThumbnailPath(directory, videoId);
 
       if (await io.File(thumbnailPath).exists()) {
         return thumbnailPath;
       }
-    }else {
-      logger.severe("No local directory set. Cannot create thumbnail for $videoId");
+    } else {
+      logger.severe(
+          "No local directory set. Cannot create thumbnail for $videoId");
+    }
+
+    if (url.endsWith(".m3u8")) {
+      Uri m3u8Url = Uri.parse(url);
+      Uri? tsUrl = await _getPreviewUrlFromM3U8Video(m3u8Url);
+      if (tsUrl != null) {
+        url = tsUrl.toString();
+      } else {
+        return null;
+      }
     }
 
     try {
       uint8list = await VideoThumbnail.thumbnailData(
-        video: url!,
+        video: url,
         imageFormat: ImageFormat.JPEG,
         quality: 10,
       );
@@ -106,7 +121,8 @@ class VideoPreviewManager {
       logger.severe("Create preview failed. Reason $e");
       return null;
     } on MissingPluginException catch (e) {
-      logger.severe("Creating preview failed faile for: ${url!}. Missing Plugin: $e");
+      logger.severe(
+          "Creating preview failed faile for: $url. Missing Plugin: $e");
       return null;
     }
 
@@ -120,8 +136,7 @@ class VideoPreviewManager {
       io.File(thumbnailPath)
           .writeAsBytes(uint8list)
           .catchError((error) =>
-          logger
-              .warning("Failed to persist preview file $error"))
+              logger.warning("Failed to persist preview file $error"))
           .then((file) => logger.info("Wrote preview file to ${file.path}"));
     }
 
@@ -131,7 +146,8 @@ class VideoPreviewManager {
   }
 
   String getThumbnailPath(io.Directory directory, String videoId) {
-    String thumbnailPath = "${directory.path}/MediathekView/thumbnails/${sanitizeVideoId(videoId)}.jpeg";
+    String thumbnailPath =
+        "${directory.path}/MediathekView/thumbnails/${sanitizeVideoId(videoId)}.jpeg";
     return thumbnailPath;
   }
 
@@ -147,5 +163,33 @@ class VideoPreviewManager {
 
     return Image.memory(pictureRaw,
         fit: BoxFit.cover, height: height.toDouble(), width: width.toDouble());
+  }
+
+  Uri _buildTsUrl(Uri m3u8Url, String tsFragment) {
+    List<String> pathSegments = List.from(m3u8Url.pathSegments);
+    pathSegments.removeLast();
+    pathSegments.add(tsFragment);
+    return m3u8Url.replace(pathSegments: pathSegments);
+  }
+
+  Future<Uri?> _getPreviewUrlFromM3U8Video(Uri m3u8Url) async {
+    final response = await http.get(m3u8Url);
+    if (response.statusCode != 200) {
+      logger.severe(
+          "Failed to fetch M3U8 file from $m3u8Url. Status code: ${response.statusCode}, body: ${response.body}");
+      return null;
+    }
+    String? tsFragment = response.body
+        .split("\n")
+        .map((line) => line.trim())
+        .firstWhereOrNull((line) => line.endsWith(".ts"));
+    if (tsFragment != null) {
+      Uri tsUrl = _buildTsUrl(m3u8Url, tsFragment);
+      return tsUrl;
+    } else {
+      logger.severe(
+          "No .ts fragment found in M3U8 file at $m3u8Url. Cannot create thumbnail.");
+      return null;
+    }
   }
 }
