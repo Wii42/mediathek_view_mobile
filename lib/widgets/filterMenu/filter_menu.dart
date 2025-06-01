@@ -67,6 +67,7 @@ class _FilterMenuState extends State<FilterMenu> {
               "Titel", SearchFilterType.title, _titleFieldController,
               theme: theme),
           getChannelRow(context),
+          getIncludeFutureVideosSwitch(),
           getRangeSliderRow(),
         ],
       ),
@@ -250,6 +251,41 @@ class _FilterMenuState extends State<FilterMenu> {
         ),
         Flexible(
             child: VideoLengthSlider(widget.onFilterUpdated, lengthFilter)),
+      ],
+    );
+  }
+
+  Widget getIncludeFutureVideosSwitch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(
+          width: 80.0,
+          child: Padding(
+            padding: EdgeInsets.only(right: 5.0),
+            child: Text(
+              "Zukünftige Videos",
+              style: TextStyle(
+                  color: widget.fontColor,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w700),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ),
+        Switch(
+          value: widget.searchFilters.includeFutureVideos?.filterValue ?? false,
+          onChanged: (bool isEnabled) {
+            widget.onFilterUpdated(SearchFilter<bool>(
+              filterValue: isEnabled,
+              displayText: "Zukünftige Videos",
+              handleTabCallback: handleTapOnFilter,
+              filterType: SearchFilterType.includeFutureVideos,
+            ));
+          },
+        ),
       ],
     );
   }

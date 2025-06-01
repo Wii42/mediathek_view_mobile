@@ -53,7 +53,7 @@ class APIQuery {
     }
 
     String request =
-        '{"queries":[${queryFilters.join(',')}],"future":true,"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
+        '{"queries":[${queryFilters.join(',')}],"future":${searchFilters.includeFutureVideos?.filterValue ?? false},"sortBy":"timestamp","sortOrder":"desc","offset":$skip,"size":$defaultQueryAmount}';
 
     logger.info("Firing request: $request");
 
