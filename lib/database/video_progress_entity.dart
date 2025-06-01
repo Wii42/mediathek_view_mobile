@@ -9,7 +9,7 @@ class VideoProgressEntity {
   String? title;
   int? timestamp;
   int? timestampLastViewed;
-  int? duration;
+  String? duration;
   int? size;
   String? url_website;
   String? url_video_low;
@@ -19,7 +19,7 @@ class VideoProgressEntity {
   String? url_subtitle;
 
   Duration? get durationAsDuration =>
-      duration != null ? Duration(seconds: duration!) : null;
+      duration != null ? Duration(seconds: int.parse(duration!)) : null;
 
   Duration? get progressAsDuration =>
       progress != null ? Duration(seconds: progress!) : null;

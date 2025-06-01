@@ -16,23 +16,24 @@ class DatabaseManager {
   Database? db;
 
   Future<void> open(String path) async {
-    db = await openDatabase(path, version: 1,
+    db = await openDatabase(path,
+        version: 1,
         onConfigure: (db) => logger.info("DB onConfigure: $db"),
-        onCreate: (Database db, int version)  {
-      logger.info("DB init: $db");
-      String createVideoTableSQL = getVideoTableSQL();
-      String createFavoriteLiveTVChannelsTable = getChannelFavoriteSQL();
-      String videoProgressCreateTableSQL = getProgressTableSQL();
+        onCreate: (Database db, int version) {
+          logger.info("DB init: $db");
+          String createVideoTableSQL = getVideoTableSQL();
+          String createFavoriteLiveTVChannelsTable = getChannelFavoriteSQL();
+          String videoProgressCreateTableSQL = getProgressTableSQL();
 
-      logger.fine("DB MANAGER: Executing $createVideoTableSQL");
-       db.execute(createVideoTableSQL);
-      logger.fine("DB MANAGER: Executing $createFavoriteLiveTVChannelsTable");
-       db.execute(createFavoriteLiveTVChannelsTable);
-      logger.fine("DB MANAGER: Executing $videoProgressCreateTableSQL");
-       db.execute(videoProgressCreateTableSQL);
-      logger.info("DB init: $db");
-
-    });
+          logger.fine("DB MANAGER: Executing $createVideoTableSQL");
+          db.execute(createVideoTableSQL);
+          logger
+              .fine("DB MANAGER: Executing $createFavoriteLiveTVChannelsTable");
+          db.execute(createFavoriteLiveTVChannelsTable);
+          logger.fine("DB MANAGER: Executing $videoProgressCreateTableSQL");
+          db.execute(videoProgressCreateTableSQL);
+          logger.info("DB init: $db");
+        });
   }
 
   Future close() async => db!.close();
