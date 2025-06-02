@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chewie/chewie.dart';
+import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -208,6 +209,7 @@ class CustomChewieController extends ChangeNotifier {
     }
 
     await videoPlayerController.play();
+    Floating().enable(OnLeavePiP());
     await videoPlayerController.seekTo(startAt!);
   }
 

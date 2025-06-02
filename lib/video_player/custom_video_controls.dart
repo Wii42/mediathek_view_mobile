@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:chewie/chewie.dart';
 import 'package:countly_flutter/countly_flutter.dart';
+import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
@@ -463,6 +464,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     }
     //chewieController?.toggleFullScreen();
     WakelockPlus.disable();
+    Floating().cancelOnLeavePiP();
   }
 
   Expanded _buildHitArea(bool showLoadingIndicator) {
@@ -780,30 +782,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           },
           colors: chewieController!.cupertinoProgressColors ??
               ChewieProgressColors(
-                playedColor: Color.fromARGB(
-                  120,
-                  255,
-                  255,
-                  255,
-                ),
-                handleColor: Color.fromARGB(
-                  255,
-                  255,
-                  255,
-                  255,
-                ),
-                bufferedColor: Color.fromARGB(
-                  60,
-                  255,
-                  255,
-                  255,
-                ),
-                backgroundColor: Color.fromARGB(
-                  20,
-                  255,
-                  255,
-                  255,
-                ),
+                playedColor: Color.fromARGB(120, 255, 255, 255),
+                handleColor: Color.fromARGB(255, 255, 255, 255),
+                bufferedColor: Color.fromARGB(60, 255, 255, 255),
+                backgroundColor: Color.fromARGB(20, 255, 255, 255),
               ),
         ),
       ),
@@ -817,6 +799,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _hideStuff = false;
         _hideTimer?.cancel();
         flutterPlayerController!.pause();
+        Floating().cancelOnLeavePiP();
       } else if (tvPlayerController!.value.isPlaying) {
         _hideStuff = false;
         _hideTimer?.cancel();
@@ -825,6 +808,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _cancelAndRestartTimer();
         if (tvPlayerController!.value.playbackOnTvStarted) {
           tvPlayerController!.resume();
+          Floating().enable(OnLeavePiP());
           return;
         }
 
