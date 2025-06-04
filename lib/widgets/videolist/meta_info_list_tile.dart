@@ -6,38 +6,48 @@ import 'channel_thumbnail.dart';
 
 class MetaInfoListTile {
   static ListTile getVideoMetaInformationListTile(
-      BuildContext context,
+      {required TextTheme textTheme,
       Duration? duration,
-      String title,
+      required String title,
+      String? topic,
       DateTime? timestamp,
-      String assetPath,
-      bool isDownloaded,
-      {int? titleMaxLines}) {
+      required String assetPath,
+      bool isDownloaded = false,
+      int? titleMaxLines}) {
     return ListTile(
-      trailing: Text(
-        duration != null ? Calculator.calculateDuration(duration) : "",
-        style: videoMetadataTextStyle.copyWith(color: Colors.white),
-      ),
       leading: assetPath.isNotEmpty
           ? ChannelThumbnail(assetPath, isDownloaded)
           : null,
-      title: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: Colors.white),
-        maxLines: titleMaxLines,
-        overflow: titleMaxLines != null
-            ? TextOverflow.ellipsis
-            : TextOverflow.visible,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (topic != null && topic.isNotEmpty)
+            Text(
+              topic,
+              style: textTheme.titleLarge?.copyWith(color: Colors.white),
+            ),
+          Text(
+            title,
+            style: textTheme.titleMedium?.copyWith(color: Colors.white),
+            maxLines: titleMaxLines,
+            overflow: titleMaxLines != null
+                ? TextOverflow.ellipsis
+                : TextOverflow.visible,
+          ),
+        ],
       ),
-      subtitle: Text(
-        timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge
-            ?.copyWith(color: Colors.white),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
+            style: textTheme.titleLarge?.copyWith(color: Colors.white),
+          ),
+          Text(
+            duration != null ? Calculator.calculateDuration(duration) : "",
+            style: videoMetadataTextStyle.copyWith(color: Colors.white),
+          ),
+        ],
       ),
     );
   }

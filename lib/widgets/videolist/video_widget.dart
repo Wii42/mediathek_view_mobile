@@ -122,11 +122,12 @@ class VideoWidgetState extends State<VideoWidget> {
                 left: 0.0,
                 right: 0.0,
                 child: getBottomBar(
-                    context,
+                    Theme.of(context).textTheme,
                     videoProgressEntity,
                     widget.video.id,
                     widget.video.durationAsDuration,
-                    widget.video.title!,
+                    widget.video.title ?? "",
+                    widget.video.topic,
                     widget.video.timestampAsDateTime,
                     widget.defaultImageAssetPath!),
               ),
@@ -196,11 +197,12 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   Widget getBottomBar(
-      BuildContext context,
+      TextTheme textTheme,
       VideoProgressEntity? playbackProgress,
       String? id,
       Duration? duration,
       String title,
+      String? topic,
       DateTime? timestamp,
       String assetPath) {
     return Container(
@@ -212,7 +214,13 @@ class VideoWidgetState extends State<VideoWidget> {
                   playbackProgress.progressAsDuration, duration, false)
               : Container(),
           MetaInfoListTile.getVideoMetaInformationListTile(
-              context, duration, title, timestamp, assetPath, entity != null,
+              textTheme: textTheme,
+              duration: duration,
+              title: title,
+              topic: topic,
+              timestamp: timestamp,
+              assetPath: assetPath,
+              isDownloaded: entity != null,
               titleMaxLines: 2),
         ],
       ),

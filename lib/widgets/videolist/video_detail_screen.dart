@@ -216,12 +216,13 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     child: downloadProgressBar)
               ]),
           MetaInfoListTile.getVideoMetaInformationListTile(
-              context,
-              widget.video.durationAsDuration,
-              widget.video.title ?? "",
-              widget.video.timestampAsDateTime,
-              widget.defaultImageAssetPath!,
-              widget.entity != null),
+              textTheme: Theme.of(context).textTheme,
+              duration: widget.video.durationAsDuration,
+              title: widget.video.title ?? "",
+              topic: widget.video.topic,
+              timestamp: widget.video.timestampAsDateTime,
+              assetPath: widget.defaultImageAssetPath!,
+              isDownloaded: widget.entity != null),
           Divider(),
           DownloadSwitch(
               widget.video,
