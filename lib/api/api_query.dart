@@ -97,6 +97,7 @@ class APIQuery {
   }
 
   void execute(String query) {
+    print(query);
     http
         .post(
           requestUri,
@@ -104,7 +105,6 @@ class APIQuery {
         )
         .catchError((err) => onError(err))
         .then((value) {
-      //logger.info("Response: " + value.body);
       onDataReceived(value.body);
     });
   }
