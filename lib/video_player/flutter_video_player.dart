@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:countly_flutter/countly_flutter.dart';
+import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/database/database_manager.dart';
 import 'package:flutter_ws/database/video_entity.dart';
@@ -73,7 +74,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     initChewieController();
 
     return Scaffold(
-        backgroundColor: Colors.grey[800],
+        backgroundColor: Colors.black,
         body: CustomChewie(
           controller: chewieController,
         ));
@@ -188,9 +189,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           iconColor: Color(0xffffbf00)),
       fullScreenByDefault: true,
       allowedScreenSleep: false,
+      allowPictureInPicture: false,
       isCurrentlyPlayingOnTV: widget.appSharedState.isCurrentlyPlayingOnTV,
       video: widget.initialVideo,
-      aspectRatio: 16 / 9,
+      aspectRatio: Rational(16, 9),
       //systemOverlaysAfterFullScreen: []
     ); // != null
     //? widget.video

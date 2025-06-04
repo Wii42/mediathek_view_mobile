@@ -5,7 +5,6 @@ import 'dart:ui';
 
 import 'package:chewie/chewie.dart';
 import 'package:countly_flutter/countly_flutter.dart';
-import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
@@ -415,43 +414,26 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     );
   }
 
-  AnimatedOpacity _buildExitButton(
+  Widget _buildExitButton(
     Color backgroundColor,
     Color iconColor,
     double barHeight,
     double buttonPadding,
   ) {
-    return AnimatedOpacity(
-      opacity: _hideStuff ? 0.0 : 1.0,
-      duration: Duration(milliseconds: 300),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 10.0),
-          child: Container(
-            height: barHeight,
-            padding: EdgeInsets.only(
-              left: buttonPadding,
-              right: buttonPadding,
-            ),
-            color: backgroundColor,
-            child: Center(
-              child: IconButton(
-                icon: Icon(Icons.clear),
-                color: iconColor,
-                iconSize: 20.0,
-                onPressed: () {
-                  _onExit();
-                  NavigatorState navigator = Navigator.of(context);
-                  if (navigator.canPop()) {
-                    navigator.pop();
-                  }
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
+    return _buildTopRowButton(
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
+      barHeight: barHeight,
+      buttonPadding: buttonPadding,
+      iconSize: 20,
+      icon: Icon(Icons.clear),
+      onPressed: () {
+        _onExit();
+        NavigatorState navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          navigator.pop();
+        }
+      },
     );
   }
 
@@ -464,7 +446,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     }
     //chewieController?.toggleFullScreen();
     WakelockPlus.disable();
-    Floating().cancelOnLeavePiP();
+    chewieController?.cancelOnLeavePip();
   }
 
   Expanded _buildHitArea(bool showLoadingIndicator) {
@@ -545,14 +527,23 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     );
   }
 
-  GestureDetector _buildMuteButton(
+  Widget _buildMuteButton(
     Color backgroundColor,
     Color iconColor,
     double barHeight,
     double buttonPadding,
   ) {
-    return GestureDetector(
-      onTap: () {
+    return _buildTopRowButton(
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
+      barHeight: barHeight,
+      buttonPadding: buttonPadding,
+      iconSize: 16,
+      icon: Icon((_latestFlutterPlayerValue != null &&
+              _latestFlutterPlayerValue!.volume > 0)
+          ? Icons.volume_up
+          : Icons.volume_off),
+      onPressed: () {
         _cancelAndRestartTimer();
         if (_latestFlutterPlayerValue!.volume == 0) {
           flutterPlayerController!.setVolume(_latestPlayerVolume ?? 0.5);
@@ -568,38 +559,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
           tvPlayerController!.mute();
         }
       },
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: const Duration(milliseconds: 300),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: Container(
-              color: backgroundColor,
-              child: Container(
-                height: barHeight,
-                padding: EdgeInsets.only(
-                  left: buttonPadding,
-                  right: buttonPadding,
-                ),
-                child: Icon(
-                  (_latestFlutterPlayerValue != null &&
-                          _latestFlutterPlayerValue!.volume > 0)
-                      ? Icons.volume_up
-                      : Icons.volume_off,
-                  color: iconColor,
-                  size: 16.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
-  GestureDetector _buildSamsungScreenCast(
+  Widget _buildSamsungScreenCast(
     VideoPlayerController? controller,
     Color backgroundColor,
     Color iconColor,
@@ -619,35 +582,19 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       tvCastIcon = 'assets/cast/ic_cast_white.png';
     }
 
-    return GestureDetector(
-      onTap: () {
-        flutterPlayerController!.pause();
-        showDialog(
-            context: context,
-            builder: (ctxt) => AvailableTVsDialog(tvPlayerController));
-      },
-      child: AnimatedOpacity(
-        opacity: _hideStuff ? 0.0 : 1.0,
-        duration: Duration(milliseconds: 300),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: Container(
-              color: backgroundColor,
-              child: Container(
-                  height: barHeight,
-                  padding: EdgeInsets.only(
-                    left: buttonPadding,
-                    right: buttonPadding,
-                  ),
-                  child: Image.asset(tvCastIcon,
-                      width: 16.0, height: 16.0, color: iconColor)),
-            ),
-          ),
-        ),
-      ),
-    );
+    return _buildTopRowButton(
+        backgroundColor: backgroundColor,
+        iconColor: iconColor,
+        barHeight: barHeight,
+        buttonPadding: buttonPadding,
+        icon: ImageIcon(AssetImage(tvCastIcon), size: 16.0, color: iconColor),
+        iconSize: 16,
+        onPressed: () {
+          flutterPlayerController!.pause();
+          showDialog(
+              context: context,
+              builder: (_) => AvailableTVsDialog(tvPlayerController));
+        });
   }
 
   Widget _buildPosition(Color iconColor) {
@@ -738,16 +685,20 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
       ),
       child: Row(
         children: <Widget>[
-          chewieController!.allowFullScreen
-              ? _buildExitButton(
-                  backgroundColor, iconColor, barHeight, buttonPadding)
-              : Container(),
-          Expanded(child: Container()),
-          chewieController!.allowMuting
-              ? _buildMuteButton(
-                  backgroundColor, iconColor, barHeight, buttonPadding)
-              : Container(),
-          if (chewieController!.allowMuting) SizedBox(width: 6),
+          if (chewieController!.allowFullScreen)
+            _buildExitButton(
+                backgroundColor, iconColor, barHeight, buttonPadding),
+          Expanded(child: SizedBox()),
+          if (chewieController!.allowPictureInPicture) ...[
+            _buildPipButton(
+                backgroundColor, iconColor, barHeight, buttonPadding),
+            SizedBox(width: 6)
+          ],
+          if (chewieController!.allowMuting) ...[
+            _buildMuteButton(
+                backgroundColor, iconColor, barHeight, buttonPadding),
+            SizedBox(width: 6)
+          ],
           _buildSamsungScreenCast(flutterPlayerController, backgroundColor,
               iconColor, barHeight, buttonPadding)
         ],
@@ -795,7 +746,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _hideStuff = false;
         _hideTimer?.cancel();
         flutterPlayerController!.pause();
-        Floating().cancelOnLeavePiP();
+        chewieController?.cancelOnLeavePip();
       } else if (tvPlayerController!.value.isPlaying) {
         _hideStuff = false;
         _hideTimer?.cancel();
@@ -804,7 +755,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _cancelAndRestartTimer();
         if (tvPlayerController!.value.playbackOnTvStarted) {
           tvPlayerController!.resume();
-          Floating().enable(OnLeavePiP());
+          chewieController?.enableOnLeavePip();
           return;
         }
 
@@ -867,5 +818,58 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
       _startHideTimer();
     });
+  }
+
+  AnimatedOpacity _buildTopRowButton({
+    required Color backgroundColor,
+    required Color iconColor,
+    required double barHeight,
+    double buttonPadding = 0,
+    required Widget icon,
+    required double iconSize,
+    required void Function()? onPressed,
+  }) {
+    return AnimatedOpacity(
+      opacity: _hideStuff ? 0.0 : 1.0,
+      duration: Duration(milliseconds: 300),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 10.0),
+          child: Container(
+            height: barHeight,
+            padding: EdgeInsets.only(
+              left: buttonPadding,
+              right: buttonPadding,
+            ),
+            color: backgroundColor,
+            child: Center(
+              child: IconButton(
+                icon: icon,
+                color: iconColor,
+                iconSize: iconSize,
+                onPressed: onPressed,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPipButton(
+    Color backgroundColor,
+    Color iconColor,
+    double barHeight,
+    double buttonPadding,
+  ) {
+    return _buildTopRowButton(
+        backgroundColor: backgroundColor,
+        iconColor: iconColor,
+        barHeight: barHeight,
+        buttonPadding: buttonPadding,
+        icon: Icon(Icons.picture_in_picture_alt_outlined),
+        iconSize: 16,
+        onPressed: chewieController?.enableImmediatePip);
   }
 }

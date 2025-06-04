@@ -1,4 +1,3 @@
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
@@ -16,8 +15,8 @@ class PlayerWithControls extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
-          aspectRatio:
-              chewieController.aspectRatio ?? _calculateAspectRatio(context),
+          aspectRatio: chewieController.aspectRatio?.aspectRatio ??
+              _calculateAspectRatio(context),
           child: _buildPlayerWithControls(chewieController, context),
         ),
       ),
@@ -31,7 +30,7 @@ class PlayerWithControls extends StatelessWidget {
         chewieController.placeholder ?? Container(),
         Center(
           child: AspectRatio(
-            aspectRatio: chewieController.aspectRatio ??
+            aspectRatio: chewieController.aspectRatio?.aspectRatio ??
                 _calculateAspectRatio(context),
             child: VideoPlayer(chewieController.videoPlayerController),
           ),
@@ -47,7 +46,8 @@ class PlayerWithControls extends StatelessWidget {
     CustomChewieController chewieController,
   ) {
     return chewieController.showControls
-        ? chewieController.customControls ?? (Theme.of(context).platform == TargetPlatform.android
+        ? chewieController.customControls ??
+            (Theme.of(context).platform == TargetPlatform.android
                 ? MaterialControls()
                 : CupertinoControls(
                     backgroundColor: Color.fromRGBO(41, 41, 41, 0.7),

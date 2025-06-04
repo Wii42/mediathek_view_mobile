@@ -87,6 +87,7 @@ class CustomChewieController extends ChangeNotifier {
     this.isLive = false,
     this.allowFullScreen = true,
     this.allowMuting = true,
+    this.allowPictureInPicture = true,
     this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
     this.deviceOrientationsAfterFullScreen = const [
       DeviceOrientation.portraitUp,
@@ -135,7 +136,7 @@ class CustomChewieController extends ChangeNotifier {
   /// video!
   ///
   /// Will fallback to fitting within the space allowed.
-  final double? aspectRatio;
+  final Rational? aspectRatio;
 
   /// The colors to use for controls on iOS. By default, the iOS player uses
   /// colors sampled from the original iOS 11 designs.
@@ -166,6 +167,9 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Defines if the mute control should be shown
   final bool allowMuting;
+
+  /// Defines if the button to allow picture-in-picture mode should be shown
+  final bool allowPictureInPicture;
 
   /// Defines the system overlays visible after exiting fullscreen
   final List<SystemUiOverlay> systemOverlaysAfterFullScreen;
@@ -209,7 +213,7 @@ class CustomChewieController extends ChangeNotifier {
     }
 
     await videoPlayerController.play();
-    Floating().enable(OnLeavePiP());
+    enableOnLeavePip();
     await videoPlayerController.seekTo(startAt!);
   }
 
@@ -233,6 +237,23 @@ class CustomChewieController extends ChangeNotifier {
       enterFullScreen();
     }
     notifyListeners();
+  }
+
+  /// Enables the Picture-in-Picture mode when the user leaves the app.
+  Future<PiPStatus> enableOnLeavePip() {
+    return Floating()
+        .enable(OnLeavePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
+  }
+
+  /// Enables the Picture-in-Picture mode immediately.
+  Future<PiPStatus> enableImmediatePip() {
+    return Floating()
+        .enable(ImmediatePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
+  }
+
+  /// Cancels the Picture-in-Picture mode when the user leaves the app.
+  Future<void> cancelOnLeavePip() {
+    return Floating().cancelOnLeavePiP();
   }
 }
 
