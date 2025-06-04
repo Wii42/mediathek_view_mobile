@@ -17,5 +17,6 @@ class Channels {
     'SRF': 'srf.png',
     'PHOENIX': 'phoenix.png',
     'Funk.net': 'funk.png',
+    'ONE': 'one.png',
   };
 }
