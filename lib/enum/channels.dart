@@ -16,5 +16,6 @@ class Channels {
     'RBB': 'rbb.png',
     'SRF': 'srf.png',
     'PHOENIX': 'phoenix.png',
+    'Funk.net': 'funk.png',
   };
 }

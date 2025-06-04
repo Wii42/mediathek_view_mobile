@@ -60,7 +60,11 @@ class VideoListItemBuilder {
       return video.channel != null &&
               video.channel!.toUpperCase().contains(entry.key.toUpperCase()) ||
           entry.key.toUpperCase().contains(video.channel!.toUpperCase());
-    }, orElse: () => MapEntry("", "")).value;
+    }, orElse: () {
+      logger.warning(
+          "No channel found for video: ${video.title} with channel: ${video.channel}");
+      return MapEntry("", "");
+    }).value;
 
     Widget deleteButton = Container();
     if (showDeleteButton) {
