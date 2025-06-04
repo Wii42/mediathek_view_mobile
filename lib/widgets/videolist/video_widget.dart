@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/database/video_progress_entity.dart';
@@ -212,24 +214,29 @@ class VideoWidgetState extends State<VideoWidget> {
       String? topic,
       DateTime? timestamp,
       String assetPath) {
-    return Container(
-      color: Colors.grey[800]?.withAlpha(177),
-      child: Column(
-        children: <Widget>[
-          playbackProgress != null
-              ? PlaybackProgressBar(
-                  playbackProgress.progressAsDuration, duration, false)
-              : Container(),
-          MetaInfoListTile.getVideoMetaInformationListTile(
-              textTheme: textTheme,
-              duration: duration,
-              title: title,
-              topic: topic,
-              timestamp: timestamp,
-              assetPath: assetPath,
-              isDownloaded: entity != null,
-              titleMaxLines: 2),
-        ],
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        child: Container(
+          color: Colors.grey[800]?.withAlpha(177),
+          child: Column(
+            children: <Widget>[
+              playbackProgress != null
+                  ? PlaybackProgressBar(
+                      playbackProgress.progressAsDuration, duration, false)
+                  : Container(),
+              MetaInfoListTile(
+                  textTheme: textTheme,
+                  duration: duration,
+                  title: title,
+                  topic: topic,
+                  timestamp: timestamp,
+                  assetPath: assetPath,
+                  isDownloaded: entity != null,
+                  titleMaxLines: 2),
+            ],
+          ),
+        ),
       ),
     );
   }

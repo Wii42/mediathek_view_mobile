@@ -215,7 +215,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     right: 0.0,
                     child: downloadProgressBar)
               ]),
-          MetaInfoListTile.getVideoMetaInformationListTile(
+          MetaInfoListTile(
               textTheme: Theme.of(context).textTheme,
               duration: widget.video.durationAsDuration,
               title: widget.video.title ?? "",

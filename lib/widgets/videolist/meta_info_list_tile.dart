@@ -4,16 +4,29 @@ import 'package:flutter_ws/util/timestamp_calculator.dart';
 
 import 'channel_thumbnail.dart';
 
-class MetaInfoListTile {
-  static ListTile getVideoMetaInformationListTile(
-      {required TextTheme textTheme,
-      Duration? duration,
-      required String title,
-      String? topic,
-      DateTime? timestamp,
-      required String assetPath,
-      bool isDownloaded = false,
-      int? titleMaxLines}) {
+class MetaInfoListTile extends StatelessWidget {
+  final TextTheme textTheme;
+  final Duration? duration;
+  final String title;
+  final String? topic;
+  final DateTime? timestamp;
+  final String assetPath;
+  final bool isDownloaded;
+  final int? titleMaxLines;
+
+  const MetaInfoListTile(
+      {super.key,
+      required this.textTheme,
+      this.duration,
+      required this.title,
+      this.topic,
+      this.timestamp,
+      required this.assetPath,
+      this.isDownloaded = false,
+      this.titleMaxLines});
+
+  @override
+  Widget build(BuildContext context) {
     return ListTile(
       leading: assetPath.isNotEmpty
           ? ChannelThumbnail(assetPath, isDownloaded)
@@ -21,9 +34,9 @@ class MetaInfoListTile {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (topic != null && topic.isNotEmpty)
+          if (topic != null && topic!.isNotEmpty)
             Text(
-              topic,
+              topic!,
               style: textTheme.titleLarge?.copyWith(color: Colors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -42,11 +55,11 @@ class MetaInfoListTile {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            timestamp != null ? Calculator.calculateTimestamp(timestamp) : "",
+            timestamp != null ? Calculator.calculateTimestamp(timestamp!) : "",
             style: textTheme.titleLarge?.copyWith(color: Colors.white),
           ),
           Text(
-            duration != null ? Calculator.calculateDuration(duration) : "",
+            duration != null ? Calculator.calculateDuration(duration!) : "",
             style: videoMetadataTextStyle.copyWith(color: Colors.white),
           ),
         ],
