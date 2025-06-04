@@ -10,7 +10,7 @@ class APIQuery {
 
   //callbacks
   void Function(String) onDataReceived;
-  Function onError;
+  void Function(Error) onError;
 
   static int skip = 0;
   static const int defaultQueryAmount = 60;

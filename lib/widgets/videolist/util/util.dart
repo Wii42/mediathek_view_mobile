@@ -1,4 +1,3 @@
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/database/video_entity.dart';
@@ -43,7 +42,7 @@ class Util {
     return true;
   }
 
-  static Future playVideoHandler(
+  static Future<Object?> playVideoHandler(
       BuildContext context,
       AppState appState,
       VideoEntity? entity,
@@ -54,7 +53,7 @@ class Util {
     bool preChecksSuccessful =
         await Util.playVideoPreChecks(context, entity, video);
     if (!preChecksSuccessful) {
-      return;
+      return null;
     }
 
     return navigator.push(MaterialPageRoute(

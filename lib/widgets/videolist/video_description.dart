@@ -44,13 +44,9 @@ class VideoDescription extends StatelessWidget {
           child: Container(
             //height: 400.0,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(40.0),
-                  bottomLeft: const Radius.circular(40.0),
-                  bottomRight: const Radius.circular(40.0),
-                  topRight: const Radius.circular(40.0)),
-              color: Color(0xffffbf00).withAlpha(100),
-            ),
+                borderRadius: BorderRadius.all(
+              const Radius.circular(40.0),
+            )),
             child: Padding(
               padding: const EdgeInsets.only(
                   left: 30.0, right: 30.0, top: 10.0, bottom: 20.0),
