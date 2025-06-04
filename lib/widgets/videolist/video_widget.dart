@@ -78,8 +78,15 @@ class VideoWidgetState extends State<VideoWidget> {
       triggerParentStateReload: checkIfAlreadyDownloaded,
     );
 
-    Image placeholderImage = Image.asset(
-        'assets/img/${widget.defaultImageAssetPath!}',
+    String assetName;
+    if (widget.defaultImageAssetPath != null &&
+        widget.defaultImageAssetPath!.isNotEmpty) {
+      assetName = widget.defaultImageAssetPath!;
+    } else {
+      assetName = "MediathekViewLoading.png";
+    }
+
+    Image placeholderImage = Image.asset('assets/img/$assetName',
         width: totalWidth,
         height: height,
         alignment: Alignment.center,

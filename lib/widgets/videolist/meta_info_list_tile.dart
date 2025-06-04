@@ -25,6 +25,8 @@ class MetaInfoListTile {
             Text(
               topic,
               style: textTheme.titleLarge?.copyWith(color: Colors.white),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           Text(
             title,
