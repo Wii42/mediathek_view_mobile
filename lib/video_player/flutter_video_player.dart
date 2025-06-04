@@ -72,12 +72,17 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     initVideoPlayerController();
     initTvVideoController();
     initChewieController();
-
-    return Scaffold(
-        backgroundColor: Colors.black,
-        body: CustomChewie(
+    return PiPSwitcher(
+        childWhenEnabled: CustomChewie(
           controller: chewieController,
-        ));
+          showControls: false,
+        ),
+        childWhenDisabled: Scaffold(
+            backgroundColor: Colors.black,
+            body: CustomChewie(
+              controller: chewieController,
+              showControls: true,
+            )));
   }
 
   @override

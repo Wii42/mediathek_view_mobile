@@ -4,7 +4,9 @@ import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerWithControls extends StatelessWidget {
-  const PlayerWithControls({super.key});
+  const PlayerWithControls({super.key, this.showControls = true});
+
+  final bool showControls;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,9 @@ class PlayerWithControls extends StatelessWidget {
         child: AspectRatio(
           aspectRatio: chewieController.aspectRatio?.aspectRatio ??
               _calculateAspectRatio(context),
-          child: _buildPlayerWithControls(chewieController, context),
+          child: showControls
+              ? _buildPlayerWithControls(chewieController, context)
+              : _buildPlayerWithoutControls(chewieController, context),
         ),
       ),
     );
@@ -37,6 +41,22 @@ class PlayerWithControls extends StatelessWidget {
         ),
         chewieController.overlay ?? Container(),
         _buildControls(context, chewieController)!,
+      ],
+    );
+  }
+
+  Widget _buildPlayerWithoutControls(
+      CustomChewieController chewieController, BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        chewieController.placeholder ?? Container(),
+        Center(
+          child: AspectRatio(
+            aspectRatio: chewieController.aspectRatio?.aspectRatio ??
+                _calculateAspectRatio(context),
+            child: VideoPlayer(chewieController.videoPlayerController),
+          ),
+        ),
       ],
     );
   }

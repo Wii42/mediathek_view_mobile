@@ -21,10 +21,13 @@ class CustomChewie extends StatefulWidget {
   const CustomChewie({
     super.key,
     required this.controller,
+    this.showControls = true,
   });
 
   /// The [CustomChewieController]
   final CustomChewieController controller;
+
+  final bool showControls;
 
   @override
   CustomChewieState createState() {
@@ -52,7 +55,7 @@ class CustomChewieState extends State<CustomChewie> {
   Widget build(BuildContext context) {
     return _ChewieControllerProvider(
       controller: widget.controller,
-      child: PlayerWithControls(),
+      child: PlayerWithControls(showControls: widget.showControls),
     );
   }
 }
