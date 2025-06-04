@@ -23,10 +23,18 @@ class Calculator {
   }
 
   static String calculateTimestamp(DateTime time) {
-    var minutes = time.minute < 9 ? "0${time.minute}" : time.minute.toString();
-    var day = time.day < 9 ? "0${time.day}" : time.day.toString();
-    var month = time.month < 9 ? "0${time.month}" : time.month.toString();
+    String minutes =
+        time.minute < 9 ? "0${time.minute}" : time.minute.toString();
+    String day = time.day < 9 ? "0${time.day}" : time.day.toString();
+    String month = time.month < 9 ? "0${time.month}" : time.month.toString();
 
-    return "$day.$month.${time.year} um ${time.hour}:$minutes";
+    DateTime now = DateTime.now();
+    bool isToday =
+        time.year == now.year && time.month == now.month && time.day == now.day;
+
+    String dateString =
+        isToday ? "Heute" : "${time.day}.${time.month}.${time.year}";
+
+    return "$dateString um ${time.hour}:$minutes";
   }
 }
