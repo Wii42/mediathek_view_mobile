@@ -8,7 +8,7 @@ Video watching in the player is possible for most channels; however, downloading
 # About MediathekViewMobile
 
 MediathekViewMobile is an Android and iOS application written with Flutter that allows searching through and downloading videos from
-a wide range of public German TV providers (ARD, ZDF, Arte, 3Sat, SWR, BR, MDR, NDR, WDR, HR, RBB, ORF, SRF).
+a wide range of public German TV providers (ARD, ZDF, Arte, 3Sat, SWR, BR, MDR, NDR, WDR, HR, RBB, ORF, SRF, Funk, ONE).
 It uses the API of [MediathekViewWeb](https://mediathekviewweb.de/).
 
 [Hier gibts die READ.ME in deutscher Sprache]().
@@ -19,6 +19,7 @@ It uses the API of [MediathekViewWeb](https://mediathekviewweb.de/).
 
 - Quick and comfortable search (including filters) over all videos from supported German public TV channels.
 - Download Videos for offline viewing.
+- Watch videos in picture-in-picture mode.
 - Videoplayer that remembers last viewing positions
 - Stream videos to supported TVs (currently Samsung) and use your device for remote control.
 - View History
