@@ -24,7 +24,6 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     AppState appState = AppState();
     await appState.ensureInitialized();
-    print("isPipAvailable: ${appState.isPipAvailable}");
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),

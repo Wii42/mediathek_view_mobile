@@ -755,15 +755,16 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         _cancelAndRestartTimer();
         if (tvPlayerController!.value.playbackOnTvStarted) {
           tvPlayerController!.resume();
-          chewieController?.enableOnLeavePip();
           return;
         }
 
         if (!flutterPlayerController!.value.isInitialized) {
           flutterPlayerController!.initialize().then((_) {
+            chewieController?.enableOnLeavePip();
             flutterPlayerController!.play();
           });
         } else {
+          chewieController?.enableOnLeavePip();
           flutterPlayerController!.play();
         }
       }

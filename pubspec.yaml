@@ -20,7 +20,7 @@ dependencies:
   shimmer: ^3.0.0
   quiver: ^3.2.2
   flutter_swiper_plus : ^2.0.4
-  video_player: ^2.9.5
+  video_player: ^2.10.0
   chewie: ^1.11.3
   wakelock_plus: ^1.3.2
   flutter_launcher_icons: ^0.14.3

@@ -216,7 +216,7 @@ class CustomChewieController extends ChangeNotifier {
     }
 
     await videoPlayerController.play();
-    enableOnLeavePip();
+    await enableOnLeavePip();
     await videoPlayerController.seekTo(startAt!);
   }
 
@@ -243,20 +243,25 @@ class CustomChewieController extends ChangeNotifier {
   }
 
   /// Enables the Picture-in-Picture mode when the user leaves the app.
-  Future<PiPStatus> enableOnLeavePip() {
-    return Floating()
+  Future<PiPStatus> enableOnLeavePip() async {
+    PiPStatus status = await Floating()
         .enable(OnLeavePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
+    logger.info("enableOnLeavePip called, status: $status");
+    return status;
   }
 
   /// Enables the Picture-in-Picture mode immediately.
-  Future<PiPStatus> enableImmediatePip() {
-    return Floating()
+  Future<PiPStatus> enableImmediatePip() async {
+    PiPStatus status = await Floating()
         .enable(ImmediatePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
+    logger.info("enableImmediatePip called, status: $status");
+    return status;
   }
 
   /// Cancels the Picture-in-Picture mode when the user leaves the app.
-  Future<void> cancelOnLeavePip() {
-    return Floating().cancelOnLeavePiP();
+  Future<void> cancelOnLeavePip() async {
+    await Floating().cancelOnLeavePiP();
+    logger.info("cancelOnLeavePip called");
   }
 }
 
