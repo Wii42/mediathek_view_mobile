@@ -118,7 +118,7 @@ class DownloadSectionState extends State<DownloadSection> {
     if (downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
       downloadedVideos =
-          downloads.map((entity) => Video.fromMap(entity.toMap())).toSet();
+          downloads.map((entity) => Video.fromJson(entity.toMap())).toSet();
       if (mounted) {
         setState(() {});
       }

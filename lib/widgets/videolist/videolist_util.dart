@@ -24,7 +24,8 @@ class VideoListUtil {
     for (int i = 0; i < newVideos.length; i++) {
       Video currentVideo = newVideos[i];
 
-      logger.info("Video ID : ${currentVideo.id!} URL: ${currentVideo.url_video!} Duration: ${currentVideo.duration} Size: ${currentVideo.size}");
+      logger.info(
+          "Video ID : ${currentVideo.id!} URL: ${currentVideo.url_video!} Duration: ${currentVideo.duration} Size: ${currentVideo.size}");
       bool hasDuplicate =
           _hasDuplicate(i, newVideos, currentVideos, currentVideo);
       if (hasDuplicate == false) {
@@ -57,9 +58,11 @@ class VideoListUtil {
   }
 
   static Video httpUrlToHttps(Video video) {
-    if (video.url_video!.startsWith('http://srfvodhd-vh.akamaihd.net') ||
-        video.url_video!.startsWith('http://hdvodsrforigin-f.akamaihd.net')) {
-      video.url_video = 'https${video.url_video!.substring(4)}';
+    if (video.url_video == null) {
+      return video;
+    }
+    if (video.url_video?.scheme == 'http') {
+      video.url_video = video.url_video?.replace(scheme: 'https');
     }
     return video;
   }
@@ -90,8 +93,7 @@ class VideoListUtil {
           videoLengthInMinutes > maxLength;
     });
     int diff = videoLengthBeforeRemoval - videos.length;
-    logger.info(
-        "Removed $diff videos due to length constraints");
+    logger.info("Removed $diff videos due to length constraints");
     return videos;
   }
 }

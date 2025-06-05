@@ -372,7 +372,7 @@ class DatabaseManager {
   void _insertPlaybackPosition(Video video, int position) {
     // get entity from video
     VideoProgressEntity videoProgress =
-        VideoProgressEntity.fromMap(video.toMap());
+        VideoProgressEntity.fromMap(video.toJson());
 
     videoProgress.progress = position;
     insertVideoProgress(videoProgress).then((value) {

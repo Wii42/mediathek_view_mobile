@@ -500,7 +500,7 @@ class DownloadManager {
   }
 
   Future<Video> downloadFile(Video video) async {
-    Uri videoUrl = Uri.parse(video.url_video!);
+    Uri videoUrl = video.url_video!;
 
     Directory directory = appState.localDirectory!;
 

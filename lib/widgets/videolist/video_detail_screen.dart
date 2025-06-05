@@ -217,10 +217,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               ]),
           MetaInfoListTile(
               textTheme: Theme.of(context).textTheme,
-              duration: widget.video.durationAsDuration,
+              duration: widget.video.duration,
               title: widget.video.title ?? "",
               topic: widget.video.topic,
-              timestamp: widget.video.timestampAsDateTime,
+              timestamp: widget.video.timestamp,
               assetPath: widget.defaultImageAssetPath!,
               isDownloaded: widget.entity != null),
           Divider(),
@@ -263,7 +263,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     if (videoProgressEntity != null) {
       videoProgressBar = PlaybackProgressBar(
           videoProgressEntity!.progressAsDuration,
-          widget.video.durationAsDuration,
+          widget.video.duration,
           false);
     }
 

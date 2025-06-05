@@ -7,7 +7,7 @@ part of 'query_info.dart';
 // **************************************************************************
 
 QueryInfo _$QueryInfoFromJson(Map<String, dynamic> json) => QueryInfo(
-      QueryInfo._DateTimeFromJson(json['filmlisteTimestamp'] as num?),
+      DateTimeParser.fromSecondsSinceEpoch(json['filmlisteTimestamp'] as num?),
       QueryInfo._DurationFromJson(json['searchEngineTime'] as String?),
       (json['resultCount'] as num?)?.toInt(),
       (json['totalResults'] as num?)?.toInt(),
@@ -15,7 +15,7 @@ QueryInfo _$QueryInfoFromJson(Map<String, dynamic> json) => QueryInfo(
 
 Map<String, dynamic> _$QueryInfoToJson(QueryInfo instance) => <String, dynamic>{
       'filmlisteTimestamp':
-          QueryInfo._DateTimeToJson(instance.filmlisteTimestamp),
+          DateTimeParser.toSecondsSinceEpoch(instance.filmlisteTimestamp),
       'searchEngineTime': QueryInfo._DurationToJson(instance.searchEngineTime),
       'resultCount': instance.resultCount,
       'totalResults': instance.totalResults,

@@ -14,12 +14,12 @@ class JSONParser {
     print("result keys: ${resultUnparsed.keys}");
     List<dynamic> unparsedResultList = resultUnparsed["results"];
     var unparsedQueryResult = resultUnparsed["queryInfo"];
-    print("queryInfo: $unparsedQueryResult");
 
     QueryInfo queryInfo = QueryInfo.fromJson(unparsedQueryResult);
-    print("queryInfo: ${queryInfo.toString()}");
+    print("unparsed: ${unparsedResultList.first}");
     List<Video> videos =
-        unparsedResultList.map((video) => Video.fromMap(video)).toList();
+        unparsedResultList.map((video) => Video.fromJson(video)).toList();
+    print("parsed: ${videos.first}");
 
     QueryResult result = QueryResult();
     result.queryInfo = queryInfo;

@@ -1,5 +1,7 @@
 import 'package:flutter_ws/model/video.dart';
 
+import '../util/date_time_parser.dart';
+
 class VideoEntity {
   static const String TABLE_NAME = "videos";
 
@@ -74,22 +76,24 @@ class VideoEntity {
 
   factory VideoEntity.fromVideo(Video video) {
     return VideoEntity(
-        video.id,
-        "", //task Id is added by download manager
-        video.channel,
-        video.topic,
-        video.description,
-        video.title,
-        video.timestamp,
-        0,
-        video.duration.toString(),
-        video.size,
-        video.url_website,
-        video.url_video_low,
-        video.url_video_hd,
-        video.filmlisteTimestamp,
-        video.url_video,
-        video.url_subtitle);
+      video.id,
+      "",
+      //task Id is added by download manager
+      video.channel,
+      video.topic,
+      video.description,
+      video.title,
+      DateTimeParser.toSecondsSinceEpoch(video.timestamp),
+      0,
+      video.duration.toString(),
+      video.size,
+      video.url_website?.toString(),
+      video.url_video_low?.toString(),
+      video.url_video_hd?.toString(),
+      DateTimeParser.toSecondsSinceEpochString(video.filmlisteTimestamp),
+      video.url_video?.toString(),
+      video.url_subtitle?.toString(),
+    );
   }
 
   VideoEntity.fromMap(Map<String, dynamic> json)

@@ -134,10 +134,10 @@ class VideoWidgetState extends State<VideoWidget> {
                     Theme.of(context).textTheme,
                     videoProgressEntity,
                     widget.video.id,
-                    widget.video.durationAsDuration,
+                    widget.video.duration,
                     widget.video.title ?? "",
                     widget.video.topic,
-                    widget.video.timestampAsDateTime,
+                    widget.video.timestamp,
                     widget.defaultImageAssetPath!),
               ),
               Positioned(

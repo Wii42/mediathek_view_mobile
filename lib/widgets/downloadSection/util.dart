@@ -51,7 +51,7 @@ class Util {
           child: Stack(
             children: <Widget>[
               VideoPreviewAdapter(
-                Video.fromMap(playbackProgress.toMap()),
+                _videoFromPlaybackProgress(playbackProgress),
                 // always show previews for already watched videos
                 // should be already generated
                 true,
@@ -66,5 +66,14 @@ class Util {
         ),
       ),
     );
+  }
+
+  static Video _videoFromPlaybackProgress(
+      VideoProgressEntity playbackProgress) {
+    Map<String, dynamic> videoMap = playbackProgress.toMap();
+    videoMap['duration'] = videoMap['duration'] != null
+        ? int.tryParse(videoMap['duration'])
+        : null;
+    return Video.fromJson(videoMap);
   }
 }

@@ -76,9 +76,9 @@ class VideoDescription extends StatelessWidget {
                     ),
                     getDivider(),
                     getCaption("Länge", textTheme),
-                    if (video.durationAsDuration != null)
+                    if (video.duration != null)
                       Text(
-                        Calculator.calculateDuration(video.durationAsDuration!),
+                        Calculator.calculateDuration(video.duration!),
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -88,8 +88,7 @@ class VideoDescription extends StatelessWidget {
                     getCaption("Ausgestrahlt", textTheme),
                     if (video.timestamp != null)
                       Text(
-                        Calculator.calculateTimestamp(
-                            video.timestampAsDateTime!),
+                        Calculator.calculateTimestamp(video.timestamp!),
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -118,8 +117,7 @@ class VideoDescription extends StatelessWidget {
                             style: TextButton.styleFrom(
                                 backgroundColor: Colors.grey[800]),
                             child: Text('Website', style: body2TextStyle),
-                            onPressed: () =>
-                                _launchURL(Uri.parse(video.url_website!)),
+                            onPressed: () => _launchURL(video.url_website!),
                           )
                         : Container(),
                     getVerticalDividerLine(top: 15.0),

@@ -13,12 +13,11 @@ class VideoUtil {
         return "${appWideState.localDirectory!.path}/MediathekView/${videoEntity.fileName!}";
       }
     } else {
-      return video.url_video;
+      return video.url_video?.toString();
     }
   }
 
   static bool isLivestreamVideo(Video video) {
-    return video.url_video!.substring(video.url_video!.lastIndexOf(".")) ==
-        ".m3u8";
+    return video.url_video?.pathSegments.last.endsWith(".m3u8") ?? false;
   }
 }

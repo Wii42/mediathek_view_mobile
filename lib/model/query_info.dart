@@ -1,12 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../util/date_time_parser.dart';
+
 part 'query_info.g.dart';
 
 @JsonSerializable()
 class QueryInfo {
   @JsonKey(
-    fromJson: _DateTimeFromJson,
-    toJson: _DateTimeToJson,
+    fromJson: DateTimeParser.fromSecondsSinceEpoch,
+    toJson: DateTimeParser.toSecondsSinceEpoch,
   )
   DateTime? filmlisteTimestamp;
   @JsonKey(
@@ -29,15 +31,6 @@ class QueryInfo {
   }
 
   Map<String, dynamic> toJson() => _$QueryInfoToJson(this);
-
-  static DateTime? _DateTimeFromJson(num? timestamp) => timestamp != null
-      ? DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000,
-          isUtc: true)
-      : null;
-
-  static int? _DateTimeToJson(DateTime? dateTime) => dateTime != null
-      ? (dateTime.millisecondsSinceEpoch / 1000).round()
-      : null;
 
   static Duration? _DurationFromJson(String? timeMs) => timeMs != null
       ? Duration(microseconds: (double.parse(timeMs) * 1000).round())

@@ -42,8 +42,8 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   void initState() {
     updateCurrentDownloads().then((List<Video> videos) {
       for (var video in videos) {
-        subscribeToDownloadUpdates(video.id, video.title,
-            widget.appWideState.downloadManager);
+        subscribeToDownloadUpdates(
+            video.id, video.title, widget.appWideState.downloadManager);
       }
 
       if (videos.isNotEmpty && mounted) {
@@ -89,7 +89,8 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
     listener() async {
       DownloadValue value = downloadController.value;
 
-      widget.logger.info("Current download status for video: ${videoId!}${value.status}");
+      widget.logger.info(
+          "Current download status for video: ${videoId!}${value.status}");
 
       if (value.status == DownloadTaskStatus.complete ||
           value.status == DownloadTaskStatus.failed ||
@@ -104,13 +105,12 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   }
 
   Future<List<Video>> updateCurrentDownloads() async {
-    Set<VideoEntity> downloads = await widget
-        .appWideState.downloadManager
-        .getCurrentDownloads();
+    Set<VideoEntity> downloads =
+        await widget.appWideState.downloadManager.getCurrentDownloads();
 
     List<Video> currentDownloads = [];
     for (VideoEntity entity in downloads) {
-      Video video = Video.fromMap(entity.toMap());
+      Video video = Video.fromJson(entity.toMap());
       currentDownloads.add(video);
       widget.logger
           .info("Current download: ${video.id!}. Title: ${video.title!}");
@@ -144,7 +144,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
           ERROR_MSG,
           TRY_AGAIN_MSG,
           widget.appWideState.downloadManager.deleteVideo,
-          id?? "");
+          id ?? "");
     });
   }
 }

@@ -1,61 +1,46 @@
+import 'package:json_annotation/json_annotation.dart';
+
+import '../util/date_time_parser.dart';
+
+part 'video.g.dart';
+
+@JsonSerializable()
 class Video {
-  String? id;
   String? channel;
   String? topic;
-  String? description;
   String? title;
-  int? timestamp;
-  int? duration;
+  String? description;
+  @JsonKey(
+      fromJson: DateTimeParser.fromSecondsSinceEpoch,
+      toJson: DateTimeParser.toSecondsSinceEpoch)
+  DateTime? timestamp;
+  @JsonKey(fromJson: _DurationFromJson, toJson: _DurationToJson)
+  Duration? duration;
   int? size;
-  String? url_website;
-  String? url_video_low;
-  String? url_video_hd;
-  String? filmlisteTimestamp;
-  String? url_video;
-  String? url_subtitle;
-
-  DateTime? get timestampAsDateTime => timestamp != null
-      ? DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000, isUtc: true)
-      : null;
-
-  Duration? get durationAsDuration =>
-      duration != null ? Duration(seconds: duration!) : null;
+  Uri? url_website;
+  Uri? url_subtitle;
+  Uri? url_video;
+  Uri? url_video_low;
+  Uri? url_video_hd;
+  @JsonKey(
+      fromJson: DateTimeParser.fromSecondsSinceEpochString,
+      toJson: DateTimeParser.toSecondsSinceEpochString)
+  DateTime? filmlisteTimestamp;
+  String? id;
 
   Video(this.id);
 
-  Video.fromMap(Map<String, dynamic> json)
-      : id = json['id'],
-        channel = json['channel'],
-        topic = json['topic'],
-        description = json['description'],
-        title = json['title'],
-        timestamp = json['timestamp'],
-        duration = int.tryParse(json['duration'].toString()),
-        size = json['size'],
-        url_website = json['url_website'],
-        url_video_low = json['url_video_low'],
-        url_video_hd = json['url_video_hd'],
-        filmlisteTimestamp = json['filmlisteTimestamp'],
-        url_video = json['url_video'],
-        url_subtitle = json['url_subtitle'];
+  static Video fromJson(Map<String, dynamic> json) => _$VideoFromJson(json);
 
-  Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      'id': id,
-      'channel': channel,
-      'topic': topic,
-      'description': description,
-      'title': title,
-      'timestamp': timestamp,
-      'duration': duration,
-      'size': size,
-      'url_website': url_website,
-      'url_video_low': url_video_low,
-      'url_video_hd': url_video_hd,
-      'filmlisteTimestamp': filmlisteTimestamp,
-      'url_video': url_video,
-      'url_subtitle': url_subtitle,
-    };
-    return map;
+  Map<String, dynamic> toJson() => _$VideoToJson(this);
+
+  @override
+  String toString() {
+    return 'Video{channel: $channel, topic: $topic, title: $title, description: $description, timestamp: $timestamp, duration: $duration, size: $size, url_website: $url_website, url_subtitle: $url_subtitle, url_video: $url_video, url_video_low: $url_video_low, url_video_hd: $url_video_hd, filmlisteTimestamp: $filmlisteTimestamp, id: $id}';
   }
+
+  static Duration? _DurationFromJson(num? timeS) =>
+      timeS != null ? Duration(seconds: timeS.toInt()) : null;
+
+  static int? _DurationToJson(Duration? duration) => duration?.inSeconds;
 }

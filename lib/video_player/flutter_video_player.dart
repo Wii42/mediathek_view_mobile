@@ -92,10 +92,11 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
 
   String? getVideoUrl(Video? video, VideoEntity? entity) {
     if (video != null) {
-      if (video.url_video_hd != null && video.url_video_hd!.isNotEmpty) {
-        return video.url_video_hd;
+      if (video.url_video_hd != null &&
+          video.url_video_hd!.toString().isNotEmpty) {
+        return video.url_video_hd.toString();
       } else {
-        return video.url_video;
+        return video.url_video.toString();
       }
     } else {
       if (entity!.url_video_hd != null && entity.url_video_hd!.isNotEmpty) {
@@ -112,7 +113,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       widget.appSharedState.samsungTVCastManager,
       widget.appSharedState.databaseManager,
       videoUrl,
-      widget.initialVideo ?? Video.fromMap(widget.initialVideoEntity!.toMap()),
+      widget.initialVideo ?? Video.fromJson(widget.initialVideoEntity!.toMap()),
       widget.initialProgressEntity != null
           ? Duration(milliseconds: widget.initialProgressEntity!.progress!)
           : Duration(milliseconds: 0),
