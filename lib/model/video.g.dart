@@ -15,7 +15,7 @@ Video _$VideoFromJson(Map<String, dynamic> json) => Video(
       ..description = json['description'] as String?
       ..timestamp =
           DateTimeParser.fromSecondsSinceEpoch(json['timestamp'] as num?)
-      ..duration = Video._DurationFromJson(json['duration'] as num?)
+      ..duration = DurationParser.fromSeconds(json['duration'] as num?)
       ..size = (json['size'] as num?)?.toInt()
       ..url_website = json['url_website'] == null
           ? null
@@ -41,7 +41,7 @@ Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
       'title': instance.title,
       'description': instance.description,
       'timestamp': DateTimeParser.toSecondsSinceEpoch(instance.timestamp),
-      'duration': Video._DurationToJson(instance.duration),
+      'duration': DurationParser.toSeconds(instance.duration),
       'size': instance.size,
       'url_website': instance.url_website?.toString(),
       'url_subtitle': instance.url_subtitle?.toString(),
