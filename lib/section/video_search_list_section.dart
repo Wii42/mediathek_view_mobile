@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,9 +8,9 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import '../api/api_query.dart';
+import '../api/api_response.dart';
 import '../model/query_result.dart';
 import '../model/video.dart';
-import '../util/json_parser.dart';
 import '../widgets/bars/gradient_app_bar.dart';
 import '../widgets/bars/status_bar.dart';
 import '../widgets/filterMenu/filter_menu.dart';
@@ -172,12 +173,18 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       logger.fine("Refresh operation finished.");
       HapticFeedback.lightImpact();
     }
-    logger.fine("start");
-    QueryResult queryResult = JSONParser.parseQueryResult(data);
-    logger.fine("finished");
+    logger.fine("start parsing response");
+    ApiResponse apiResponse = ApiResponse.fromJson(jsonDecode(data));
+    QueryResult? queryResult = apiResponse.result;
+    logger.fine("finished parsing response");
+    if (queryResult == null) {
+      logger.warning(
+          "Received empty query result from API, error: ${apiResponse.error}");
+      return;
+    }
 
     List<Video> newVideosFromQuery = queryResult.videos.toList();
-    totalQueryResults = queryResult.queryInfo.totalResults;
+    totalQueryResults = queryResult.queryInfo?.totalResults;
     lastAmountOfVideosRetrieved = newVideosFromQuery.length;
     logger.info("received videos: $lastAmountOfVideosRetrieved");
 

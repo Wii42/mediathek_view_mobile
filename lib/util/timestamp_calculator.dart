@@ -32,8 +32,7 @@ class Calculator {
     bool isToday =
         time.year == now.year && time.month == now.month && time.day == now.day;
 
-    String dateString =
-        isToday ? "Heute" : "${time.day}.${time.month}.${time.year}";
+    String dateString = isToday ? "Heute" : "$day.$month.${time.year}";
 
     return "$dateString um ${time.hour}:$minutes";
   }
