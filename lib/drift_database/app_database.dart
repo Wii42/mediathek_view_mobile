@@ -1,11 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:flutter_ws/drift_database/converters.dart';
-import 'package:flutter_ws/drift_database/videos_table.dart';
+
+import 'converters.dart';
+import 'tables.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [VideosTable])
+@DriftDatabase(tables: [Videos, VideoProgress, ChannelFavorites])
 class AppDatabase extends _$AppDatabase {
   AppDatabase({Future<Object> Function()? databaseDir, QueryExecutor? executor})
       : super(executor ?? _openConnection(databaseDir));
@@ -23,4 +24,6 @@ class AppDatabase extends _$AppDatabase {
       ),
     );
   }
+
+  void test() {}
 }

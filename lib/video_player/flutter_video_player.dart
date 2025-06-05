@@ -114,9 +114,9 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       widget.appSharedState.databaseManager,
       videoUrl,
       widget.initialVideo ?? Video.fromJson(widget.initialVideoEntity!.toMap()),
-      widget.initialProgressEntity != null
-          ? Duration(milliseconds: widget.initialProgressEntity!.progress!)
-          : Duration(milliseconds: 0),
+      widget.initialProgressEntity?.progressAsDuration != null
+          ? widget.initialProgressEntity!.progressAsDuration!
+          : Duration.zero,
     );
 
     if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
