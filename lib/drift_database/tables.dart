@@ -33,7 +33,7 @@ mixin VideoMixin on Table {
 }
 
 @DataClassName('VideoProgressEntity')
-class VideoProgress extends Table {
+class VideoProgress extends Table with VideoMixin {
   IntColumn get progress =>
       integer().map(const DurationConverter()).nullable()();
   DateTimeColumn get timestampLastViewed => dateTime().nullable()();

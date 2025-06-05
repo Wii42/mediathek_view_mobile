@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/enum/channels.dart';
-import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_adapter.dart';
+
+import '../../drift_database/app_database.dart' show VideoProgressEntity;
+import '../../model/video.dart';
 
 class Util {
   static List<Widget> getWatchHistoryItems(
@@ -51,7 +52,7 @@ class Util {
           child: Stack(
             children: <Widget>[
               VideoPreviewAdapter(
-                _videoFromPlaybackProgress(playbackProgress),
+                Video.fromVideoProgressEntity(playbackProgress),
                 // always show previews for already watched videos
                 // should be already generated
                 true,
@@ -66,14 +67,5 @@ class Util {
         ),
       ),
     );
-  }
-
-  static Video _videoFromPlaybackProgress(
-      VideoProgressEntity playbackProgress) {
-    Map<String, dynamic> videoMap = playbackProgress.toMap();
-    videoMap['duration'] = videoMap['duration'] != null
-        ? int.tryParse(videoMap['duration'])
-        : null;
-    return Video.fromJson(videoMap);
   }
 }

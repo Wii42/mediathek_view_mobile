@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/database_manager.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
@@ -13,6 +10,7 @@ import 'package:flutter_ws/video_player/custom_video_controls.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
 
+import '../drift_database/app_database.dart';
 import 'tv_player_controller.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
@@ -27,7 +25,7 @@ class FlutterVideoPlayer extends StatefulWidget {
       this.initialVideo, this.initialVideoEntity, this.initialProgressEntity,
       {super.key});
 
-  DatabaseManager get databaseManager => appSharedState.databaseManager;
+  AppDatabase get databaseManager => appSharedState.databaseManager;
 
   String? get videoId => initialVideo.id ?? initialVideoEntity?.id;
 
@@ -40,7 +38,7 @@ class FlutterVideoPlayer extends StatefulWidget {
 }
 
 class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
-  String? videoUrl;
+  Uri? videoUrl;
 
   // castNewVideoToTV indicates that the currently playing video on the TV
   // should be replaced
@@ -90,19 +88,20 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     super.dispose();
   }
 
-  String? getVideoUrl(Video? video, VideoEntity? entity) {
+  Uri? getVideoUrl(Video? video, VideoEntity? entity) {
     if (video != null) {
       if (video.url_video_hd != null &&
           video.url_video_hd!.toString().isNotEmpty) {
-        return video.url_video_hd.toString();
+        return video.url_video_hd;
       } else {
-        return video.url_video.toString();
+        return video.url_video;
       }
     } else {
-      if (entity!.url_video_hd != null && entity.url_video_hd!.isNotEmpty) {
-        return entity.url_video_hd;
+      if (entity!.urlVideoHd != null &&
+          entity.urlVideoHd!.toString().isNotEmpty) {
+        return entity.urlVideoHd;
       } else {
-        return entity.url_video;
+        return entity.urlVideo;
       }
     }
   }
@@ -113,10 +112,8 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
       widget.appSharedState.samsungTVCastManager,
       widget.appSharedState.databaseManager,
       videoUrl,
-      widget.initialVideo ?? Video.fromJson(widget.initialVideoEntity!.toMap()),
-      widget.initialProgressEntity?.progressAsDuration != null
-          ? widget.initialProgressEntity!.progressAsDuration!
-          : Duration.zero,
+      widget.initialVideo ?? Video.fromVideoEntity(widget.initialVideoEntity!),
+      widget.initialProgressEntity?.progress ?? Duration.zero,
     );
 
     if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
@@ -146,7 +143,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     if (widget.initialVideoEntity == null ||
         widget.appSharedState.isCurrentlyPlayingOnTV) {
       videoController = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl!),
+        videoUrl!,
       );
 
       Countly.instance.events.recordEvent("PLAY_VIDEO_NETWORK", null, 1);
@@ -172,7 +169,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           widget.logger.severe(
               "Cannot play video from file. File does not exist: ${file.uri}");
           videoController = VideoPlayerController.networkUrl(
-            Uri.parse(videoUrl!),
+            videoUrl!,
           );
         }
       },
@@ -225,9 +222,11 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             videoEntity = await widget.appSharedState.databaseManager
                 .getDownloadedVideo(widget.videoId);
 
-            // get the video progress
-            progressEntity = await widget.appSharedState.databaseManager
-                .getVideoProgressEntity(widget.initialVideo.id);
+            if (widget.initialVideo.id != null) {
+              // get the video progress
+              progressEntity = await widget.appSharedState.databaseManager
+                  .getVideoProgressEntity(widget.initialVideo.id!);
+            }
 
             // start initializing players with the video playing on the TV
             setState(() {});

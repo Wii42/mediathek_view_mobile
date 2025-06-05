@@ -1,3 +1,5 @@
+import 'package:flutter_ws/drift_database/app_database.dart'
+    show VideoEntity, VideoProgressEntity;
 import 'package:json_annotation/json_annotation.dart';
 
 import '../util/date_time_parser.dart';
@@ -39,5 +41,79 @@ class Video {
   @override
   String toString() {
     return 'Video{channel: $channel, topic: $topic, title: $title, description: $description, timestamp: $timestamp, duration: $duration, size: $size, url_website: $url_website, url_subtitle: $url_subtitle, url_video: $url_video, url_video_low: $url_video_low, url_video_hd: $url_video_hd, filmlisteTimestamp: $filmlisteTimestamp, id: $id}';
+  }
+
+  VideoEntity toVideoEntity({required String taskId}) {
+    return VideoEntity(
+      id: id!,
+      channel: channel ?? "",
+      topic: topic ?? "",
+      description: description,
+      title: title ?? "",
+      timestamp: timestamp,
+      duration: duration,
+      size: size,
+      urlWebsite: url_website,
+      urlVideoLow: url_video_low,
+      urlVideoHd: url_video_hd,
+      filmlisteTimestamp: filmlisteTimestamp,
+      urlVideo: url_video,
+      urlSubtitle: url_subtitle,
+      taskId: '',
+    );
+  }
+
+  static Video fromVideoEntity(VideoEntity entity) {
+    return Video(entity.id)
+      ..channel = entity.channel
+      ..topic = entity.topic
+      ..description = entity.description
+      ..title = entity.title
+      ..timestamp = entity.timestamp
+      ..duration = entity.duration
+      ..size = entity.size
+      ..url_website = entity.urlWebsite
+      ..url_video_low = entity.urlVideoLow
+      ..url_video_hd = entity.urlVideoHd
+      ..filmlisteTimestamp = entity.filmlisteTimestamp
+      ..url_video = entity.urlVideo
+      ..url_subtitle = entity.urlSubtitle;
+  }
+
+  VideoProgressEntity toVideoProgressEntity() {
+    return VideoProgressEntity(
+      id: id!,
+      progress: null, // Progress is not part of Video, so we set it to 0
+      channel: channel ?? "",
+      topic: topic ?? "",
+      description: description,
+      title: title ?? "",
+      timestamp: timestamp,
+      duration: duration,
+      size: size,
+      urlWebsite: url_website,
+      urlVideoLow: url_video_low,
+      urlVideoHd: url_video_hd,
+      filmlisteTimestamp: filmlisteTimestamp,
+      urlVideo: url_video,
+      urlSubtitle: url_subtitle,
+    );
+  }
+
+  static Video fromVideoProgressEntity(VideoProgressEntity entity) {
+    return Video(entity.id)
+      ..channel = entity.channel
+      ..topic = entity.topic
+      ..description = entity.description
+      ..title = entity.title
+      ..timestamp = entity.timestamp
+      ..duration = entity.duration
+      ..size = entity.size
+      ..url_website = entity.urlWebsite
+      ..url_video_low = entity.urlVideoLow
+      ..url_video_hd = entity.urlVideoHd
+      ..filmlisteTimestamp = entity.filmlisteTimestamp
+      ..url_video = entity.urlVideo
+      ..url_subtitle = entity.urlSubtitle;
   }
 }

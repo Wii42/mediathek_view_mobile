@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/video.dart';
@@ -8,6 +6,8 @@ import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../drift_database/app_database.dart';
 
 class VideoPreviewAdapter extends StatefulWidget {
   final Logger logger = Logger('VideoPreviewAdapter');

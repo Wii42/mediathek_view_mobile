@@ -284,7 +284,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   void deleteVideo() {
     widget.downloadManager
-        .deleteVideo(widget.video.id)
+        .deleteVideo(widget.video.id!)
         .then((bool deletedSuccessfully) {
       if (!deletedSuccessfully) {
         widget.logger
@@ -300,7 +300,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
 
   void updateIfCurrentlyDownloading() {
     widget.downloadManager
-        .isCurrentlyDownloading(widget.video.id)
+        .isCurrentlyDownloading(widget.video.id!)
         .then((status) {
       if (status != null) {
         if (mounted) {

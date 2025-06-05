@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/downloadSection/util.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
+
+import '../../drift_database/app_database.dart' show VideoProgressEntity;
 
 class WatchHistory extends StatefulWidget {
   final Logger logger = Logger('WatchHistory');
@@ -19,7 +20,7 @@ class WatchHistory extends StatefulWidget {
 }
 
 class WatchHistoryState extends State<WatchHistory> {
-  Set<VideoProgressEntity>? history;
+  List<VideoProgressEntity>? history;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +116,7 @@ class WatchHistoryState extends State<WatchHistory> {
     AppState appState = context.watch<AppState>();
     if (history == null || history!.isEmpty) {
       return appState.databaseManager.getAllLastViewedVideos().then((all) {
-        if (all != null && all.isNotEmpty) {
+        if (all.isNotEmpty) {
           history = all;
           setState(() {});
         }
@@ -176,9 +177,7 @@ class WatchHistoryState extends State<WatchHistory> {
 
     for (var entry in watchHistoryItems.entries) {
       String heading = getWatchHistoryHeading(
-          entry.key,
-          DateTime.fromMillisecondsSinceEpoch(
-              entry.value.key.timestampLastViewed!));
+          entry.key, entry.value.key.timestampLastViewed!);
 
       resultList.add(
         SliverToBoxAdapter(
@@ -211,13 +210,11 @@ class WatchHistoryState extends State<WatchHistory> {
     return resultList;
   }
 
-  int getDaysSinceVideoWatched(int? timestampLastViewed) {
+  int getDaysSinceVideoWatched(DateTime? timestampLastViewed) {
     if (timestampLastViewed == null) {
       throw Exception();
     }
-    DateTime videoWatchDate =
-        DateTime.fromMillisecondsSinceEpoch(timestampLastViewed);
-    Duration differenceToToday = DateTime.now().difference(videoWatchDate);
+    Duration differenceToToday = DateTime.now().difference(timestampLastViewed);
     return differenceToToday.inDays;
   }
 }

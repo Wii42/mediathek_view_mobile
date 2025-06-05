@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_ws/database/database_manager.dart';
 import 'package:flutter_ws/enum/tv_player_status.dart';
 import 'package:flutter_ws/enum/tv_status.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:logging/logging.dart';
 
+import '../drift_database/app_database.dart';
 import 'tv_video_player_value.dart';
 
 class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
@@ -15,10 +15,10 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   bool _isDisposed = false;
 
   SamsungTVCastManager samsungTVCastManager;
-  DatabaseManager databaseManager;
+  AppDatabase databaseManager;
 
   /// The URI to the video file.
-  final String? dataSource;
+  final Uri? dataSource;
   final Video video;
   Duration startAt;
   static bool playRequestSend = false;
@@ -38,8 +38,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
     this.dataSource,
     this.video,
     this.startAt,
-  )   : super(
-            TvVideoPlayerValue(position: startAt, availableTvs: availableTvs));
+  ) : super(TvVideoPlayerValue(position: startAt, availableTvs: availableTvs));
 
   // start listening for TVs (active during the whole player lifetime
   // even though not connected to TV: this is to show available TVs right away).
@@ -194,7 +193,8 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       tvConnectionSubscription = tvReadinessStream.listen((raw) {
         String connectionStatus = raw['status'];
         String tvName = raw['name'];
-        logger.info("Samsung TV: received connection status $connectionStatus for TV $tvName");
+        logger.info(
+            "Samsung TV: received connection status $connectionStatus for TV $tvName");
         switch (connectionStatus) {
           case TvStatus.IS_SUPPORTED:
             {
@@ -214,8 +214,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
             }
         }
       }, onError: (e) {
-        logger.severe(
-            "Samsung TV connection status returned an error: $e");
+        logger.severe("Samsung TV connection status returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV connection status event channel is done.");
       }, cancelOnError: false);
@@ -287,7 +286,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
         // insert position
         databaseManager.updatePlaybackPosition(
-            video, Duration(milliseconds: playbackPosition).inMilliseconds);
+            video, Duration(milliseconds: playbackPosition));
 
         value = value.copyWith(
             playbackOnTvStarted: true,
@@ -325,7 +324,8 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
           value = value.copyWith(availableTvs: avail);
         }
       }, onError: (e) {
-        logger.severe("Samsung TV discovery - found TV's returned an error: $e");
+        logger
+            .severe("Samsung TV discovery - found TV's returned an error: $e");
       }, onDone: () {
         logger.info("Samsung TV discovery (found) event channel is done.");
       }, cancelOnError: false);

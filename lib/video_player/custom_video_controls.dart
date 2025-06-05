@@ -111,7 +111,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     _latestFlutterPlayerValue = flutterPlayerController!.value;
 
     // update position
-    final int position = _latestFlutterPlayerValue!.position.inMilliseconds;
+    final Duration position = _latestFlutterPlayerValue!.position;
     logger.info("video playback position:$position");
 
     if (mounted) {

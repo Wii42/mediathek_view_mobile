@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_ws/database/channel_favorite_entity.dart';
-import 'package:flutter_ws/database/database_manager.dart';
+import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/platform_channels/filesystem_permission_manager.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:flutter_ws/platform_channels/video_preview_manager.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,7 +58,7 @@ class AppState extends ChangeNotifier {
   TargetPlatform? _targetPlatform;
   late final Directory? localDirectory;
   final DownloadManager downloadManager = DownloadManager();
-  final DatabaseManager databaseManager = DatabaseManager();
+  late final AppDatabase databaseManager;
   final VideoPreviewManager videoPreviewManager = VideoPreviewManager();
   final FilesystemPermissionManager filesystemPermissionManager =
       FilesystemPermissionManager();
@@ -70,7 +68,7 @@ class AppState extends ChangeNotifier {
 
   // only relevant on Android, always true on other platforms
   bool _hasFilesystemPermission = false;
-  Map<String?, ChannelFavoriteEntity> favoriteChannels;
+  Map<String, ChannelFavorite> favoriteChannels;
 
   // Samsung TV cast
   final SamsungTVCastManager samsungTVCastManager = SamsungTVCastManager();
@@ -135,8 +133,9 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> initDBAndDownloadManager() async {
-    await initializeDatabase().then((_) =>
-        logger.info("Database initialized: ${databaseManager.db != null}"));
+    databaseManager = AppDatabase();
+    //await initializeDatabase().then((_) =>
+    //    logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
     downloadManager.startListeningToDownloads(this);
 
@@ -168,7 +167,7 @@ class AppState extends ChangeNotifier {
     if (targetPlatform == TargetPlatform.iOS) {
       directory = await getApplicationDocumentsDirectory();
     } else {
-      directory = await getApplicationDocumentsDirectory();
+      directory = await getExternalStorageDirectory();
     }
     localDirectory = directory;
     logger.info("Local directory set to: ${localDirectory!.path}");
@@ -191,25 +190,25 @@ class AppState extends ChangeNotifier {
   }
 
   void prefillFavoritedChannels() async {
-    Set<ChannelFavoriteEntity> channels =
+    List<ChannelFavorite> channels =
         await databaseManager.getAllChannelFavorites();
     logger.fine(
         "There are ${channels.length} favorited channels in the database");
     for (var entity in channels) {
-      favoriteChannels.putIfAbsent(entity.name, () => entity);
+      favoriteChannels.putIfAbsent(entity.channelName, () => entity);
     }
   }
 
-  Future<void> initializeDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    logger.info("DB dir: ${documentsDirectory.path}");
-    String path = join(documentsDirectory.path, "demo.db");
-    //Uncomment when having made changes to the DB Schema
-    //appState.databaseManager.deleteDb(path);
-    //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
-    return await databaseManager.open(path).then(
-          (dynamic) => logger.info("Successfully opened database"),
-          onError: (e) => logger.severe("Error when opening database"),
-        );
-  }
+  //Future<void> initializeDatabase() async {
+  //  Directory documentsDirectory = await getApplicationDocumentsDirectory();
+  //  logger.info("DB dir: ${documentsDirectory.path}");
+  //  String path = join(documentsDirectory.path, "demo.db");
+  //  //Uncomment when having made changes to the DB Schema
+  //  //appState.databaseManager.deleteDb(path);
+  //  //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
+  //  return await databaseManager.open(path).then(
+  //        (dynamic) => logger.info("Successfully opened database"),
+  //        onError: (e) => logger.severe("Error when opening database"),
+  //      );
+  //}
 }

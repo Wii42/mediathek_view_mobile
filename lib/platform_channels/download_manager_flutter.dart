@@ -4,10 +4,10 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:countly_flutter/countly_flutter.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_ws/database/database_manager.dart';
-import 'package:flutter_ws/database/video_entity.dart';
+import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:logging/logging.dart';
@@ -49,7 +49,7 @@ class DownloadManager {
 
   late AppState appState;
 
-  DatabaseManager get databaseManager => appState.databaseManager;
+  AppDatabase get databaseManager => appState.databaseManager;
 
   //special case Android: remember Video to be able to resume download after grant of file system permission
   late Video rememberedFailedVideoDownload;
@@ -111,7 +111,7 @@ class DownloadManager {
   }
 
   void _notify(String? taskId, DownloadTaskStatus? status, int? progress,
-      DatabaseManager? databaseManager, VideoEntity entity) {
+      AppDatabase? databaseManager, VideoEntity entity) {
     if (status == DownloadTaskStatus.failed) {
       //delete from schema first in case we want to try downloading video again
       handleFailedDownload(entity);
@@ -156,15 +156,20 @@ class DownloadManager {
       }
 
       DownloadTask task = list.elementAt(0);
-
       // for ios, saving the directory is useless as the base directory gets mounted to a unique id every restart
-      entity.filePath = task.savedDir;
-      entity.fileName = task.filename;
-      entity.timestamp_video_saved = DateTime.now().millisecondsSinceEpoch;
       await databaseManager
-          .updateDownloadingVideoEntity(entity)
+          .updateDownloadingVideoEntity(
+              taskId: entity.taskId,
+              filePath: Value(task.savedDir),
+              fileName: Value(task.filename),
+              timestampVideoSaved: Value(DateTime.now()))
           .then((rowsUpdated) {
         logger.fine("Updated $rowsUpdated relations.");
+        cache[entity.id] = entity.copyWith(
+          filePath: Value(task.savedDir),
+          fileName: Value(task.filename),
+          timestampVideoSaved: Value(DateTime.now()),
+        );
       });
       //also update cache
       cache.update(entity.id, (oldEntity) => entity);
@@ -242,8 +247,13 @@ class DownloadManager {
 
   // Check first if a entity with that id exists on the db or cache. If yes & task id is set, check Task schema for running, queued or paused status
   Future<DownloadTask?> isCurrentlyDownloading(String? videoId) async {
+    if (videoId == null || videoId.isEmpty) {
+      logger.warning(
+          "Cannot check if video is currently downloading. VideoId is null or empty");
+      return null;
+    }
     return getEntityForId(videoId).then((entity) {
-      if (entity == null || entity.task_id == '') {
+      if (entity == null || entity.taskId == '') {
         return null;
       }
       // if already has a filename, then it is already downloaded!
@@ -253,7 +263,7 @@ class DownloadManager {
 
       //check for right task status
       return FlutterDownloader.loadTasksWithRawQuery(
-              query: "$SQL_GET_SINGEL_TASK'${entity.task_id}'")
+              query: "$SQL_GET_SINGEL_TASK'${entity.taskId}'")
           .then((List<DownloadTask>? list) {
         if (list!.isEmpty) {
           return null;
@@ -273,8 +283,13 @@ class DownloadManager {
   //Checks if the video is downloaded already.
   // downloaded videos have a filePath set
   Future<VideoEntity?> isAlreadyDownloaded(String? videoId) async {
+    if (videoId == null || videoId.isEmpty) {
+      logger.warning(
+          "Cannot check if video is downloaded. VideoId is null or empty");
+      return null;
+    }
     return getEntityForId(videoId).then((entity) {
-      if (entity == null || entity.task_id == '') {
+      if (entity == null || entity.taskId == '') {
         return null;
       }
       // if it has a filename, then it is already downloaded!
@@ -285,7 +300,7 @@ class DownloadManager {
     });
   }
 
-  Future<VideoEntity?> getEntityForId(String? videoId) async {
+  Future<VideoEntity?> getEntityForId(String videoId) async {
     VideoEntity? entity = cache[videoId];
     if (entity != null) {
       logger.fine("Cache hit for VideoId -> Entity");
@@ -303,7 +318,7 @@ class DownloadManager {
   }
 
   //Delete all in one: as task & file & from VideoEntity schema
-  Future<bool> deleteVideo(String? videoId) async {
+  Future<bool> deleteVideo(String videoId) async {
     cache[videoId] = null;
     return getEntityForId(videoId).then((entity) {
       if (entity == null) {
@@ -313,10 +328,10 @@ class DownloadManager {
       }
 
       // notify listeners about cancellation
-      _notify(entity.task_id, DownloadTaskStatus.canceled, 0, databaseManager,
+      _notify(entity.taskId, DownloadTaskStatus.canceled, 0, databaseManager,
           entity);
 
-      return _cancelDownload(entity.task_id!)
+      return _cancelDownload(entity.taskId)
           .then((dummy) => _deleteVideo(entity));
     });
   }
@@ -359,7 +374,7 @@ class DownloadManager {
     });
   }
 
-  Future<int> _deleteFromVideoSchema(String? videoId) {
+  Future<int> _deleteFromVideoSchema(String videoId) {
     return databaseManager.deleteVideoEntity(videoId).then((int rowsAffected) {
       return rowsAffected;
     }, onError: (e) {
@@ -417,10 +432,10 @@ class DownloadManager {
     }
   }
 
-  Future<Set<VideoEntity>> getCurrentDownloads() async {
+  Future<List<VideoEntity>> getCurrentDownloads() async {
     return _getCurrentDownloadTasks().then((tasks) async {
       if (tasks.isEmpty) {
-        return <VideoEntity>{};
+        return <VideoEntity>[];
       }
       return databaseManager.getVideoEntitiesForTaskIds(
           tasks.map((task) => task.taskId).toList());
@@ -464,12 +479,19 @@ class DownloadManager {
           if (entity.filePath == null || entity.fileName == null) {
             logger.info(
                 "Found download tasks that was completed while flutter app was not running. Syncing with VideoEntity Schema. Title: ${entity.title}");
-            entity.filePath = task.savedDir;
-            entity.fileName = task.filename;
             databaseManager
-                .updateDownloadingVideoEntity(entity)
+                .updateDownloadingVideoEntity(
+                    taskId: entity.taskId,
+                    filePath: Value(task.savedDir),
+                    fileName: Value(task.filename))
                 .then((rowsUpdated) {
               logger.fine("Updated $rowsUpdated relations.");
+              cache.update(entity.id, (oldEntity) {
+                return entity.copyWith(
+                  filePath: Value(task.savedDir),
+                  fileName: Value(task.filename),
+                );
+              });
             });
           }
           //also update cache
@@ -522,7 +544,7 @@ class DownloadManager {
     logger.info(
         "Requested download of video with id ${video.id} and url ${video.url_video}");
 
-    DatabaseManager databaseManager = appState.databaseManager;
+    AppDatabase databaseManager = appState.databaseManager;
 
     Countly.instance.events.recordEvent("DOWNLOAD_VIDEO", null, 1);
 
@@ -530,24 +552,23 @@ class DownloadManager {
     First check if there is already a VideoEntity.
     Once finished downloading, the filepath and filename will be updated.
      */
-    getEntityForId(video.id).then(
+    getEntityForId(video.id!).then(
       (alreadyExistingEntity) {
         if (alreadyExistingEntity != null) {
           //perform update
           logger.info(
               "Video to download already exist in db (possibly due to previous rating). Upadting entity with download information");
-          alreadyExistingEntity.task_id = taskId;
-          databaseManager
-              .updateVideoEntity(alreadyExistingEntity)
-              .then((rowsUpdated) {
+          VideoEntity newEntity =
+              alreadyExistingEntity.copyWith(taskId: taskId);
+          databaseManager.updateVideoEntity(newEntity).then((rowsUpdated) {
             logger.info(
                 "Updated $rowsUpdated rows when starting download for already existing entity");
+            cache[video.id] = newEntity;
           });
         } else {
-          VideoEntity entity = VideoEntity.fromVideo(video);
-          entity.task_id =
-              taskId; //set TaskId to associate with running download
-          databaseManager.insert(entity).then((data) {
+          VideoEntity entity = video.toVideoEntity(taskId: taskId!);
+          //set TaskId to associate with running download
+          databaseManager.insertVideo(entity).then((data) {
             logger.fine("Inserted new currently downloading video to Database");
             cache.putIfAbsent(video.id, () {
               return entity;

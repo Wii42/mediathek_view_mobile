@@ -955,6 +955,80 @@ class $VideoProgressTable extends VideoProgress
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoProgressTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _channelMeta =
+      const VerificationMeta('channel');
+  @override
+  late final GeneratedColumn<String> channel = GeneratedColumn<String>(
+      'channel', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _topicMeta = const VerificationMeta('topic');
+  @override
+  late final GeneratedColumn<String> topic = GeneratedColumn<String>(
+      'topic', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _timestampMeta =
+      const VerificationMeta('timestamp');
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+      'timestamp', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  late final GeneratedColumnWithTypeConverter<Duration?, int> duration =
+      GeneratedColumn<int>('duration', aliasedName, true,
+              type: DriftSqlType.int, requiredDuringInsert: false)
+          .withConverter<Duration?>($VideoProgressTable.$converterdurationn);
+  static const VerificationMeta _sizeMeta = const VerificationMeta('size');
+  @override
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
+      'size', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  @override
+  late final GeneratedColumnWithTypeConverter<Uri?, String> urlWebsite =
+      GeneratedColumn<String>('url_website', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<Uri?>($VideoProgressTable.$converterurlWebsiten);
+  @override
+  late final GeneratedColumnWithTypeConverter<Uri?, String> urlVideoLow =
+      GeneratedColumn<String>('url_video_low', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<Uri?>($VideoProgressTable.$converterurlVideoLown);
+  @override
+  late final GeneratedColumnWithTypeConverter<Uri?, String> urlVideoHd =
+      GeneratedColumn<String>('url_video_hd', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<Uri?>($VideoProgressTable.$converterurlVideoHdn);
+  static const VerificationMeta _filmlisteTimestampMeta =
+      const VerificationMeta('filmlisteTimestamp');
+  @override
+  late final GeneratedColumn<DateTime> filmlisteTimestamp =
+      GeneratedColumn<DateTime>('filmliste_timestamp', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  late final GeneratedColumnWithTypeConverter<Uri?, String> urlVideo =
+      GeneratedColumn<String>('url_video', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<Uri?>($VideoProgressTable.$converterurlVideon);
+  @override
+  late final GeneratedColumnWithTypeConverter<Uri?, String> urlSubtitle =
+      GeneratedColumn<String>('url_subtitle', aliasedName, true,
+              type: DriftSqlType.string, requiredDuringInsert: false)
+          .withConverter<Uri?>($VideoProgressTable.$converterurlSubtitlen);
   @override
   late final GeneratedColumnWithTypeConverter<Duration?, int> progress =
       GeneratedColumn<int>('progress', aliasedName, true,
@@ -967,7 +1041,24 @@ class $VideoProgressTable extends VideoProgress
       GeneratedColumn<DateTime>('timestamp_last_viewed', aliasedName, true,
           type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [progress, timestampLastViewed];
+  List<GeneratedColumn> get $columns => [
+        id,
+        channel,
+        topic,
+        description,
+        title,
+        timestamp,
+        duration,
+        size,
+        urlWebsite,
+        urlVideoLow,
+        urlVideoHd,
+        filmlisteTimestamp,
+        urlVideo,
+        urlSubtitle,
+        progress,
+        timestampLastViewed
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -979,6 +1070,49 @@ class $VideoProgressTable extends VideoProgress
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('channel')) {
+      context.handle(_channelMeta,
+          channel.isAcceptableOrUnknown(data['channel']!, _channelMeta));
+    } else if (isInserting) {
+      context.missing(_channelMeta);
+    }
+    if (data.containsKey('topic')) {
+      context.handle(
+          _topicMeta, topic.isAcceptableOrUnknown(data['topic']!, _topicMeta));
+    } else if (isInserting) {
+      context.missing(_topicMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    }
+    if (data.containsKey('size')) {
+      context.handle(
+          _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
+    }
+    if (data.containsKey('filmliste_timestamp')) {
+      context.handle(
+          _filmlisteTimestampMeta,
+          filmlisteTimestamp.isAcceptableOrUnknown(
+              data['filmliste_timestamp']!, _filmlisteTimestampMeta));
+    }
     if (data.containsKey('timestamp_last_viewed')) {
       context.handle(
           _timestampLastViewedMeta,
@@ -989,11 +1123,45 @@ class $VideoProgressTable extends VideoProgress
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   VideoProgressEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoProgressEntity(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      channel: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}channel'])!,
+      topic: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}topic'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      timestamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp']),
+      duration: $VideoProgressTable.$converterdurationn.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}duration'])),
+      size: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}size']),
+      urlWebsite: $VideoProgressTable.$converterurlWebsiten.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}url_website'])),
+      urlVideoLow: $VideoProgressTable.$converterurlVideoLown.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}url_video_low'])),
+      urlVideoHd: $VideoProgressTable.$converterurlVideoHdn.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}url_video_hd'])),
+      filmlisteTimestamp: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}filmliste_timestamp']),
+      urlVideo: $VideoProgressTable.$converterurlVideon.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url_video'])),
+      urlSubtitle: $VideoProgressTable.$converterurlSubtitlen.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}url_subtitle'])),
       progress: $VideoProgressTable.$converterprogressn.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}progress'])),
@@ -1008,6 +1176,27 @@ class $VideoProgressTable extends VideoProgress
     return $VideoProgressTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<Duration, int> $converterduration =
+      const DurationConverter();
+  static TypeConverter<Duration?, int?> $converterdurationn =
+      NullAwareTypeConverter.wrap($converterduration);
+  static TypeConverter<Uri, String> $converterurlWebsite = const UriConverter();
+  static TypeConverter<Uri?, String?> $converterurlWebsiten =
+      NullAwareTypeConverter.wrap($converterurlWebsite);
+  static TypeConverter<Uri, String> $converterurlVideoLow =
+      const UriConverter();
+  static TypeConverter<Uri?, String?> $converterurlVideoLown =
+      NullAwareTypeConverter.wrap($converterurlVideoLow);
+  static TypeConverter<Uri, String> $converterurlVideoHd = const UriConverter();
+  static TypeConverter<Uri?, String?> $converterurlVideoHdn =
+      NullAwareTypeConverter.wrap($converterurlVideoHd);
+  static TypeConverter<Uri, String> $converterurlVideo = const UriConverter();
+  static TypeConverter<Uri?, String?> $converterurlVideon =
+      NullAwareTypeConverter.wrap($converterurlVideo);
+  static TypeConverter<Uri, String> $converterurlSubtitle =
+      const UriConverter();
+  static TypeConverter<Uri?, String?> $converterurlSubtitlen =
+      NullAwareTypeConverter.wrap($converterurlSubtitle);
   static TypeConverter<Duration, int> $converterprogress =
       const DurationConverter();
   static TypeConverter<Duration?, int?> $converterprogressn =
@@ -1016,12 +1205,82 @@ class $VideoProgressTable extends VideoProgress
 
 class VideoProgressEntity extends DataClass
     implements Insertable<VideoProgressEntity> {
+  final String id;
+  final String channel;
+  final String topic;
+  final String? description;
+  final String title;
+  final DateTime? timestamp;
+  final Duration? duration;
+  final int? size;
+  final Uri? urlWebsite;
+  final Uri? urlVideoLow;
+  final Uri? urlVideoHd;
+  final DateTime? filmlisteTimestamp;
+  final Uri? urlVideo;
+  final Uri? urlSubtitle;
   final Duration? progress;
   final DateTime? timestampLastViewed;
-  const VideoProgressEntity({this.progress, this.timestampLastViewed});
+  const VideoProgressEntity(
+      {required this.id,
+      required this.channel,
+      required this.topic,
+      this.description,
+      required this.title,
+      this.timestamp,
+      this.duration,
+      this.size,
+      this.urlWebsite,
+      this.urlVideoLow,
+      this.urlVideoHd,
+      this.filmlisteTimestamp,
+      this.urlVideo,
+      this.urlSubtitle,
+      this.progress,
+      this.timestampLastViewed});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['channel'] = Variable<String>(channel);
+    map['topic'] = Variable<String>(topic);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || timestamp != null) {
+      map['timestamp'] = Variable<DateTime>(timestamp);
+    }
+    if (!nullToAbsent || duration != null) {
+      map['duration'] = Variable<int>(
+          $VideoProgressTable.$converterdurationn.toSql(duration));
+    }
+    if (!nullToAbsent || size != null) {
+      map['size'] = Variable<int>(size);
+    }
+    if (!nullToAbsent || urlWebsite != null) {
+      map['url_website'] = Variable<String>(
+          $VideoProgressTable.$converterurlWebsiten.toSql(urlWebsite));
+    }
+    if (!nullToAbsent || urlVideoLow != null) {
+      map['url_video_low'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideoLown.toSql(urlVideoLow));
+    }
+    if (!nullToAbsent || urlVideoHd != null) {
+      map['url_video_hd'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideoHdn.toSql(urlVideoHd));
+    }
+    if (!nullToAbsent || filmlisteTimestamp != null) {
+      map['filmliste_timestamp'] = Variable<DateTime>(filmlisteTimestamp);
+    }
+    if (!nullToAbsent || urlVideo != null) {
+      map['url_video'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideon.toSql(urlVideo));
+    }
+    if (!nullToAbsent || urlSubtitle != null) {
+      map['url_subtitle'] = Variable<String>(
+          $VideoProgressTable.$converterurlSubtitlen.toSql(urlSubtitle));
+    }
     if (!nullToAbsent || progress != null) {
       map['progress'] = Variable<int>(
           $VideoProgressTable.$converterprogressn.toSql(progress));
@@ -1034,6 +1293,38 @@ class VideoProgressEntity extends DataClass
 
   VideoProgressCompanion toCompanion(bool nullToAbsent) {
     return VideoProgressCompanion(
+      id: Value(id),
+      channel: Value(channel),
+      topic: Value(topic),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      title: Value(title),
+      timestamp: timestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(timestamp),
+      duration: duration == null && nullToAbsent
+          ? const Value.absent()
+          : Value(duration),
+      size: size == null && nullToAbsent ? const Value.absent() : Value(size),
+      urlWebsite: urlWebsite == null && nullToAbsent
+          ? const Value.absent()
+          : Value(urlWebsite),
+      urlVideoLow: urlVideoLow == null && nullToAbsent
+          ? const Value.absent()
+          : Value(urlVideoLow),
+      urlVideoHd: urlVideoHd == null && nullToAbsent
+          ? const Value.absent()
+          : Value(urlVideoHd),
+      filmlisteTimestamp: filmlisteTimestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(filmlisteTimestamp),
+      urlVideo: urlVideo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(urlVideo),
+      urlSubtitle: urlSubtitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(urlSubtitle),
       progress: progress == null && nullToAbsent
           ? const Value.absent()
           : Value(progress),
@@ -1047,6 +1338,21 @@ class VideoProgressEntity extends DataClass
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoProgressEntity(
+      id: serializer.fromJson<String>(json['id']),
+      channel: serializer.fromJson<String>(json['channel']),
+      topic: serializer.fromJson<String>(json['topic']),
+      description: serializer.fromJson<String?>(json['description']),
+      title: serializer.fromJson<String>(json['title']),
+      timestamp: serializer.fromJson<DateTime?>(json['timestamp']),
+      duration: serializer.fromJson<Duration?>(json['duration']),
+      size: serializer.fromJson<int?>(json['size']),
+      urlWebsite: serializer.fromJson<Uri?>(json['urlWebsite']),
+      urlVideoLow: serializer.fromJson<Uri?>(json['urlVideoLow']),
+      urlVideoHd: serializer.fromJson<Uri?>(json['urlVideoHd']),
+      filmlisteTimestamp:
+          serializer.fromJson<DateTime?>(json['filmlisteTimestamp']),
+      urlVideo: serializer.fromJson<Uri?>(json['urlVideo']),
+      urlSubtitle: serializer.fromJson<Uri?>(json['urlSubtitle']),
       progress: serializer.fromJson<Duration?>(json['progress']),
       timestampLastViewed:
           serializer.fromJson<DateTime?>(json['timestampLastViewed']),
@@ -1056,15 +1362,59 @@ class VideoProgressEntity extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'channel': serializer.toJson<String>(channel),
+      'topic': serializer.toJson<String>(topic),
+      'description': serializer.toJson<String?>(description),
+      'title': serializer.toJson<String>(title),
+      'timestamp': serializer.toJson<DateTime?>(timestamp),
+      'duration': serializer.toJson<Duration?>(duration),
+      'size': serializer.toJson<int?>(size),
+      'urlWebsite': serializer.toJson<Uri?>(urlWebsite),
+      'urlVideoLow': serializer.toJson<Uri?>(urlVideoLow),
+      'urlVideoHd': serializer.toJson<Uri?>(urlVideoHd),
+      'filmlisteTimestamp': serializer.toJson<DateTime?>(filmlisteTimestamp),
+      'urlVideo': serializer.toJson<Uri?>(urlVideo),
+      'urlSubtitle': serializer.toJson<Uri?>(urlSubtitle),
       'progress': serializer.toJson<Duration?>(progress),
       'timestampLastViewed': serializer.toJson<DateTime?>(timestampLastViewed),
     };
   }
 
   VideoProgressEntity copyWith(
-          {Value<Duration?> progress = const Value.absent(),
+          {String? id,
+          String? channel,
+          String? topic,
+          Value<String?> description = const Value.absent(),
+          String? title,
+          Value<DateTime?> timestamp = const Value.absent(),
+          Value<Duration?> duration = const Value.absent(),
+          Value<int?> size = const Value.absent(),
+          Value<Uri?> urlWebsite = const Value.absent(),
+          Value<Uri?> urlVideoLow = const Value.absent(),
+          Value<Uri?> urlVideoHd = const Value.absent(),
+          Value<DateTime?> filmlisteTimestamp = const Value.absent(),
+          Value<Uri?> urlVideo = const Value.absent(),
+          Value<Uri?> urlSubtitle = const Value.absent(),
+          Value<Duration?> progress = const Value.absent(),
           Value<DateTime?> timestampLastViewed = const Value.absent()}) =>
       VideoProgressEntity(
+        id: id ?? this.id,
+        channel: channel ?? this.channel,
+        topic: topic ?? this.topic,
+        description: description.present ? description.value : this.description,
+        title: title ?? this.title,
+        timestamp: timestamp.present ? timestamp.value : this.timestamp,
+        duration: duration.present ? duration.value : this.duration,
+        size: size.present ? size.value : this.size,
+        urlWebsite: urlWebsite.present ? urlWebsite.value : this.urlWebsite,
+        urlVideoLow: urlVideoLow.present ? urlVideoLow.value : this.urlVideoLow,
+        urlVideoHd: urlVideoHd.present ? urlVideoHd.value : this.urlVideoHd,
+        filmlisteTimestamp: filmlisteTimestamp.present
+            ? filmlisteTimestamp.value
+            : this.filmlisteTimestamp,
+        urlVideo: urlVideo.present ? urlVideo.value : this.urlVideo,
+        urlSubtitle: urlSubtitle.present ? urlSubtitle.value : this.urlSubtitle,
         progress: progress.present ? progress.value : this.progress,
         timestampLastViewed: timestampLastViewed.present
             ? timestampLastViewed.value
@@ -1072,6 +1422,27 @@ class VideoProgressEntity extends DataClass
       );
   VideoProgressEntity copyWithCompanion(VideoProgressCompanion data) {
     return VideoProgressEntity(
+      id: data.id.present ? data.id.value : this.id,
+      channel: data.channel.present ? data.channel.value : this.channel,
+      topic: data.topic.present ? data.topic.value : this.topic,
+      description:
+          data.description.present ? data.description.value : this.description,
+      title: data.title.present ? data.title.value : this.title,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      duration: data.duration.present ? data.duration.value : this.duration,
+      size: data.size.present ? data.size.value : this.size,
+      urlWebsite:
+          data.urlWebsite.present ? data.urlWebsite.value : this.urlWebsite,
+      urlVideoLow:
+          data.urlVideoLow.present ? data.urlVideoLow.value : this.urlVideoLow,
+      urlVideoHd:
+          data.urlVideoHd.present ? data.urlVideoHd.value : this.urlVideoHd,
+      filmlisteTimestamp: data.filmlisteTimestamp.present
+          ? data.filmlisteTimestamp.value
+          : this.filmlisteTimestamp,
+      urlVideo: data.urlVideo.present ? data.urlVideo.value : this.urlVideo,
+      urlSubtitle:
+          data.urlSubtitle.present ? data.urlSubtitle.value : this.urlSubtitle,
       progress: data.progress.present ? data.progress.value : this.progress,
       timestampLastViewed: data.timestampLastViewed.present
           ? data.timestampLastViewed.value
@@ -1082,6 +1453,20 @@ class VideoProgressEntity extends DataClass
   @override
   String toString() {
     return (StringBuffer('VideoProgressEntity(')
+          ..write('id: $id, ')
+          ..write('channel: $channel, ')
+          ..write('topic: $topic, ')
+          ..write('description: $description, ')
+          ..write('title: $title, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('duration: $duration, ')
+          ..write('size: $size, ')
+          ..write('urlWebsite: $urlWebsite, ')
+          ..write('urlVideoLow: $urlVideoLow, ')
+          ..write('urlVideoHd: $urlVideoHd, ')
+          ..write('filmlisteTimestamp: $filmlisteTimestamp, ')
+          ..write('urlVideo: $urlVideo, ')
+          ..write('urlSubtitle: $urlSubtitle, ')
           ..write('progress: $progress, ')
           ..write('timestampLastViewed: $timestampLastViewed')
           ..write(')'))
@@ -1089,35 +1474,138 @@ class VideoProgressEntity extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(progress, timestampLastViewed);
+  int get hashCode => Object.hash(
+      id,
+      channel,
+      topic,
+      description,
+      title,
+      timestamp,
+      duration,
+      size,
+      urlWebsite,
+      urlVideoLow,
+      urlVideoHd,
+      filmlisteTimestamp,
+      urlVideo,
+      urlSubtitle,
+      progress,
+      timestampLastViewed);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoProgressEntity &&
+          other.id == this.id &&
+          other.channel == this.channel &&
+          other.topic == this.topic &&
+          other.description == this.description &&
+          other.title == this.title &&
+          other.timestamp == this.timestamp &&
+          other.duration == this.duration &&
+          other.size == this.size &&
+          other.urlWebsite == this.urlWebsite &&
+          other.urlVideoLow == this.urlVideoLow &&
+          other.urlVideoHd == this.urlVideoHd &&
+          other.filmlisteTimestamp == this.filmlisteTimestamp &&
+          other.urlVideo == this.urlVideo &&
+          other.urlSubtitle == this.urlSubtitle &&
           other.progress == this.progress &&
           other.timestampLastViewed == this.timestampLastViewed);
 }
 
 class VideoProgressCompanion extends UpdateCompanion<VideoProgressEntity> {
+  final Value<String> id;
+  final Value<String> channel;
+  final Value<String> topic;
+  final Value<String?> description;
+  final Value<String> title;
+  final Value<DateTime?> timestamp;
+  final Value<Duration?> duration;
+  final Value<int?> size;
+  final Value<Uri?> urlWebsite;
+  final Value<Uri?> urlVideoLow;
+  final Value<Uri?> urlVideoHd;
+  final Value<DateTime?> filmlisteTimestamp;
+  final Value<Uri?> urlVideo;
+  final Value<Uri?> urlSubtitle;
   final Value<Duration?> progress;
   final Value<DateTime?> timestampLastViewed;
   final Value<int> rowid;
   const VideoProgressCompanion({
+    this.id = const Value.absent(),
+    this.channel = const Value.absent(),
+    this.topic = const Value.absent(),
+    this.description = const Value.absent(),
+    this.title = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.duration = const Value.absent(),
+    this.size = const Value.absent(),
+    this.urlWebsite = const Value.absent(),
+    this.urlVideoLow = const Value.absent(),
+    this.urlVideoHd = const Value.absent(),
+    this.filmlisteTimestamp = const Value.absent(),
+    this.urlVideo = const Value.absent(),
+    this.urlSubtitle = const Value.absent(),
     this.progress = const Value.absent(),
     this.timestampLastViewed = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   VideoProgressCompanion.insert({
+    required String id,
+    required String channel,
+    required String topic,
+    this.description = const Value.absent(),
+    required String title,
+    this.timestamp = const Value.absent(),
+    this.duration = const Value.absent(),
+    this.size = const Value.absent(),
+    this.urlWebsite = const Value.absent(),
+    this.urlVideoLow = const Value.absent(),
+    this.urlVideoHd = const Value.absent(),
+    this.filmlisteTimestamp = const Value.absent(),
+    this.urlVideo = const Value.absent(),
+    this.urlSubtitle = const Value.absent(),
     this.progress = const Value.absent(),
     this.timestampLastViewed = const Value.absent(),
     this.rowid = const Value.absent(),
-  });
+  })  : id = Value(id),
+        channel = Value(channel),
+        topic = Value(topic),
+        title = Value(title);
   static Insertable<VideoProgressEntity> custom({
+    Expression<String>? id,
+    Expression<String>? channel,
+    Expression<String>? topic,
+    Expression<String>? description,
+    Expression<String>? title,
+    Expression<DateTime>? timestamp,
+    Expression<int>? duration,
+    Expression<int>? size,
+    Expression<String>? urlWebsite,
+    Expression<String>? urlVideoLow,
+    Expression<String>? urlVideoHd,
+    Expression<DateTime>? filmlisteTimestamp,
+    Expression<String>? urlVideo,
+    Expression<String>? urlSubtitle,
     Expression<int>? progress,
     Expression<DateTime>? timestampLastViewed,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (channel != null) 'channel': channel,
+      if (topic != null) 'topic': topic,
+      if (description != null) 'description': description,
+      if (title != null) 'title': title,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (duration != null) 'duration': duration,
+      if (size != null) 'size': size,
+      if (urlWebsite != null) 'url_website': urlWebsite,
+      if (urlVideoLow != null) 'url_video_low': urlVideoLow,
+      if (urlVideoHd != null) 'url_video_hd': urlVideoHd,
+      if (filmlisteTimestamp != null) 'filmliste_timestamp': filmlisteTimestamp,
+      if (urlVideo != null) 'url_video': urlVideo,
+      if (urlSubtitle != null) 'url_subtitle': urlSubtitle,
       if (progress != null) 'progress': progress,
       if (timestampLastViewed != null)
         'timestamp_last_viewed': timestampLastViewed,
@@ -1126,10 +1614,38 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressEntity> {
   }
 
   VideoProgressCompanion copyWith(
-      {Value<Duration?>? progress,
+      {Value<String>? id,
+      Value<String>? channel,
+      Value<String>? topic,
+      Value<String?>? description,
+      Value<String>? title,
+      Value<DateTime?>? timestamp,
+      Value<Duration?>? duration,
+      Value<int?>? size,
+      Value<Uri?>? urlWebsite,
+      Value<Uri?>? urlVideoLow,
+      Value<Uri?>? urlVideoHd,
+      Value<DateTime?>? filmlisteTimestamp,
+      Value<Uri?>? urlVideo,
+      Value<Uri?>? urlSubtitle,
+      Value<Duration?>? progress,
       Value<DateTime?>? timestampLastViewed,
       Value<int>? rowid}) {
     return VideoProgressCompanion(
+      id: id ?? this.id,
+      channel: channel ?? this.channel,
+      topic: topic ?? this.topic,
+      description: description ?? this.description,
+      title: title ?? this.title,
+      timestamp: timestamp ?? this.timestamp,
+      duration: duration ?? this.duration,
+      size: size ?? this.size,
+      urlWebsite: urlWebsite ?? this.urlWebsite,
+      urlVideoLow: urlVideoLow ?? this.urlVideoLow,
+      urlVideoHd: urlVideoHd ?? this.urlVideoHd,
+      filmlisteTimestamp: filmlisteTimestamp ?? this.filmlisteTimestamp,
+      urlVideo: urlVideo ?? this.urlVideo,
+      urlSubtitle: urlSubtitle ?? this.urlSubtitle,
       progress: progress ?? this.progress,
       timestampLastViewed: timestampLastViewed ?? this.timestampLastViewed,
       rowid: rowid ?? this.rowid,
@@ -1139,6 +1655,54 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressEntity> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (channel.present) {
+      map['channel'] = Variable<String>(channel.value);
+    }
+    if (topic.present) {
+      map['topic'] = Variable<String>(topic.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (duration.present) {
+      map['duration'] = Variable<int>(
+          $VideoProgressTable.$converterdurationn.toSql(duration.value));
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (urlWebsite.present) {
+      map['url_website'] = Variable<String>(
+          $VideoProgressTable.$converterurlWebsiten.toSql(urlWebsite.value));
+    }
+    if (urlVideoLow.present) {
+      map['url_video_low'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideoLown.toSql(urlVideoLow.value));
+    }
+    if (urlVideoHd.present) {
+      map['url_video_hd'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideoHdn.toSql(urlVideoHd.value));
+    }
+    if (filmlisteTimestamp.present) {
+      map['filmliste_timestamp'] = Variable<DateTime>(filmlisteTimestamp.value);
+    }
+    if (urlVideo.present) {
+      map['url_video'] = Variable<String>(
+          $VideoProgressTable.$converterurlVideon.toSql(urlVideo.value));
+    }
+    if (urlSubtitle.present) {
+      map['url_subtitle'] = Variable<String>(
+          $VideoProgressTable.$converterurlSubtitlen.toSql(urlSubtitle.value));
+    }
     if (progress.present) {
       map['progress'] = Variable<int>(
           $VideoProgressTable.$converterprogressn.toSql(progress.value));
@@ -1156,6 +1720,20 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressEntity> {
   @override
   String toString() {
     return (StringBuffer('VideoProgressCompanion(')
+          ..write('id: $id, ')
+          ..write('channel: $channel, ')
+          ..write('topic: $topic, ')
+          ..write('description: $description, ')
+          ..write('title: $title, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('duration: $duration, ')
+          ..write('size: $size, ')
+          ..write('urlWebsite: $urlWebsite, ')
+          ..write('urlVideoLow: $urlVideoLow, ')
+          ..write('urlVideoHd: $urlVideoHd, ')
+          ..write('filmlisteTimestamp: $filmlisteTimestamp, ')
+          ..write('urlVideo: $urlVideo, ')
+          ..write('urlSubtitle: $urlSubtitle, ')
           ..write('progress: $progress, ')
           ..write('timestampLastViewed: $timestampLastViewed, ')
           ..write('rowid: $rowid')
@@ -1863,12 +2441,40 @@ typedef $$VideosTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function()>;
 typedef $$VideoProgressTableCreateCompanionBuilder = VideoProgressCompanion
     Function({
+  required String id,
+  required String channel,
+  required String topic,
+  Value<String?> description,
+  required String title,
+  Value<DateTime?> timestamp,
+  Value<Duration?> duration,
+  Value<int?> size,
+  Value<Uri?> urlWebsite,
+  Value<Uri?> urlVideoLow,
+  Value<Uri?> urlVideoHd,
+  Value<DateTime?> filmlisteTimestamp,
+  Value<Uri?> urlVideo,
+  Value<Uri?> urlSubtitle,
   Value<Duration?> progress,
   Value<DateTime?> timestampLastViewed,
   Value<int> rowid,
 });
 typedef $$VideoProgressTableUpdateCompanionBuilder = VideoProgressCompanion
     Function({
+  Value<String> id,
+  Value<String> channel,
+  Value<String> topic,
+  Value<String?> description,
+  Value<String> title,
+  Value<DateTime?> timestamp,
+  Value<Duration?> duration,
+  Value<int?> size,
+  Value<Uri?> urlWebsite,
+  Value<Uri?> urlVideoLow,
+  Value<Uri?> urlVideoHd,
+  Value<DateTime?> filmlisteTimestamp,
+  Value<Uri?> urlVideo,
+  Value<Uri?> urlSubtitle,
   Value<Duration?> progress,
   Value<DateTime?> timestampLastViewed,
   Value<int> rowid,
@@ -1883,6 +2489,61 @@ class $$VideoProgressTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get channel => $composableBuilder(
+      column: $table.channel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get topic => $composableBuilder(
+      column: $table.topic, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<Duration?, Duration, int> get duration =>
+      $composableBuilder(
+          column: $table.duration,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<Uri?, Uri, String> get urlWebsite =>
+      $composableBuilder(
+          column: $table.urlWebsite,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnWithTypeConverterFilters<Uri?, Uri, String> get urlVideoLow =>
+      $composableBuilder(
+          column: $table.urlVideoLow,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnWithTypeConverterFilters<Uri?, Uri, String> get urlVideoHd =>
+      $composableBuilder(
+          column: $table.urlVideoHd,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<DateTime> get filmlisteTimestamp => $composableBuilder(
+      column: $table.filmlisteTimestamp,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<Uri?, Uri, String> get urlVideo =>
+      $composableBuilder(
+          column: $table.urlVideo,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnWithTypeConverterFilters<Uri?, Uri, String> get urlSubtitle =>
+      $composableBuilder(
+          column: $table.urlSubtitle,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
   ColumnWithTypeConverterFilters<Duration?, Duration, int> get progress =>
       $composableBuilder(
           column: $table.progress,
@@ -1902,6 +2563,49 @@ class $$VideoProgressTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get channel => $composableBuilder(
+      column: $table.channel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get topic => $composableBuilder(
+      column: $table.topic, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get duration => $composableBuilder(
+      column: $table.duration, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get urlWebsite => $composableBuilder(
+      column: $table.urlWebsite, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get urlVideoLow => $composableBuilder(
+      column: $table.urlVideoLow, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get urlVideoHd => $composableBuilder(
+      column: $table.urlVideoHd, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get filmlisteTimestamp => $composableBuilder(
+      column: $table.filmlisteTimestamp,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get urlVideo => $composableBuilder(
+      column: $table.urlVideo, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get urlSubtitle => $composableBuilder(
+      column: $table.urlSubtitle, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<int> get progress => $composableBuilder(
       column: $table.progress, builder: (column) => ColumnOrderings(column));
 
@@ -1919,6 +2623,52 @@ class $$VideoProgressTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get channel =>
+      $composableBuilder(column: $table.channel, builder: (column) => column);
+
+  GeneratedColumn<String> get topic =>
+      $composableBuilder(column: $table.topic, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Duration?, int> get duration =>
+      $composableBuilder(column: $table.duration, builder: (column) => column);
+
+  GeneratedColumn<int> get size =>
+      $composableBuilder(column: $table.size, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Uri?, String> get urlWebsite =>
+      $composableBuilder(
+          column: $table.urlWebsite, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Uri?, String> get urlVideoLow =>
+      $composableBuilder(
+          column: $table.urlVideoLow, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Uri?, String> get urlVideoHd =>
+      $composableBuilder(
+          column: $table.urlVideoHd, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get filmlisteTimestamp => $composableBuilder(
+      column: $table.filmlisteTimestamp, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Uri?, String> get urlVideo =>
+      $composableBuilder(column: $table.urlVideo, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Uri?, String> get urlSubtitle =>
+      $composableBuilder(
+          column: $table.urlSubtitle, builder: (column) => column);
+
   GeneratedColumnWithTypeConverter<Duration?, int> get progress =>
       $composableBuilder(column: $table.progress, builder: (column) => column);
 
@@ -1952,21 +2702,77 @@ class $$VideoProgressTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$VideoProgressTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> channel = const Value.absent(),
+            Value<String> topic = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<DateTime?> timestamp = const Value.absent(),
+            Value<Duration?> duration = const Value.absent(),
+            Value<int?> size = const Value.absent(),
+            Value<Uri?> urlWebsite = const Value.absent(),
+            Value<Uri?> urlVideoLow = const Value.absent(),
+            Value<Uri?> urlVideoHd = const Value.absent(),
+            Value<DateTime?> filmlisteTimestamp = const Value.absent(),
+            Value<Uri?> urlVideo = const Value.absent(),
+            Value<Uri?> urlSubtitle = const Value.absent(),
             Value<Duration?> progress = const Value.absent(),
             Value<DateTime?> timestampLastViewed = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               VideoProgressCompanion(
+            id: id,
+            channel: channel,
+            topic: topic,
+            description: description,
+            title: title,
+            timestamp: timestamp,
+            duration: duration,
+            size: size,
+            urlWebsite: urlWebsite,
+            urlVideoLow: urlVideoLow,
+            urlVideoHd: urlVideoHd,
+            filmlisteTimestamp: filmlisteTimestamp,
+            urlVideo: urlVideo,
+            urlSubtitle: urlSubtitle,
             progress: progress,
             timestampLastViewed: timestampLastViewed,
             rowid: rowid,
           ),
           createCompanionCallback: ({
+            required String id,
+            required String channel,
+            required String topic,
+            Value<String?> description = const Value.absent(),
+            required String title,
+            Value<DateTime?> timestamp = const Value.absent(),
+            Value<Duration?> duration = const Value.absent(),
+            Value<int?> size = const Value.absent(),
+            Value<Uri?> urlWebsite = const Value.absent(),
+            Value<Uri?> urlVideoLow = const Value.absent(),
+            Value<Uri?> urlVideoHd = const Value.absent(),
+            Value<DateTime?> filmlisteTimestamp = const Value.absent(),
+            Value<Uri?> urlVideo = const Value.absent(),
+            Value<Uri?> urlSubtitle = const Value.absent(),
             Value<Duration?> progress = const Value.absent(),
             Value<DateTime?> timestampLastViewed = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               VideoProgressCompanion.insert(
+            id: id,
+            channel: channel,
+            topic: topic,
+            description: description,
+            title: title,
+            timestamp: timestamp,
+            duration: duration,
+            size: size,
+            urlWebsite: urlWebsite,
+            urlVideoLow: urlVideoLow,
+            urlVideoHd: urlVideoHd,
+            filmlisteTimestamp: filmlisteTimestamp,
+            urlVideo: urlVideo,
+            urlSubtitle: urlSubtitle,
             progress: progress,
             timestampLastViewed: timestampLastViewed,
             rowid: rowid,

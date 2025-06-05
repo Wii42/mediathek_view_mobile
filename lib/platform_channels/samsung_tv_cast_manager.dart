@@ -45,8 +45,7 @@ class SamsungTVCastManager {
       Map<String, String> requestArguments = {};
       await _methodChannel.invokeMethod('startDiscovery', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe(
-          "Starting samsung tv discovery failed. Reason $e");
+      logger.severe("Starting samsung tv discovery failed. Reason $e");
     } on MissingPluginException catch (e) {
       logger.severe("Starting samsung tv discovery failed. Missing Plugin: $e");
     }
@@ -57,8 +56,7 @@ class SamsungTVCastManager {
       Map<String, String> requestArguments = {};
       await _methodChannel.invokeMethod('stopDiscovery', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe(
-          "Stopping samsung tv discovery failed. Reason $e");
+      logger.severe("Stopping samsung tv discovery failed. Reason $e");
     } on MissingPluginException catch (e) {
       logger.severe("Stopping samsung tv discovery failed. Missing Plugin: $e");
     }
@@ -71,18 +69,17 @@ class SamsungTVCastManager {
     try {
       await _methodChannel.invokeMethod('check', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe(
-          "Starting samsung tv readiness check failed. Reason $e");
+      logger.severe("Starting samsung tv readiness check failed. Reason $e");
     } on MissingPluginException catch (e) {
       logger.severe(
           "Starting samsung tv readiness check failed. Missing Plugin: $e");
     }
   }
 
-  Future play(String? videoUrl, String? title, Duration startingPosition) async {
+  Future play(Uri? videoUrl, String? title, Duration startingPosition) async {
     Map<String, String?> requestArguments = {};
     // has to be url accessible from internet (do not support downloaded videos)
-    requestArguments.putIfAbsent("url", () => videoUrl);
+    requestArguments.putIfAbsent("url", () => videoUrl?.toString());
     requestArguments.putIfAbsent("title", () => title);
     requestArguments.putIfAbsent(
         "startingPosition", () => startingPosition.inMilliseconds.toString());
@@ -90,8 +87,7 @@ class SamsungTVCastManager {
     try {
       _methodChannel.invokeMethod('play', requestArguments);
     } on PlatformException catch (e) {
-      logger
-          .severe("Playing video on Samsung TV failed. Reason $e");
+      logger.severe("Playing video on Samsung TV failed. Reason $e");
     } on MissingPluginException catch (e) {
       logger.severe("Playing video on Samsung TV failed. Missing Plugin: $e");
     }
@@ -105,8 +101,7 @@ class SamsungTVCastManager {
     try {
       await _methodChannel.invokeMethod('seekTo', requestArguments);
     } on PlatformException catch (e) {
-      logger.severe(
-          "Seeking to video position on Samsung TV failed $e");
+      logger.severe("Seeking to video position on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
       logger.severe(
           "Seeking to video position on Samsung TV failed. Missing Plugin: $e");
@@ -164,8 +159,7 @@ class SamsungTVCastManager {
     } on PlatformException catch (e) {
       logger.severe("Muting video on Samsung TV failed $e");
     } on MissingPluginException catch (e) {
-      logger.severe(
-          "Muting video on Samsung TV failed. Missing Plugin: $e");
+      logger.severe("Muting video on Samsung TV failed. Missing Plugin: $e");
     }
   }
 
@@ -203,7 +197,8 @@ class SamsungTVCastManager {
   }
 
   Stream<dynamic>? getTvPlaybackPositionStream() {
-    _tvPlaybackPositionStream ??= _tvPlaybackPositionEventChannel.receiveBroadcastStream();
+    _tvPlaybackPositionStream ??=
+        _tvPlaybackPositionEventChannel.receiveBroadcastStream();
     return _tvPlaybackPositionStream;
   }
 }

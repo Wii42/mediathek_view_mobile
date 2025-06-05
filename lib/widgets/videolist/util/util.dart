@@ -1,12 +1,13 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/flutter_video_player.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../drift_database/app_database.dart'
+    show VideoEntity, VideoProgressEntity;
 
 const ERROR_MSG_NOT_AVAILABLE = "Video nicht verfügbar";
 const ERROR_MSG_NO_INTERNET = "Keine Internet Verbindung";

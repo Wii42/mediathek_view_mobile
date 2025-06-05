@@ -1,7 +1,5 @@
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
@@ -15,6 +13,7 @@ import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
+import '../../drift_database/app_database.dart';
 import 'channel_thumbnail.dart';
 import 'download_switch.dart';
 import 'meta_info_list_tile.dart';
@@ -262,9 +261,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     Widget videoProgressBar = Container();
     if (videoProgressEntity != null) {
       videoProgressBar = PlaybackProgressBar(
-          videoProgressEntity!.progressAsDuration,
-          widget.video.duration,
-          false);
+          videoProgressEntity!.progress, widget.video.duration, false);
     }
 
     return GestureDetector(
@@ -332,15 +329,18 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
   void checkPlaybackProgress() async {
     AppState appState = context.read<AppState>();
-    appState.databaseManager
-        .getVideoProgressEntity(widget.video.id)
-        .then((entity) {
-      widget.logger.fine("Video has playback progress: ${widget.video.title!}");
-      videoProgressEntity = entity;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (widget.video.id != null) {
+      appState.databaseManager
+          .getVideoProgressEntity(widget.video.id!)
+          .then((entity) {
+        widget.logger
+            .fine("Video has playback progress: ${widget.video.title!}");
+        videoProgressEntity = entity;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
   }
 
   ListTile getBottomBar(BuildContext context, String assetPath, String title,

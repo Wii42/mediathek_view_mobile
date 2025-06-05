@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_ws/database/video_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
@@ -11,6 +10,8 @@ import 'package:flutter_ws/widgets/downloadSection/video_list_item_builder.dart'
 import 'package:flutter_ws/widgets/videolist/download/download_controller.dart';
 import 'package:flutter_ws/widgets/videolist/download/download_value.dart';
 import 'package:logging/logging.dart';
+
+import '../../drift_database/app_database.dart' show VideoEntity;
 
 class CurrentDownloads extends StatefulWidget {
   final Logger logger = Logger('CurrentDownloads');
@@ -105,12 +106,12 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   }
 
   Future<List<Video>> updateCurrentDownloads() async {
-    Set<VideoEntity> downloads =
+    List<VideoEntity> downloads =
         await widget.appWideState.downloadManager.getCurrentDownloads();
 
     List<Video> currentDownloads = [];
     for (VideoEntity entity in downloads) {
-      Video video = Video.fromJson(entity.toMap());
+      Video video = Video.fromVideoEntity(entity);
       currentDownloads.add(video);
       widget.logger
           .info("Current download: ${video.id!}. Title: ${video.title!}");
@@ -125,6 +126,10 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
   //Cancels active download (remove from task schema), removes the file from local storage & deletes the entry in VideoEntity schema
   void cancelCurrentDownload(BuildContext context, String? id) {
     widget.logger.info("Canceling download for: $id");
+    if (id == null) {
+      widget.logger.warning("Cannot cancel download, id is null");
+      return;
+    }
     ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     widget.appWideState.downloadManager
         .deleteVideo(id)

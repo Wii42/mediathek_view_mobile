@@ -1,8 +1,6 @@
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/channel_util.dart';
@@ -17,6 +15,8 @@ import 'package:flutter_ws/widgets/downloadSection/watch_history.dart';
 import 'package:flutter_ws/widgets/videolist/circular_progress_with_text.dart';
 import 'package:logging/logging.dart';
 
+import '../drift_database/app_database.dart'
+    show VideoEntity, VideoProgressEntity;
 import '../util/device_information.dart';
 
 const ERROR_MSG = "Deletion of video failed.";
@@ -34,8 +34,9 @@ class DownloadSection extends StatefulWidget {
 }
 
 class DownloadSectionState extends State<DownloadSection> {
+  final Logger logger = Logger('DownloadSectionState');
   List<Video> currentDownloads = [];
-  Set<Video> downloadedVideos = {};
+  List<Video> downloadedVideos = [];
   Set<String> userDeletedAppId; //used for fade out animation
   int milliseconds = 1500;
   Map<String, double> progress = {};
@@ -94,6 +95,10 @@ class DownloadSectionState extends State<DownloadSection> {
   void deleteDownload(BuildContext context, String? id) {
     widget.logger.info("Deleting video with title id: $id");
     ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
+    if (id == null) {
+      logger.warning("Tried to delete video with null id");
+      return;
+    }
     widget.appWideState.downloadManager
         .deleteVideo(id)
         .then((bool deletedSuccessfully) {
@@ -102,23 +107,19 @@ class DownloadSectionState extends State<DownloadSection> {
         SnackbarActions.showSuccess(scaffoldMessenger, "Löschen erfolgreich");
         return;
       }
-      SnackbarActions.showErrorWithTryAgain(
-          scaffoldMessenger,
-          ERROR_MSG,
-          TRY_AGAIN_MSG,
-          widget.appWideState.downloadManager.deleteVideo,
-          id ?? "");
+      SnackbarActions.showErrorWithTryAgain(scaffoldMessenger, ERROR_MSG,
+          TRY_AGAIN_MSG, widget.appWideState.downloadManager.deleteVideo, id);
     });
   }
 
   void loadAlreadyDownloadedVideosFromDb() async {
-    Set<VideoEntity> downloads =
+    List<VideoEntity> downloads =
         await widget.appWideState.databaseManager.getAllDownloadedVideos();
 
     if (downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
       downloadedVideos =
-          downloads.map((entity) => Video.fromJson(entity.toMap())).toSet();
+          downloads.map((entity) => Video.fromVideoEntity(entity)).toList();
       if (mounted) {
         setState(() {});
       }
@@ -131,7 +132,7 @@ class DownloadSectionState extends State<DownloadSection> {
       return widget.appWideState.databaseManager
           .getLastViewedVideos(recentlyWatchedVideosLimit)
           .then((all) {
-        if (all != null && all.isNotEmpty) {
+        if (all.isNotEmpty) {
           bool stateReloadNeeded = false;
           for (var i = 0; i < all.length; ++i) {
             var entity = all.elementAt(i);

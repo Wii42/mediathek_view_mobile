@@ -20,8 +20,13 @@ class DownloadProgressBar extends StatefulWidget {
   // widget does not have to subscribe video downloads separately
   final TriggerParentStateReload? triggerParentStateReload;
 
-  DownloadProgressBar({required this.videoId, required this.videoTitle, required this.downloadManager,
-      this.isOnDetailScreen = false, this.triggerParentStateReload, super.key});
+  DownloadProgressBar(
+      {required this.videoId,
+      required this.videoTitle,
+      required this.downloadManager,
+      this.isOnDetailScreen = false,
+      this.triggerParentStateReload,
+      super.key});
 
   @override
   State<DownloadProgressBar> createState() => _DownloadProgressBarState();
@@ -68,19 +73,17 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
         constraints: BoxConstraints.expand(height: 7.0),
         child: progress == -1
             ? LinearProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color?>(Colors.green[700]),
+                valueColor: AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100])
             : LinearProgressIndicator(
                 value: (progress / 100),
-                valueColor:
-                    AlwaysStoppedAnimation<Color?>(Colors.green[700]),
+                valueColor: AlwaysStoppedAnimation<Color?>(Colors.green[700]),
                 backgroundColor: Colors.green[100]));
   }
 
   void updateIfCurrentlyDownloading() {
     widget.downloadManager
-        .isCurrentlyDownloading(widget.videoId)
+        .isCurrentlyDownloading(widget.videoId!)
         .then((status) {
       if (status != null) {
         if (mounted) {
@@ -112,8 +115,8 @@ class _DownloadProgressBarState extends State<DownloadProgressBar> {
 
   void updateDownloadState() {
     _latestDownloadValue = downloadController!.value;
-    widget.logger.info(
-        "DownloadProgressBar status ${_latestDownloadValue!.status}");
+    widget.logger
+        .info("DownloadProgressBar status ${_latestDownloadValue!.status}");
 
     if (widget.triggerParentStateReload != null &&
         _latestDownloadValue!.isComplete) {

@@ -3,8 +3,6 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
@@ -19,6 +17,7 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../drift_database/app_database.dart';
 import 'download_switch.dart';
 
 class ListCard extends StatefulWidget {
@@ -142,7 +141,7 @@ class _ListCardState extends State<ListCard> {
                               // Playback Progress
                               videoProgressEntity != null
                                   ? PlaybackProgressBar(
-                                      videoProgressEntity!.progressAsDuration,
+                                      videoProgressEntity!.progress,
                                       widget.video.duration,
                                       true)
                                   : Container(),
@@ -292,7 +291,7 @@ class _ListCardState extends State<ListCard> {
 
   void loadCurrentStatusFromDatabase(String? videoId, AppState appState) async {
     if (videoProgressEntity == null) {
-      appState.databaseManager.getVideoProgressEntity(videoId).then((entity) {
+      appState.databaseManager.getVideoProgressEntity(videoId!).then((entity) {
         if (entity != null) {
           videoProgressEntity = entity;
           if (mounted) {
@@ -380,20 +379,22 @@ class _ListCardState extends State<ListCard> {
 
   void onDeleteRequested() {
     DownloadManager downloadManager = context.read<AppState>().downloadManager;
-    downloadManager
-        .deleteVideo(widget.video.id)
-        .then((bool deletedSuccessfully) {
-      if (!deletedSuccessfully) {
-        widget.logger
-            .severe("Failed to delete video with title ${widget.video.title!}");
-      }
-      isDownloadedAlready = false;
-      isCurrentlyDownloading = false;
-      currentStatus = null;
-      progress = null;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (widget.video.id != null) {
+      downloadManager
+          .deleteVideo(widget.video.id!)
+          .then((bool deletedSuccessfully) {
+        if (!deletedSuccessfully) {
+          widget.logger.severe(
+              "Failed to delete video with title ${widget.video.title!}");
+        }
+        isDownloadedAlready = false;
+        isCurrentlyDownloading = false;
+        currentStatus = null;
+        progress = null;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
   }
 }

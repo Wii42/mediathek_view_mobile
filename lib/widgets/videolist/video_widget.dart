@@ -1,8 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/database/video_entity.dart';
-import 'package:flutter_ws/database/video_progress_entity.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
@@ -12,6 +10,7 @@ import 'package:flutter_ws/widgets/videolist/video_detail_screen.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../drift_database/app_database.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
@@ -223,7 +222,7 @@ class VideoWidgetState extends State<VideoWidget> {
             children: <Widget>[
               playbackProgress != null
                   ? PlaybackProgressBar(
-                      playbackProgress.progressAsDuration, duration, false)
+                      playbackProgress.progress, duration, false)
                   : Container(),
               MetaInfoListTile(
                   textTheme: textTheme,
@@ -242,8 +241,13 @@ class VideoWidgetState extends State<VideoWidget> {
   }
 
   void checkPlaybackProgress() async {
+    if (widget.video.id == null) {
+      widget.logger
+          .warning("Video ID is null, cannot check playback progress.");
+      return;
+    }
     widget.appWideState.databaseManager
-        .getVideoProgressEntity(widget.video.id)
+        .getVideoProgressEntity(widget.video.id!)
         .then((entity) {
       widget.logger.info("Video has playback progress: ${widget.video.title!}");
       if (videoProgressEntity == null && mounted) {
