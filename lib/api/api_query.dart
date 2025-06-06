@@ -97,7 +97,6 @@ class APIQuery {
   }
 
   void execute(String query) {
-    print(query);
     http
         .post(
           requestUri,

@@ -1,8 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_USER_VISUAL_USER_SELECTED"/>
     <application
         android:label="flutter_ws"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <provider
+            android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
+            android:authorities="${applicationId}.flutter_downloader.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
         <activity
             android:name=".MainActivity"
             android:exported="true"

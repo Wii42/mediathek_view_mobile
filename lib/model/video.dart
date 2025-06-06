@@ -59,7 +59,7 @@ class Video {
       filmlisteTimestamp: filmlisteTimestamp,
       urlVideo: url_video,
       urlSubtitle: url_subtitle,
-      taskId: '',
+      taskId: taskId,
     );
   }
 

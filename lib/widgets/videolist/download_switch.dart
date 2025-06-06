@@ -238,6 +238,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   }
 
   void downloadVideo() async {
+    print("Download video: ${widget.video.title!}");
     AppState appState = context.read<AppState>();
     ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -258,6 +259,8 @@ class DownloadSwitchState extends State<DownloadSwitch> {
       return;
     }
 
+    print("Video available, starting download...");
+
     // start download animation right away.
     if (mounted) {
       setState(() {
@@ -268,6 +271,7 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     // check for filesystem permissions
     // if user grants permission, start downloading right away
     if (appState.hasFilesystemPermission) {
+      print("Filesystem permission already granted, starting download");
       appState.downloadManager
           .checkAndRequestFilesystemPermissions(appState, widget.video);
       return;

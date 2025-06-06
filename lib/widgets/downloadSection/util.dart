@@ -19,7 +19,7 @@ class Util {
 
   static Widget getWatchHistoryItem(
       VideoProgressEntity videoProgress, double width) {
-    String assetPath = getAssetPath(videoProgress.channel!.toUpperCase());
+    String assetPath = getAssetPath(videoProgress.channel.toUpperCase());
     Widget rect =
         getWatchHistoryWidget(assetPath, videoProgress, width, 13, 11);
     return rect;

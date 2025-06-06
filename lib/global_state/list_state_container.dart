@@ -6,7 +6,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
-import 'package:flutter_ws/platform_channels/filesystem_permission_manager.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:flutter_ws/platform_channels/video_preview_manager.dart';
 import 'package:flutter_ws/util/device_information.dart';
@@ -60,8 +59,6 @@ class AppState extends ChangeNotifier {
   final DownloadManager downloadManager = DownloadManager();
   late final AppDatabase databaseManager;
   final VideoPreviewManager videoPreviewManager = VideoPreviewManager();
-  final FilesystemPermissionManager filesystemPermissionManager =
-      FilesystemPermissionManager();
   late final SharedPreferences sharedPreferences;
   late final bool isPipAvailable;
   bool _initialized = false;
@@ -91,6 +88,7 @@ class AppState extends ChangeNotifier {
   }
 
   bool get isCurrentlyPlayingOnTV => _isCurrentlyPlayingOnTV;
+
   set isCurrentlyPlayingOnTV(bool isPlaying) {
     _isCurrentlyPlayingOnTV = isPlaying;
     notifyListeners();
@@ -116,18 +114,14 @@ class AppState extends ChangeNotifier {
       return;
     }
     logger.info("Initializing AppState");
-    FlutterDownloader.initialize();
+    FlutterDownloader.initialize(debug: true);
 
     videoPreviewManager.appWideState = this;
     logger.info("Initializing Filesystem Permission Manager");
     // async execution to concurrently open database
-    await Future.wait([
-      getPlatformAndSetDirectory(),
-      initDBAndDownloadManager(),
-      () async {
-        isPipAvailable = await Floating().isPipAvailable;
-      }()
-    ]);
+    await getPlatformAndSetDirectory();
+    await initDBAndDownloadManager();
+    isPipAvailable = await Floating().isPipAvailable;
 
     _initialized = true;
   }
@@ -137,7 +131,7 @@ class AppState extends ChangeNotifier {
     //await initializeDatabase().then((_) =>
     //    logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
-    downloadManager.startListeningToDownloads(this);
+    downloadManager.initialize(this);
 
     //check for downloads that have been completed while flutter app was not running
     downloadManager.syncCompletedDownloads();
@@ -199,16 +193,16 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  //Future<void> initializeDatabase() async {
-  //  Directory documentsDirectory = await getApplicationDocumentsDirectory();
-  //  logger.info("DB dir: ${documentsDirectory.path}");
-  //  String path = join(documentsDirectory.path, "demo.db");
-  //  //Uncomment when having made changes to the DB Schema
-  //  //appState.databaseManager.deleteDb(path);
-  //  //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
-  //  return await databaseManager.open(path).then(
-  //        (dynamic) => logger.info("Successfully opened database"),
-  //        onError: (e) => logger.severe("Error when opening database"),
-  //      );
-  //}
+//Future<void> initializeDatabase() async {
+//  Directory documentsDirectory = await getApplicationDocumentsDirectory();
+//  logger.info("DB dir: ${documentsDirectory.path}");
+//  String path = join(documentsDirectory.path, "demo.db");
+//  //Uncomment when having made changes to the DB Schema
+//  //appState.databaseManager.deleteDb(path);
+//  //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
+//  return await databaseManager.open(path).then(
+//        (dynamic) => logger.info("Successfully opened database"),
+//        onError: (e) => logger.severe("Error when opening database"),
+//      );
+//}
 }

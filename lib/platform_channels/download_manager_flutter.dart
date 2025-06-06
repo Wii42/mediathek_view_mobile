@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:drift/drift.dart';
@@ -10,7 +8,9 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
+import 'package:flutter_ws/platform_channels/flutter_downloader_isolate_connection.dart';
 import 'package:logging/logging.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/collection.dart';
 
 typedef OnFailed = void Function(String? videoId);
@@ -31,23 +31,24 @@ class DownloadManager {
       "SELECT * FROM task WHERE status = ${DownloadTaskStatus.failed.index}";
 
   //Listeners
-  static Multimap<String?, MapEntry<int, OnFailed>> onFailedListeners =
+  final Multimap<String?, MapEntry<int, OnFailed>> onFailedListeners =
       Multimap<String?, MapEntry<int, OnFailed>>();
-  static Multimap<String?, MapEntry<int, OnComplete>> onCompleteListeners =
+  final Multimap<String?, MapEntry<int, OnComplete>> onCompleteListeners =
       Multimap<String?, MapEntry<int, OnComplete>>();
-  static Multimap<String?, MapEntry<int, OnCanceled>> onCanceledListeners =
+  final Multimap<String?, MapEntry<int, OnCanceled>> onCanceledListeners =
       Multimap<String?, MapEntry<int, OnCanceled>>();
-  static Multimap<String?, MapEntry<int, OnStateChanged>>
+  final Multimap<String?, MapEntry<int, OnStateChanged>>
       onStateChangedListeners =
       Multimap<String?, MapEntry<int, OnStateChanged>>();
 
   // VideoId -> VideoEntity
-  static Map<String?, VideoEntity?> cache = {};
+  final Map<String?, VideoEntity?> cache = {};
 
   // TaskID -> VideoId
-  static Map<String?, String?> cacheTask = {};
+  final Map<String?, String?> cacheTask = {};
 
-  late AppState appState;
+  late final AppState appState;
+  late final FlutterDownloaderIsolateConnection backgroundIsolateConnection;
 
   AppDatabase get databaseManager => appState.databaseManager;
 
@@ -57,38 +58,17 @@ class DownloadManager {
   //remember video that was intended to be downloaded, but permission was missing
   Video? downloadVideoRequestWithoutPermission;
 
-  // port for isolate needed for download progress handler
-  final ReceivePort _port = ReceivePort();
-
-  DownloadManager();
-
-  void startListeningToDownloads(AppState appState) {
-    logger.fine("Start listening to downloads");
+  void initialize(AppState appState) {
     this.appState = appState;
-
-    // isolate listening
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-    IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    _port.listen((dynamic data) {
-      String? id = data[0];
-      DownloadTaskStatus? status = data[1];
-      int? progress = data[2];
-      handleDownloadProgress(id, status, progress);
-    });
-
-    FlutterDownloader.registerCallback(downloadCallback);
-  }
-
-  // static callback in background thread using an isolate to send the progress to the UI thread
-  static void downloadCallback(String id, int status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port')!;
-    send.send([id, status, progress]);
+    backgroundIsolateConnection =
+        FlutterDownloaderIsolateConnection(handleDownloadProgress);
+    backgroundIsolateConnection.startListening();
   }
 
   void handleDownloadProgress(
       String? taskId, DownloadTaskStatus? status, int? progress) {
+    print(
+        "Received download update with status $status and progress $progress");
     logger.fine(
         "Received download update with status $status and progress $progress");
     String? videoId = cacheTask[taskId];
@@ -209,40 +189,16 @@ class DownloadManager {
       AppState appWideState, Video video) async {
     logger.info("Requesting Filesystem Permissions");
     rememberedFailedVideoDownload = video;
-
     //ask for user permission
-    bool successfullyAsked =
-        await appWideState.filesystemPermissionManager.askUserForPermission();
+    bool successfullyAsked = await (Permission.videos.request()).isGranted;
+
+    await Permission.notification.request().isGranted;
 
     if (!successfullyAsked) {
       logger.severe("Failed to ask user for Filesystem Permissions");
-      Countly.logException("failed to ask for filesystem permission", true);
     }
 
-    // subscribe to event stream to catch update - if granted by user then start download
-    Stream<dynamic> broadcastStream =
-        appWideState.filesystemPermissionManager.getBroadcastStream()!;
-    broadcastStream.listen(
-      (result) {
-        String res = result['Granted'];
-        bool granted = res.toLowerCase() == 'true';
-
-        if (granted) {
-          appWideState.hasFilesystemPermission = true;
-          logger.info("Filesystem permissions got granted");
-          //restart download using the remembered video
-          downloadFile(rememberedFailedVideoDownload);
-        } else {
-          logger.info("Filesystem Permission denied by User");
-          Countly.instance.events
-              .recordEvent("FILESYSTEM_PERMISSION_DENIED", null, 1);
-        }
-      },
-      onError: (e) {
-        logger.severe(
-            "Listening to User Action regarding Android file system permission failed. Reason $e");
-      },
-    );
+    downloadFile(rememberedFailedVideoDownload);
   }
 
   // Check first if a entity with that id exists on the db or cache. If yes & task id is set, check Task schema for running, queued or paused status
@@ -306,14 +262,7 @@ class DownloadManager {
       logger.fine("Cache hit for VideoId -> Entity");
       return entity;
     } else {
-      return databaseManager
-          .getVideoEntity(videoId)
-          .then((VideoEntity? entity) {
-        if (entity == null) {
-          return null;
-        }
-        return entity;
-      });
+      return databaseManager.getVideoEntity(videoId);
     }
   }
 
@@ -326,6 +275,8 @@ class DownloadManager {
             "Video with id $videoId does not exist. Cannot fetch taskID to remove it via Downloader from tasks db and local file storage");
         return false;
       }
+      logger.info(
+          "Deleting video with id ${entity.id} and taskId ${entity.taskId} from VideoEntity schema and filesystem");
 
       // notify listeners about cancellation
       _notify(entity.taskId, DownloadTaskStatus.canceled, 0, databaseManager,
@@ -533,50 +484,54 @@ class DownloadManager {
     // same as video id if provided
     String? taskId = await FlutterDownloader.enqueue(
       url: videoUrl.toString(),
-      savedDir: storageDirectory
-          .path, //  getFileNameForVideo(video.id, video.url_video, video.title)
-      showNotification:
-          true, // show download progress in status bar (for Android)
-      openFileFromNotification:
-          true, // click on notification to open downloaded file (for Android)
+      savedDir: storageDirectory.path,
+      //  getFileNameForVideo(video.id, video.url_video, video.title)
+      showNotification: true,
+      // show download progress in status bar (for Android)
+      openFileFromNotification: true,
+      // click on notification to open downloaded file (for Android)
+      saveInPublicStorage: true,
     );
 
+    print("generated taskId: $taskId");
+
     logger.info(
+        "Requested download of video with id ${video.id} and url ${video.url_video}");
+    print(
         "Requested download of video with id ${video.id} and url ${video.url_video}");
 
     AppDatabase databaseManager = appState.databaseManager;
 
-    Countly.instance.events.recordEvent("DOWNLOAD_VIDEO", null, 1);
+    //Countly.instance.events.recordEvent("DOWNLOAD_VIDEO", null, 1);
 
     /*
     First check if there is already a VideoEntity.
     Once finished downloading, the filepath and filename will be updated.
      */
-    getEntityForId(video.id!).then(
-      (alreadyExistingEntity) {
-        if (alreadyExistingEntity != null) {
-          //perform update
-          logger.info(
-              "Video to download already exist in db (possibly due to previous rating). Upadting entity with download information");
-          VideoEntity newEntity =
-              alreadyExistingEntity.copyWith(taskId: taskId);
-          databaseManager.updateVideoEntity(newEntity).then((rowsUpdated) {
-            logger.info(
-                "Updated $rowsUpdated rows when starting download for already existing entity");
-            cache[video.id] = newEntity;
-          });
-        } else {
-          VideoEntity entity = video.toVideoEntity(taskId: taskId!);
-          //set TaskId to associate with running download
-          databaseManager.insertVideo(entity).then((data) {
-            logger.fine("Inserted new currently downloading video to Database");
-            cache.putIfAbsent(video.id, () {
-              return entity;
-            });
-          });
-        }
-      },
-    );
+    VideoEntity? alreadyExistingEntity = await getEntityForId(video.id!);
+    print(" Already existing entity: $alreadyExistingEntity");
+    if (alreadyExistingEntity != null) {
+      //perform update
+      logger.info(
+          "Video to download already exist in db (possibly due to previous rating). Upadting entity with download information");
+      VideoEntity newEntity = alreadyExistingEntity.copyWith(taskId: taskId);
+      databaseManager.updateVideoEntity(newEntity).then((rowsUpdated) {
+        logger.info(
+            "Updated $rowsUpdated rows when starting download for already existing entity");
+        cache[video.id] = newEntity;
+      });
+    } else {
+      VideoEntity entity = video.toVideoEntity(taskId: taskId!);
+      print(" Inserting new video entity: ${entity.taskId}");
+      //set TaskId to associate with running download
+      await databaseManager.insertVideo(entity);
+      print(
+          "Inserted new video with id ${video.id} and taskId $taskId to database");
+      logger.fine("Inserted new currently downloading video to Database");
+      cache.putIfAbsent(video.id, () {
+        return entity;
+      });
+    }
 
     cacheTask.putIfAbsent(taskId, () {
       return video.id;
