@@ -68,8 +68,8 @@ class VideoListUtil {
   }
 
   static List<Video> applyLengthFilter(
-      List<Video> videos, SearchFilter<(double, double)> searchFilter) {
-    double minLength, maxLength;
+      List<Video> videos, SearchFilter<(Duration, Duration)> searchFilter) {
+    Duration minLength, maxLength;
     (minLength, maxLength) = searchFilter.filterValue;
 
     bool discardMaxLength = false;
@@ -79,18 +79,15 @@ class VideoListUtil {
 
     int videoLengthBeforeRemoval = videos.length;
     videos.removeWhere((video) {
-      if (video.duration == null || video.duration.toString().isEmpty) {
+      if (video.duration == null) {
         return false;
       }
-      int sekunden = int.parse(video.duration.toString());
-      int videoLengthInMinutes = (sekunden / 60).floor();
 
       if (discardMaxLength) {
-        return videoLengthInMinutes < minLength;
+        return video.duration! < minLength;
       }
 
-      return videoLengthInMinutes < minLength ||
-          videoLengthInMinutes > maxLength;
+      return video.duration! < minLength || video.duration! > maxLength;
     });
     int diff = videoLengthBeforeRemoval - videos.length;
     logger.info("Removed $diff videos due to length constraints");

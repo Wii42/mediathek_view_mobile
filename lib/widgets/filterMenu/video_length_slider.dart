@@ -3,19 +3,22 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 
 class VideoLengthSlider extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
-  final SearchFilter<(double, double)> initialSearchFilter;
-  late final double initialStart;
-  late final double initialEnd;
+  final SearchFilter<(Duration, Duration)> initialSearchFilter;
+  late final Duration initialStart;
+  late final Duration initialEnd;
 
-  static const double MAXIMUM_FILTER_LENGTH = 60;
+  static const Duration MAXIMUM_FILTER_LENGTH = Duration(minutes: 60);
+  static const Duration _UNDEFINED_FILTER_LENGTH = Duration(seconds: -1);
+  static const (Duration, Duration) UNDEFINED_FILTER =
+      (_UNDEFINED_FILTER_LENGTH, _UNDEFINED_FILTER_LENGTH);
 
   VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter,
       {super.key}) {
-    if (initialSearchFilter.filterValue == (-1.0, -1.0)) {
-      initialStart = 0.0;
+    if (initialSearchFilter.filterValue == UNDEFINED_FILTER) {
+      initialStart = Duration.zero;
       initialEnd = MAXIMUM_FILTER_LENGTH;
     } else {
-      double start, end;
+      Duration start, end;
       (start, end) = initialSearchFilter.filterValue;
       initialStart = start;
       initialEnd = end;
@@ -28,14 +31,17 @@ class VideoLengthSlider extends StatefulWidget {
 
 class _RangeSliderState extends State<VideoLengthSlider> {
   late RangeValues _values;
-  late SearchFilter searchFilter;
+  late SearchFilter<(Duration, Duration)> searchFilter;
 
   _RangeSliderState();
 
   @override
   void initState() {
     searchFilter = widget.initialSearchFilter;
-    _values = RangeValues(widget.initialStart, widget.initialEnd);
+    _values = RangeValues(
+      _durationToMinutes(widget.initialStart),
+      _durationToMinutes(widget.initialEnd),
+    );
     super.initState();
   }
 
@@ -53,16 +59,26 @@ class _RangeSliderState extends State<VideoLengthSlider> {
       inactiveColor: Colors.grey,
       labels: RangeLabels(
           "${_values.start.round()} min",
-          _values.end < VideoLengthSlider.MAXIMUM_FILTER_LENGTH
+          _values.end <
+                  _durationToMinutes(VideoLengthSlider.MAXIMUM_FILTER_LENGTH)
               ? "${_values.end.round()} min"
               : "max"),
-      max: VideoLengthSlider.MAXIMUM_FILTER_LENGTH,
+      max: _durationToMinutes(VideoLengthSlider.MAXIMUM_FILTER_LENGTH),
       min: 0.0,
       divisions: 10,
       onChangeEnd: (values) {
-        searchFilter = searchFilter.copyWith((_values.start, _values.end));
+        searchFilter = searchFilter.copyWith((
+          _minutesToDuration(_values.start),
+          _minutesToDuration(_values.end)
+        ));
         widget.onFilterUpdated(searchFilter);
       },
     );
   }
+
+  double _durationToMinutes(Duration duration) =>
+      duration.inMilliseconds / Duration.millisecondsPerMinute;
+
+  Duration _minutesToDuration(double minutes) => Duration(
+      milliseconds: (minutes * Duration.millisecondsPerMinute).round());
 }

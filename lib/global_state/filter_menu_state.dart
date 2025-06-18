@@ -23,7 +23,7 @@ class SearchFilters extends ChangeNotifier {
   SearchFilter<String>? topic;
   SearchFilter<String>? title;
   SearchFilter<Set<String>>? channels;
-  SearchFilter<(double, double)>? videoLength;
+  SearchFilter<(Duration, Duration)>? videoLength;
   SearchFilter<bool>? includeFutureVideos;
 
   /// Returns a list of all filters that are not null.
@@ -119,7 +119,7 @@ class SearchFilters extends ChangeNotifier {
         channels = newFilter as SearchFilter<Set<String>>;
         break;
       case SearchFilterType.videoLength:
-        videoLength = newFilter as SearchFilter<(double, double)>;
+        videoLength = newFilter as SearchFilter<(Duration, Duration)>;
         break;
       case SearchFilterType.includeFutureVideos:
         includeFutureVideos = newFilter as SearchFilter<bool>;

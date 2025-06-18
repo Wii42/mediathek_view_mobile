@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter_ws/widgets/filterMenu/video_length_slider.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
 import '../global_state/filter_menu_state.dart';
+import '../widgets/filterMenu/search_filter.dart';
 
 class APIQuery {
   final Logger logger = Logger('WebsocketController');
@@ -30,7 +32,8 @@ class APIQuery {
       "sortBy": "timestamp",
       "sortOrder": "desc",
       "offset": skip,
-      "size": defaultQueryAmount
+      "size": defaultQueryAmount,
+      ...videoLength(searchFilters.videoLength),
     };
 
     String requestString = json.encode(request);
@@ -86,6 +89,24 @@ class APIQuery {
       }
     }
     return queryFilters;
+  }
+
+  Map<String, int> videoLength(
+      SearchFilter<(Duration, Duration)>? lengthFilter) {
+    if (lengthFilter == null ||
+        lengthFilter.filterValue == VideoLengthSlider.UNDEFINED_FILTER) {
+      return {};
+    }
+    Duration minLength, maxLength;
+    (minLength, maxLength) = lengthFilter.filterValue;
+
+    bool discardMaxLength =
+        (maxLength >= VideoLengthSlider.MAXIMUM_FILTER_LENGTH);
+    // min and max length in seconds
+    return {
+      "duration_min": minLength.inSeconds,
+      if (!discardMaxLength) "duration_max": maxLength.inSeconds
+    };
   }
 
   void resetSkip() {

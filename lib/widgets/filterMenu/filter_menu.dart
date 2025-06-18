@@ -216,14 +216,12 @@ class _FilterMenuState extends State<FilterMenu> {
   }
 
   Row getRangeSliderRow() {
-    SearchFilter<(double, double)> lengthFilter;
-    (double, double) filterValue;
-    if (widget.searchFilters.videoLength != null) {
-      filterValue = widget.searchFilters.videoLength!.filterValue;
-    } else {
-      filterValue = (-1.0, -1.0);
-    }
-    lengthFilter = SearchFilter<(double, double)>(
+    SearchFilter<(Duration, Duration)> lengthFilter;
+    (Duration, Duration) filterValue =
+        widget.searchFilters.videoLength?.filterValue ??
+            VideoLengthSlider.UNDEFINED_FILTER;
+
+    lengthFilter = SearchFilter<(Duration, Duration)>(
       displayText: "Länge",
       filterValue: filterValue,
       handleTabCallback: handleTapOnFilter,

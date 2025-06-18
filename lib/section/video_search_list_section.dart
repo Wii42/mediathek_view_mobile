@@ -156,7 +156,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
   }
 
   void onAPISearchError(Error error) {
-    logger.info("Received an error from thr API.$error");
+    logger.warning("Received an error from thr API.$error");
 
     // TODO show status bar with error
 
@@ -201,11 +201,6 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       }
       return;
     } else if (newVideosCount != 0) {
-      // client side result filtering
-      if (searchFilters.videoLength != null) {
-        videos =
-            VideoListUtil.applyLengthFilter(videos, searchFilters.videoLength!);
-      }
       int newVideosCount = videos.length - videoListLengthOld;
 
       logger.info(

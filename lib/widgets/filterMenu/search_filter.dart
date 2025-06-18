@@ -53,7 +53,7 @@ class SearchFilter<T extends Object> extends StatelessWidget {
         ));
   }
 
-  SearchFilter copyWith(T newFilterValue) {
+  SearchFilter<T> copyWith(T newFilterValue) {
     return SearchFilter<T>(
       filterValue: newFilterValue,
       handleTabCallback: handleTabCallback,
