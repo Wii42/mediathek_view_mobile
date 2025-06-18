@@ -155,14 +155,15 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
     _createQuery();
   }
 
-  void onAPISearchError(Error error) {
-    logger.warning("Received an error from thr API.$error");
+  void onAPISearchError(Object error, StackTrace stacktrace) {
+    logger.warning(
+        "Received an error from thr API.$error\nStacktrace: $stacktrace");
 
     // TODO show status bar with error
 
     // http 503 -> indexing
     // http 500 -> internal error
-    // http 400 -> invalid query
+    // http 400 -> invalid query// 033 952 80 80
   }
 
   void onSearchResponse(String data) {

@@ -12,7 +12,7 @@ class APIQuery {
 
   //callbacks
   void Function(String) onDataReceived;
-  void Function(Error) onError;
+  void Function(Object, StackTrace) onError;
 
   static int skip = 0;
   static const int defaultQueryAmount = 60;
@@ -119,13 +119,7 @@ class APIQuery {
 
   void execute(String query) {
     http
-        .post(
-          requestUri,
-          body: query,
-        )
-        .catchError((err) => onError(err))
-        .then((value) {
-      onDataReceived(value.body);
-    });
+        .post(requestUri, body: query)
+        .then((value) => onDataReceived(value.body), onError: onError);
   }
 }
