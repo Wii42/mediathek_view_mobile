@@ -19,7 +19,7 @@ class ChannelThumbnail extends StatelessWidget {
       height: 50.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isDownloadedAlready ? Colors.green[800] : Colors.grey[300],
+        color: isDownloadedAlready ? Colors.green[200] : Colors.grey[300],
         image: DecorationImage(
           image: AssetImage('assets/img/$imgPath'),
         ),
