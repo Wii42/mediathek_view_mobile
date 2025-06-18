@@ -4,26 +4,14 @@ import 'package:flutter_ws/widgets/filterMenu/search_filter.dart';
 class VideoLengthSlider extends StatefulWidget {
   final void Function(SearchFilter) onFilterUpdated;
   final SearchFilter<(Duration, Duration)> initialSearchFilter;
-  late final Duration initialStart;
-  late final Duration initialEnd;
 
   static const Duration MAXIMUM_FILTER_LENGTH = Duration(minutes: 60);
   static const Duration _UNDEFINED_FILTER_LENGTH = Duration(seconds: -1);
   static const (Duration, Duration) UNDEFINED_FILTER =
       (_UNDEFINED_FILTER_LENGTH, _UNDEFINED_FILTER_LENGTH);
 
-  VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter,
-      {super.key}) {
-    if (initialSearchFilter.filterValue == UNDEFINED_FILTER) {
-      initialStart = Duration.zero;
-      initialEnd = MAXIMUM_FILTER_LENGTH;
-    } else {
-      Duration start, end;
-      (start, end) = initialSearchFilter.filterValue;
-      initialStart = start;
-      initialEnd = end;
-    }
-  }
+  const VideoLengthSlider(this.onFilterUpdated, this.initialSearchFilter,
+      {super.key});
 
   @override
   State<VideoLengthSlider> createState() => _RangeSliderState();
@@ -37,15 +25,35 @@ class _RangeSliderState extends State<VideoLengthSlider> {
 
   @override
   void initState() {
-    searchFilter = widget.initialSearchFilter;
-    _values = RangeValues(
-      _durationToMinutes(widget.initialStart),
-      _durationToMinutes(widget.initialEnd),
-    );
+    final originalCallback = widget.initialSearchFilter.handleTabCallback;
+    searchFilter =
+        widget.initialSearchFilter.copyWith(handleTabCallback: (filter) {
+      originalCallback(filter);
+      if (mounted) {
+        setState(() {
+          _values = RangeValues(defaultStart, defaultEnd);
+        });
+      }
+    });
+    _setInitialRangeValues();
     super.initState();
   }
 
-  // TODO: reset the slider to its initial state when the filter is cleared
+  void _setInitialRangeValues() {
+    double initialStart, initialEnd;
+    if (searchFilter.filterValue == VideoLengthSlider.UNDEFINED_FILTER) {
+      initialStart = defaultStart;
+      initialEnd = defaultEnd;
+    } else {
+      Duration start, end;
+      (start, end) = searchFilter.filterValue;
+      initialStart = _durationToMinutes(start);
+      initialEnd = _durationToMinutes(end);
+    }
+
+    _values = RangeValues(initialStart, initialEnd);
+  }
+
   @override
   Widget build(BuildContext context) {
     return RangeSlider(
@@ -67,7 +75,7 @@ class _RangeSliderState extends State<VideoLengthSlider> {
       min: 0.0,
       divisions: 10,
       onChangeEnd: (values) {
-        searchFilter = searchFilter.copyWith((
+        searchFilter = searchFilter.copyWith(filterValue: (
           _minutesToDuration(_values.start),
           _minutesToDuration(_values.end)
         ));
@@ -81,4 +89,8 @@ class _RangeSliderState extends State<VideoLengthSlider> {
 
   Duration _minutesToDuration(double minutes) => Duration(
       milliseconds: (minutes * Duration.millisecondsPerMinute).round());
+
+  double get defaultStart => 0;
+  double get defaultEnd =>
+      _durationToMinutes(VideoLengthSlider.MAXIMUM_FILTER_LENGTH);
 }
