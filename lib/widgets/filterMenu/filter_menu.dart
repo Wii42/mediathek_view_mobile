@@ -94,14 +94,13 @@ class _FilterMenuState extends State<FilterMenu> {
                 ))),
         widget.searchFilters.channels == null ||
                 widget.searchFilters.channels!.filterValue.isEmpty
-            ? Switch(
-                value: false,
-                onChanged: (bool isEnabled) {
-                  if (isEnabled) {
-                    logger.fine("User enabled channel switch");
-                    _openAddEntryDialog(context);
-                  }
-                })
+            ? IconButton.outlined(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  logger.fine("User tapped on add channel button");
+                  _openAddEntryDialog(context);
+                },
+              )
             : FilterMenuChannelEditButton(
                 handleTabCallback: _openAddEntryDialog,
                 icon: Icon(Icons.edit, size: 50.0),
