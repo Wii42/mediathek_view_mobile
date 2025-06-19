@@ -75,34 +75,15 @@ class VideoListItemBuilder {
             video.size != null ? filesize(video.size) : null),
       );
     }
-
-    Widget listRow = Container(
-      padding: EdgeInsets.symmetric(horizontal: 3.0),
-      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                child: Container(
-                    color: Colors.white,
-                    child: VideoPreviewAdapter(
-                      video,
-                      previewNotDownloadedVideos: previewNotDownloadedVideos,
-                      isVisible: true,
-                      openDetailPage: openDetailPage,
-                      defaultImageAssetPath: assetPath,
-                      presetAspectRatio: 16 / 9,
-                    )),
-              ),
-              deleteButton,
-            ],
-          ),
-        ),
-      ]),
+    return VideoPreviewAdapter(
+      video,
+      previewNotDownloadedVideos: previewNotDownloadedVideos,
+      isVisible: true,
+      openDetailPage: openDetailPage,
+      defaultImageAssetPath: assetPath,
+      presetAspectRatio: 16 / 9,
+      overlayWidgets: [deleteButton],
     );
-
-    return listRow;
   }
 
   ActionChip getRemoveButton(

@@ -42,30 +42,17 @@ class Util {
       double width,
       double headingFontSize,
       double metaFontSize) {
-    return Padding(
-      padding: EdgeInsets.only(right: 5.0, left: 2.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-        child: Container(
-          color: Colors.grey[100],
-          width: width,
-          child: Stack(
-            children: <Widget>[
-              VideoPreviewAdapter(
-                Video.fromVideoProgressEntity(playbackProgress),
-                // always show previews for already watched videos
-                // should be already generated
-                previewNotDownloadedVideos: true,
-                isVisible: true,
-                openDetailPage: false,
-                defaultImageAssetPath: channelPictureImagePath,
-                presetAspectRatio: 16 / 9,
-                //size: new Size.fromWidth(1000),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return VideoPreviewAdapter(
+      Video.fromVideoProgressEntity(playbackProgress),
+      // always show previews for already watched videos
+      // should be already generated
+      previewNotDownloadedVideos: true,
+      isVisible: true,
+      openDetailPage: false,
+      defaultImageAssetPath: channelPictureImagePath,
+      presetAspectRatio: 16 / 9,
+      width: width,
+      //size: new Size.fromWidth(1000),
     );
   }
 }

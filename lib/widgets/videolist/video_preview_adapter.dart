@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/video.dart';
+import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,8 @@ class VideoPreviewAdapter extends StatefulWidget {
   final bool previewNotDownloadedVideos;
   final bool isVisible;
   final bool openDetailPage;
+  final List<Widget> overlayWidgets;
+  final double? width;
 
   // if width not set, set to full width
   final Size? size;
@@ -34,6 +37,8 @@ class VideoPreviewAdapter extends StatefulWidget {
     this.defaultImageAssetPath,
     this.size,
     this.presetAspectRatio,
+    this.width,
+    this.overlayWidgets = const [],
   });
 
   @override
@@ -53,16 +58,16 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     return MediaQuery.of(context).size;
   }
 
+  final Uuid uuid = Uuid();
+
   @override
   Widget build(BuildContext context) {
+    if (!widget.isVisible) {
+      return Container();
+    }
+
     return Consumer2<AppState, VideoListState>(
       builder: (context, appState, videoListState, _) {
-        Uuid uuid = Uuid();
-
-        if (!widget.isVisible) {
-          return Container();
-        }
-
         if (videoListState.previewImages.containsKey(widget.video.id)) {
           widget.logger.info(
               "Getting preview image from memory for: ${widget.video.title!}");
@@ -116,15 +121,19 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
           children: <Widget>[
             Container(
               key: Key(uuid.v1()),
-              child: VideoWidget(
-                appState,
-                widget.video,
-                isCurrentlyDownloading,
-                widget.openDetailPage,
-                previewImage: previewImage,
-                defaultImageAssetPath: widget.defaultImageAssetPath,
-                size: size,
-                presetAspectRatio: widget.presetAspectRatio,
+              child: VideoPreviewLayout(
+                overlayWidgets: widget.overlayWidgets,
+                width: widget.width,
+                child: VideoWidget(
+                  appState,
+                  widget.video,
+                  isCurrentlyDownloading,
+                  widget.openDetailPage,
+                  previewImage: previewImage,
+                  defaultImageAssetPath: widget.defaultImageAssetPath,
+                  size: size,
+                  presetAspectRatio: widget.presetAspectRatio,
+                ),
               ),
             )
           ],

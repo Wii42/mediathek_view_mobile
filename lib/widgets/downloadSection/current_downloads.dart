@@ -62,7 +62,7 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
       return SliverToBoxAdapter(child: Container());
     }
 
-    var videoListItemBuilder = VideoListItemBuilder.name(
+    VideoListItemBuilder videoListItemBuilder = VideoListItemBuilder.name(
         currentDownloads.toList(), true, true, true,
         onRemoveVideo: cancelCurrentDownload);
 
