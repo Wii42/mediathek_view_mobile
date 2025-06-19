@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/list_state_container.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/video.dart';
-import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
@@ -121,21 +120,18 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
           children: <Widget>[
             Container(
               key: Key(uuid.v1()),
-              child: VideoPreviewLayout(
+              child: VideoWidget(
+                appState,
+                widget.video,
+                isCurrentlyDownloading,
+                widget.openDetailPage,
+                previewImage: previewImage,
+                defaultImageAssetPath: widget.defaultImageAssetPath,
+                size: size,
+                presetAspectRatio: widget.presetAspectRatio,
                 overlayWidgets: widget.overlayWidgets,
-                width: widget.width,
-                child: VideoWidget(
-                  appState,
-                  widget.video,
-                  isCurrentlyDownloading,
-                  widget.openDetailPage,
-                  previewImage: previewImage,
-                  defaultImageAssetPath: widget.defaultImageAssetPath,
-                  size: size,
-                  presetAspectRatio: widget.presetAspectRatio,
-                ),
               ),
-            )
+            ),
           ],
         );
       },

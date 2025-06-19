@@ -7,6 +7,7 @@ import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:flutter_ws/widgets/videolist/video_detail_screen.dart';
+import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
@@ -20,8 +21,9 @@ class VideoWidget extends StatefulWidget {
   final String? mimeType;
   final String? defaultImageAssetPath;
   final Image? previewImage;
-  final Size? size;
+  final Size size;
   final double? presetAspectRatio;
+  final List<Widget> overlayWidgets;
 
   final bool isDownloading;
   final bool openDetailPage;
@@ -35,8 +37,9 @@ class VideoWidget extends StatefulWidget {
     this.previewImage,
     this.mimeType,
     this.defaultImageAssetPath,
-    this.size,
+    required this.size,
     this.presetAspectRatio,
+    this.overlayWidgets = const [],
   });
 
   @override
@@ -44,7 +47,7 @@ class VideoWidget extends StatefulWidget {
 }
 
 class VideoWidgetState extends State<VideoWidget> {
-  String? heroUuid;
+  late String heroUuid;
   VideoProgressEntity? videoProgressEntity;
   VideoEntity? entity;
 
@@ -56,7 +59,7 @@ class VideoWidgetState extends State<VideoWidget> {
   @override
   void initState() {
     super.initState();
-    heroUuid = Uuid().v1().toString();
+    heroUuid = Uuid().v1();
     checkPlaybackProgress();
     checkIfAlreadyDownloaded();
   }
@@ -67,7 +70,7 @@ class VideoWidgetState extends State<VideoWidget> {
 
     //Always fill full width & calc height accordingly
     double totalWidth =
-        widget.size!.width - 36.0; //Intendation: 28 left, 8 right
+        widget.size.width - 36.0; //Intendation: 28 left, 8 right
     double height = calculateImageHeight(
         widget.previewImage, totalWidth, widget.presetAspectRatio);
 
@@ -93,102 +96,77 @@ class VideoWidgetState extends State<VideoWidget> {
         alignment: Alignment.center,
         gaplessPlayback: true);
 
-    Hero previewImage;
-    if (widget.previewImage != null) {
-      widget.logger.fine("Showing preview image for ${widget.video.title!}");
-      previewImage = Hero(tag: heroUuid!, child: widget.previewImage!);
-    } else {
-      widget.logger.fine("Showing placeholder for ${widget.video.title!}");
-      previewImage = Hero(tag: heroUuid!, child: placeholderImage);
-    }
-
-    return GestureDetector(
-      child: AspectRatio(
-        aspectRatio:
-            totalWidth > height ? totalWidth / height : height / totalWidth,
-        child: SizedBox(
-          width: totalWidth,
-          child: Stack(
-            alignment: Alignment.center,
-            fit: StackFit.passthrough,
-            children: <Widget>[
-              AnimatedOpacity(
-                opacity: widget.previewImage == null ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 750),
-                curve: Curves.easeInOut,
-                child: previewImage,
-              ),
-              AnimatedOpacity(
-                opacity: widget.previewImage != null ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 750),
-                curve: Curves.easeInOut,
-                child: widget.previewImage,
-              ),
-              //Overlay Banner
-              Positioned(
-                bottom: 0,
-                left: 0.0,
-                right: 0.0,
-                child: getBottomBar(
-                    Theme.of(context).textTheme,
-                    videoProgressEntity,
-                    widget.video.id,
-                    widget.video.duration,
-                    widget.video.title ?? "",
-                    widget.video.topic,
-                    widget.video.timestamp,
-                    widget.defaultImageAssetPath!),
-              ),
-              Positioned(
-                  bottom: 0.0,
-                  left: 0.0,
-                  right: 0.0,
-                  child: downloadProgressBar)
-            ],
-          ),
+    return VideoPreviewLayout(
+      width: widget.size.width,
+      thumbnailImage: Hero(
+        tag: heroUuid,
+        child: AnimatedCrossFade(
+          firstChild: placeholderImage,
+          secondChild: widget.previewImage ?? placeholderImage,
+          crossFadeState: widget.previewImage == null
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 750),
         ),
       ),
-      onTap: () async {
-        if (widget.openDetailPage) {
-          widget.logger.info("Open detail page");
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) {
-                    return VideoDetailScreen(
-                      widget.previewImage ?? placeholderImage,
-                      widget.video,
-                      entity,
-                      widget.isDownloading,
-                      entity != null,
-                      heroUuid,
-                      widget.defaultImageAssetPath,
-                    );
-                  },
-                  fullscreenDialog: true));
-        } else {
-          // play video
-          if (mounted) {
-            Util.playVideoHandler(context, widget.appWideState, entity,
-                    widget.video, videoProgressEntity)
-                .then((value) {
-              // setting state after the video player popped the Navigator context
-              // this reloads the video progress entity to show the playback progress
-              checkPlaybackProgress();
-              // also check if video is downloaded in the meantime
-              checkIfAlreadyDownloaded();
-            });
+      videoInfoBottomBar: getBottomBar(
+          Theme.of(context).textTheme,
+          videoProgressEntity,
+          widget.video.id,
+          widget.video.duration,
+          widget.video.title ?? "",
+          widget.video.topic,
+          widget.video.timestamp,
+          widget.defaultImageAssetPath!),
+      aspectRatio:
+          totalWidth > height ? totalWidth / height : height / totalWidth,
+      overlayWidgets: [
+        ...widget.overlayWidgets,
+        Positioned(
+            bottom: 0.0, left: 0.0, right: 0.0, child: downloadProgressBar)
+      ],
+      gestureDetector: (child) => GestureDetector(
+        child: child,
+        onTap: () {
+          if (widget.openDetailPage) {
+            widget.logger.info("Open detail page");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) {
+                      return VideoDetailScreen(
+                        widget.previewImage ?? placeholderImage,
+                        widget.video,
+                        entity,
+                        widget.isDownloading,
+                        entity != null,
+                        heroUuid,
+                        widget.defaultImageAssetPath,
+                      );
+                    },
+                    fullscreenDialog: true));
+          } else {
+            // play video
+            if (mounted) {
+              Util.playVideoHandler(context, widget.appWideState, entity,
+                      widget.video, videoProgressEntity)
+                  .then((value) {
+                // setting state after the video player popped the Navigator context
+                // this reloads the video progress entity to show the playback progress
+                checkPlaybackProgress();
+                // also check if video is downloaded in the meantime
+                checkIfAlreadyDownloaded();
+              });
+            }
           }
-        }
-      },
+        },
+      ),
     );
   }
 
   static double calculateImageHeight(
       Image? image, double totalWidth, double? presetAspectRatio) {
-    if (image != null && presetAspectRatio != null) {
-      return totalWidth / presetAspectRatio;
-    } else if (image == null && presetAspectRatio != null) {
+    if (presetAspectRatio != null) {
       return totalWidth / presetAspectRatio;
     } else if (image != null) {
       double originalWidth = image.width!;

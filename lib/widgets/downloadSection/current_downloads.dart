@@ -144,12 +144,8 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
         widget.setStateNecessary(currentDownloads);
         return;
       }
-      SnackbarActions.showErrorWithTryAgain(
-          scaffoldMessenger,
-          ERROR_MSG,
-          TRY_AGAIN_MSG,
-          widget.appWideState.downloadManager.deleteVideo,
-          id ?? "");
+      SnackbarActions.showErrorWithTryAgain(scaffoldMessenger, ERROR_MSG,
+          TRY_AGAIN_MSG, widget.appWideState.downloadManager.deleteVideo, id);
     });
   }
 }
