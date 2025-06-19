@@ -194,15 +194,12 @@ class WatchHistoryState extends State<WatchHistory> {
         ),
       );
       resultList.add(
-        SliverPadding(
-          padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-          sliver: SliverGrid.count(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: 16 / 9,
-            mainAxisSpacing: 8.0,
-            crossAxisSpacing: 8.0,
-            children: entry.value.value,
-          ),
+        SliverGrid.count(
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: 16 / 9,
+          mainAxisSpacing: 8.0,
+          crossAxisSpacing: 8.0,
+          children: entry.value.value,
         ),
       );
     }

@@ -202,7 +202,7 @@ class DownloadSectionState extends State<DownloadSection> {
       List<Widget> watchHistoryItems = Util.getWatchHistoryItems(
           videosWithPlaybackProgress, size.width / crossAxisCount);
 
-      double containerHeight = size.width / crossAxisCount / 16 * 9;
+      double containerHeight = (size.width / crossAxisCount / 16 * 9) + 33;
 
       Widget recentlyViewedSwiper = ListView(
         scrollDirection: Axis.horizontal,
@@ -273,13 +273,13 @@ class DownloadSectionState extends State<DownloadSection> {
 
   Widget getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
     return Swiper(
-      itemBuilder: (BuildContext context, int index) {
-        return watchHistoryItems[index];
-      },
-      itemCount: watchHistoryItems.length,
-      pagination: SwiperPagination(),
-      control: SwiperControl(),
-    );
+        itemBuilder: (BuildContext context, int index) {
+          return watchHistoryItems[index];
+        },
+        itemCount: watchHistoryItems.length,
+        pagination: SwiperPagination(),
+        control: SwiperControl(),
+        outer: true);
   }
 
   Center getEmptyDownloadWidget() {

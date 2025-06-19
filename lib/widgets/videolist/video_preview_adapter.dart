@@ -127,7 +127,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
                 widget.openDetailPage,
                 previewImage: previewImage,
                 defaultImageAssetPath: widget.defaultImageAssetPath,
-                size: size,
+                width: widget.width ?? size.width,
                 presetAspectRatio: widget.presetAspectRatio,
                 overlayWidgets: widget.overlayWidgets,
               ),

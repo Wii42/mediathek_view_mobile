@@ -24,7 +24,7 @@ class VideoWidget extends StatefulWidget {
   final String? mimeType;
   final String? defaultImageAssetPath;
   final Image? previewImage;
-  final Size size;
+  final double width;
   final double? presetAspectRatio;
   final List<Widget> overlayWidgets;
 
@@ -40,7 +40,7 @@ class VideoWidget extends StatefulWidget {
     this.previewImage,
     this.mimeType,
     this.defaultImageAssetPath,
-    required this.size,
+    required this.width,
     this.presetAspectRatio,
     this.overlayWidgets = const [],
   });
@@ -72,8 +72,7 @@ class VideoWidgetState extends State<VideoWidget> {
     widget.logger.fine("Rendering Image for ${widget.video.id!}");
 
     //Always fill full width & calc height accordingly
-    double totalWidth =
-        widget.size.width - 36.0; //Intendation: 28 left, 8 right
+    double totalWidth = widget.width - 36.0; //Intendation: 28 left, 8 right
     double height = calculateImageHeight(
         widget.previewImage, totalWidth, widget.presetAspectRatio);
 
@@ -100,7 +99,7 @@ class VideoWidgetState extends State<VideoWidget> {
         gaplessPlayback: true);
 
     return VideoPreviewLayout(
-      width: widget.size.width,
+      width: widget.width,
       thumbnailImage: Hero(
         tag: heroUuid,
         child: AnimatedCrossFade(
@@ -194,7 +193,10 @@ class VideoWidgetState extends State<VideoWidget> {
       String? topic,
       DateTime? timestamp,
       String assetPath) {
-    return ClipRect(
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+          bottomLeft: VideoPreviewLayout.cornerClipping,
+          bottomRight: VideoPreviewLayout.cornerClipping),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
         child: Container(

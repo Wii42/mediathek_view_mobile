@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../util/cross_axis_count.dart';
 
 class VideoPreviewLayout extends StatelessWidget {
+  static const Radius cornerClipping = Radius.circular(10.0);
   final double width;
   final Widget thumbnailImage;
   final Widget videoInfoBottomBar;
@@ -29,7 +30,7 @@ class VideoPreviewLayout extends StatelessWidget {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         // Column is needed for correct padding of the widget
         ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          borderRadius: BorderRadius.all(cornerClipping),
           child: Container(
             color: Colors.grey[100],
             width: width,
