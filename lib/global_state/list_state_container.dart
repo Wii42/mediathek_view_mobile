@@ -177,8 +177,9 @@ class AppState extends ChangeNotifier {
 
     if (!await thumbnailDirectory.exists()) {
       //if folder already exists return path
-      await thumbnailDirectory.create(recursive: true).catchError((error) =>
-          logger.info("Failed to create thumbnail directory $error"));
+      await thumbnailDirectory.create(recursive: true).then((dir) => dir,
+          onError: (error, stacktrace) => logger.info(
+              "Failed to create thumbnail directory $error.\nStacktrace: $stacktrace"));
     }
     logger.fine("Local directory and thumbnail directory initialized");
   }

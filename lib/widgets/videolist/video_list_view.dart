@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/channel_util.dart';
-import 'package:flutter_ws/util/cross_axis_count.dart';
 import 'package:flutter_ws/widgets/downloadSection/video_list_item_builder.dart';
 import 'package:flutter_ws/widgets/videolist/loading_list_view.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
@@ -70,19 +69,6 @@ class _VideoListViewState extends State<VideoListView> {
         context,
         SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
             childCount: widget.videos!.length));
-
-    int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
-
-    return SliverGrid(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: 16 / 9,
-        mainAxisSpacing: 5.0,
-        crossAxisSpacing: 5.0,
-      ),
-      delegate: SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
-          childCount: widget.videos!.length),
-    );
   }
 
   Center buildNoVideosFound() {

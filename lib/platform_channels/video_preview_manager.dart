@@ -133,11 +133,10 @@ class VideoPreviewManager {
 
     logger.info("Received image for $url with size: ${uint8list.length}");
     if (thumbnailPath != null) {
-      io.File(thumbnailPath)
-          .writeAsBytes(uint8list)
-          .catchError((error) =>
-              logger.warning("Failed to persist preview file $error"))
-          .then((file) => logger.info("Wrote preview file to ${file.path}"));
+      io.File(thumbnailPath).writeAsBytes(uint8list).then(
+          (file) => logger.info("Wrote preview file to ${file.path}"),
+          onError: (error, stacktrace) => logger.warning(
+              "Failed to persist preview file $error.\nStacktrace: $stacktrace"));
     }
 
     Image image = await _createImage(uint8list);
