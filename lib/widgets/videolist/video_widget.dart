@@ -15,6 +15,9 @@ import '../../drift_database/app_database.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
+  static const Color bottomBarBackgroundColor =
+      Color(0xFF424242); // Colors.grey[800]
+
   final Logger logger = Logger('VideoWidget');
   final AppState appWideState;
   final Video video;
@@ -195,7 +198,7 @@ class VideoWidgetState extends State<VideoWidget> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
         child: Container(
-          color: Colors.grey[800]?.withAlpha(177),
+          color: VideoWidget.bottomBarBackgroundColor.withAlpha(177),
           child: Column(
             children: <Widget>[
               playbackProgress != null

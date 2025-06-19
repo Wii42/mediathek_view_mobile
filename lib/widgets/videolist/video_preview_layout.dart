@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../util/cross_axis_count.dart';
+
 class VideoPreviewLayout extends StatelessWidget {
   final double width;
   final Widget thumbnailImage;
@@ -59,6 +61,21 @@ class VideoPreviewLayout extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  static Widget getVideoListViewLayout(
+      BuildContext context, SliverChildDelegate videoListItemBuilder) {
+    int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
+
+    return SliverGrid(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: 16 / 9,
+        mainAxisSpacing: 5.0,
+        crossAxisSpacing: 5.0,
+      ),
+      delegate: videoListItemBuilder,
     );
   }
 }

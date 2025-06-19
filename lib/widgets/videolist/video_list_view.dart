@@ -4,6 +4,7 @@ import 'package:flutter_ws/util/channel_util.dart';
 import 'package:flutter_ws/util/cross_axis_count.dart';
 import 'package:flutter_ws/widgets/downloadSection/video_list_item_builder.dart';
 import 'package:flutter_ws/widgets/videolist/loading_list_view.dart';
+import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:logging/logging.dart';
 
 class VideoListView extends StatefulWidget {
@@ -42,14 +43,16 @@ class _VideoListViewState extends State<VideoListView> {
 
   @override
   Widget build(BuildContext context) {
-    widget.logger.info("Rendering Main Video List with list length ${widget.videos!.length}");
+    widget.logger.info(
+        "Rendering Main Video List with list length ${widget.videos!.length}");
 
     if (widget.videos!.isEmpty && widget.amountOfVideosFetched == 0) {
       widget.logger.info("No Videos found");
       return SliverToBoxAdapter(child: buildNoVideosFound());
     } else if (widget.videos!.isEmpty) {
-      widget.logger.info("Searching: video list length : 0 & amountFetched: ${widget.amountOfVideosFetched}");
-      return SliverToBoxAdapter(child: LoadingListPage());
+      widget.logger.info(
+          "Searching: video list length : 0 & amountFetched: ${widget.amountOfVideosFetched}");
+      return LoadingListPage();
     }
 
     // do not request previews in the main download section if it is a tablet
@@ -63,13 +66,18 @@ class _VideoListViewState extends State<VideoListView> {
         totalResultSize: widget.totalResultSize,
         currentQuerySkip: widget.currentQuerySkip);
 
+    return VideoPreviewLayout.getVideoListViewLayout(
+        context,
+        SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
+            childCount: widget.videos!.length));
+
     int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
 
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
         childAspectRatio: 16 / 9,
-        mainAxisSpacing: 1.0,
+        mainAxisSpacing: 5.0,
         crossAxisSpacing: 5.0,
       ),
       delegate: SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
