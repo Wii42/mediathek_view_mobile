@@ -193,21 +193,19 @@ class VideoWidgetState extends State<VideoWidget> {
       String? topic,
       DateTime? timestamp,
       String assetPath) {
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-          bottomLeft: VideoPreviewLayout.cornerClipping,
-          bottomRight: VideoPreviewLayout.cornerClipping),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-        child: Container(
-          color: VideoWidget.bottomBarBackgroundColor.withAlpha(177),
-          child: Column(
-            children: <Widget>[
-              playbackProgress != null
-                  ? PlaybackProgressBar(
-                      playbackProgress.progress, duration, false)
-                  : Container(),
-              MetaInfoListTile(
+    return Column(
+      children: <Widget>[
+        PlaybackProgressBar(
+            playbackProgress?.progress ?? Duration.zero, duration, true),
+        ClipRRect(
+          borderRadius: BorderRadius.only(
+              bottomLeft: VideoPreviewLayout.cornerClipping,
+              bottomRight: VideoPreviewLayout.cornerClipping),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            child: Container(
+              color: VideoWidget.bottomBarBackgroundColor.withAlpha(177),
+              child: MetaInfoListTile(
                   textTheme: textTheme,
                   duration: duration,
                   title: title,
@@ -216,10 +214,10 @@ class VideoWidgetState extends State<VideoWidget> {
                   assetPath: assetPath,
                   isDownloaded: entity != null,
                   titleMaxLines: 2),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 

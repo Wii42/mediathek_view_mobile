@@ -167,18 +167,20 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     if (filepath == null) {
       return;
     }
-    AppState appState = Provider.of<AppState>(context, listen: false);
-    VideoListState videoListState =
-        Provider.of<VideoListState>(context, listen: false);
-    widget.logger.info("Preview received for video: ${widget.video.title!}");
-    // get preview from file
-    appState.videoPreviewManager
-        .getImagePreview(widget.video.id!, videoListState)
-        .then((image) {
-      previewImage = image;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (mounted) {
+      AppState appState = Provider.of<AppState>(context, listen: false);
+      VideoListState videoListState =
+          Provider.of<VideoListState>(context, listen: false);
+      widget.logger.info("Preview received for video: ${widget.video.title!}");
+      // get preview from file
+      appState.videoPreviewManager
+          .getImagePreview(widget.video.id!, videoListState)
+          .then((image) {
+        previewImage = image;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
   }
 }

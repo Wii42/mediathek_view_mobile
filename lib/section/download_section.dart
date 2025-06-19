@@ -272,13 +272,17 @@ class DownloadSectionState extends State<DownloadSection> {
   }
 
   Widget getMobileRecentlyWatchedSwiper(List<Widget> watchHistoryItems) {
+    ThemeData theme = Theme.of(context);
     return Swiper(
         itemBuilder: (BuildContext context, int index) {
           return watchHistoryItems[index];
         },
         itemCount: watchHistoryItems.length,
-        pagination: SwiperPagination(),
-        control: SwiperControl(),
+        pagination: SwiperPagination(
+            builder: DotSwiperPaginationBuilder(
+                activeColor: theme.bottomNavigationBarTheme.selectedItemColor)),
+        control: SwiperControl(
+            color: theme.bottomNavigationBarTheme.selectedItemColor),
         outer: true);
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
-import 'package:flutter_ws/util/timestamp_calculator.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/util/util.dart';
@@ -14,7 +13,6 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
 import '../../drift_database/app_database.dart';
-import 'channel_thumbnail.dart';
 import 'download_switch.dart';
 import 'meta_info_list_tile.dart';
 
@@ -258,11 +256,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
   GestureDetector getImageSurface(
       double totalImageWidth, double height, AppState appState) {
-    Widget videoProgressBar = Container();
-    if (videoProgressEntity != null) {
-      videoProgressBar = PlaybackProgressBar(
-          videoProgressEntity!.progress, widget.video.duration, false);
-    }
+    Widget videoProgressBar = PlaybackProgressBar(
+        videoProgressEntity?.progress ?? Duration.zero,
+        widget.video.duration,
+        true);
 
     return GestureDetector(
       child: AspectRatio(
@@ -280,7 +277,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 bottom: 0,
                 left: 0.0,
                 right: 0.0,
-                child: Opacity(opacity: 0.7, child: videoProgressBar),
+                child: Opacity(opacity: 1, child: videoProgressBar),
               ),
               Center(
                   child: Icon(
@@ -341,32 +338,5 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         }
       });
     }
-  }
-
-  ListTile getBottomBar(BuildContext context, String assetPath, String title,
-      Duration length, DateTime timestamp, bool isDownloaded) {
-    return ListTile(
-      trailing: Text(
-        Calculator.calculateDuration(length),
-        style: videoMetadataTextStyle.copyWith(color: Colors.white),
-      ),
-      leading: assetPath.isNotEmpty
-          ? ChannelThumbnail(assetPath, isDownloaded)
-          : Container(),
-      title: Text(
-        title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium!
-            .copyWith(color: Colors.white),
-      ),
-      subtitle: Text(
-        Calculator.calculateTimestamp(timestamp),
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(color: Colors.white),
-      ),
-    );
   }
 }
