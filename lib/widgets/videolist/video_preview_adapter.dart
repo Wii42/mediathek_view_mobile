@@ -26,10 +26,10 @@ class VideoPreviewAdapter extends StatefulWidget {
   VideoPreviewAdapter(
     // always hand over video. Download section needs to convert to video.
     // Needs to made uniform to be easier
-    this.video,
-    this.previewNotDownloadedVideos,
-    this.isVisible,
-    this.openDetailPage, {
+    this.video, {
+    required this.previewNotDownloadedVideos,
+    required this.isVisible,
+    required this.openDetailPage,
     super.key,
     this.defaultImageAssetPath,
     this.size,

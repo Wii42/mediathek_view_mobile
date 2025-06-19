@@ -88,9 +88,9 @@ class VideoListItemBuilder {
                     color: Colors.white,
                     child: VideoPreviewAdapter(
                       video,
-                      previewNotDownloadedVideos,
-                      true,
-                      openDetailPage,
+                      previewNotDownloadedVideos: previewNotDownloadedVideos,
+                      isVisible: true,
+                      openDetailPage: openDetailPage,
                       defaultImageAssetPath: assetPath,
                       presetAspectRatio: 16 / 9,
                     )),

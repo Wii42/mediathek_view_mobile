@@ -163,7 +163,7 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
 
     // http 503 -> indexing
     // http 500 -> internal error
-    // http 400 -> invalid query// 033 952 80 80
+    // http 400 -> invalid query
   }
 
   void onSearchResponse(String data) {

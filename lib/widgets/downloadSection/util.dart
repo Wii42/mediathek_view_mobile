@@ -55,9 +55,9 @@ class Util {
                 Video.fromVideoProgressEntity(playbackProgress),
                 // always show previews for already watched videos
                 // should be already generated
-                true,
-                true,
-                false,
+                previewNotDownloadedVideos: true,
+                isVisible: true,
+                openDetailPage: false,
                 defaultImageAssetPath: channelPictureImagePath,
                 presetAspectRatio: 16 / 9,
                 //size: new Size.fromWidth(1000),
