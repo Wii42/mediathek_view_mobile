@@ -31,7 +31,16 @@ class Util {
       final response = await http.head(video.url_video!);
 
       if (response.statusCode >= 300) {
-        SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);
+        String? detailedError = switch (response.statusCode) {
+          404 => "Video nicht gefunden",
+          403 => "Zugriff verweigert",
+          429 => "Zu viele Anfragen, bitte später erneut versuchen",
+          _ => null
+        };
+        String fullErrorMessage = detailedError != null
+            ? "$ERROR_MSG_NOT_AVAILABLE: $detailedError"
+            : ERROR_MSG_NOT_AVAILABLE;
+        SnackbarActions.showError(scaffoldMessenger, fullErrorMessage);
         return false;
       }
     }
