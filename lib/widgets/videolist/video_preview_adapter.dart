@@ -159,7 +159,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
         videoListState,
         widget.video.id,
         widget.video.title,
-        url,
+        Uri.parse(url),
         triggerStateReloadOnPreviewReceived);
   }
 

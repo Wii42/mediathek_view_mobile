@@ -50,7 +50,7 @@ class VideoPreviewManager {
       VideoListState videoListState,
       String? videoId,
       String? title,
-      String url,
+      Uri url,
       TriggerStateReloadOnPreviewReceived triggerStateReload) async {
     if (videoListState.previewImages.containsKey(videoId)) {
       return null;
@@ -84,7 +84,7 @@ class VideoPreviewManager {
   }
 
   Future<String?> _createAndPersistThumbnail(
-      String videoId, String url, VideoListState videoListState) async {
+      String videoId, Uri url, VideoListState videoListState) async {
     Uint8List? uint8list;
 
     io.Directory? directory = _appWideState.localDirectory;
@@ -101,11 +101,10 @@ class VideoPreviewManager {
           "No local directory set. Cannot create thumbnail for $videoId");
     }
 
-    if (url.endsWith(".m3u8")) {
-      Uri m3u8Url = Uri.parse(url);
-      Uri? tsUrl = await _getPreviewUrlFromM3U8Video(m3u8Url);
+    if (url.toString().endsWith(".m3u8")) {
+      Uri? tsUrl = await _getPreviewUrlFromM3U8Video(url);
       if (tsUrl != null) {
-        url = tsUrl.toString();
+        url = tsUrl;
       } else {
         return null;
       }
@@ -113,7 +112,7 @@ class VideoPreviewManager {
 
     try {
       uint8list = await VideoThumbnail.thumbnailData(
-        video: url,
+        video: url.toString(),
         imageFormat: ImageFormat.JPEG,
         quality: 10,
       );

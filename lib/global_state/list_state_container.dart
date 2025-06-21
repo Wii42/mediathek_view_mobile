@@ -17,6 +17,8 @@ import '../util/countly.dart';
 
 class VideoListState extends ChangeNotifier {
   final Logger logger = Logger('VideoListState');
+
+  /// Saves which list tiles are currently extended.
   final Set<String> _extendedListTiles;
   final Map<String, Image> _previewImages;
 
@@ -193,17 +195,4 @@ class AppState extends ChangeNotifier {
       favoriteChannels.putIfAbsent(entity.channelName, () => entity);
     }
   }
-
-//Future<void> initializeDatabase() async {
-//  Directory documentsDirectory = await getApplicationDocumentsDirectory();
-//  logger.info("DB dir: ${documentsDirectory.path}");
-//  String path = join(documentsDirectory.path, "demo.db");
-//  //Uncomment when having made changes to the DB Schema
-//  //appState.databaseManager.deleteDb(path);
-//  //appState.databaseManager.deleteDb(join(documentsDirectory.path, "task.db"));
-//  return await databaseManager.open(path).then(
-//        (dynamic) => logger.info("Successfully opened database"),
-//        onError: (e) => logger.severe("Error when opening database"),
-//      );
-//}
 }

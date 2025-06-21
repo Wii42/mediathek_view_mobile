@@ -7,7 +7,8 @@ import '../drift_database/app_database.dart' show VideoEntity;
 class VideoUtil {
   static String? getVideoPath(
       AppState appWideState, VideoEntity? videoEntity, Video video) {
-    if (videoEntity != null) {
+    if (videoEntity != null && videoEntity.filePath != null) {
+      print("Filename: ${videoEntity.fileName}");
       if (appWideState.targetPlatform == TargetPlatform.android) {
         return "${videoEntity.filePath!}/${videoEntity.fileName!}";
       } else {
