@@ -87,12 +87,12 @@ class AppState extends ChangeNotifier {
     logger.info("Initializing AppState");
     FlutterDownloader.initialize(debug: true);
 
-    videoPreviewManager.appWideState = this;
     logger.info("Initializing Filesystem Permission Manager");
     // async execution to concurrently open database
     await getPlatformAndSetDirectory();
     await initDBAndDownloadManager();
     isPipAvailable = await Floating().isPipAvailable;
+    videoPreviewManager.localDirectory = localDirectory;
 
     _initialized = true;
   }

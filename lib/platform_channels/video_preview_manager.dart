@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -16,7 +15,7 @@ typedef TriggerStateReloadOnPreviewReceived = void Function(String? trigger);
 
 class VideoPreviewManager {
   final Logger logger = Logger('VideoPreviewManager');
-  late final AppState _appWideState;
+  late final io.Directory? localDirectory;
 
   //Map<String, bool> requestedVideoPreview = new Map();
   // Maps a video id to a function that reloads the state of the widget that requested the preview
@@ -28,14 +27,13 @@ class VideoPreviewManager {
 
   VideoPreviewManager();
 
-  set appWideState(AppState appWideState) {
-    _appWideState = appWideState;
-  }
-
   Future<Image?> getImagePreview(
       String videoId, VideoPreviewState videoListState) async {
-    String thumbnailPath =
-        getThumbnailPath(_appWideState.localDirectory!, videoId);
+    if (localDirectory == null) {
+      logger.severe("No local directory set. Cannot get preview for $videoId");
+      return null;
+    }
+    String thumbnailPath = getThumbnailPath(localDirectory!, videoId);
 
     var file = io.File(thumbnailPath);
     if (!await file.exists()) {
@@ -89,7 +87,7 @@ class VideoPreviewManager {
       String videoId, Uri url, VideoPreviewState videoListState) async {
     Uint8List? uint8list;
 
-    io.Directory? directory = _appWideState.localDirectory;
+    io.Directory? directory = localDirectory;
 
     String? thumbnailPath;
     if (directory != null) {
