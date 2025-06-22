@@ -62,8 +62,10 @@ class _CurrentDownloadsState extends State<CurrentDownloads> {
       return SliverToBoxAdapter(child: Container());
     }
 
-    VideoListItemBuilder videoListItemBuilder = VideoListItemBuilder.name(
-        currentDownloads.toList(), true, true, true,
+    VideoListItemBuilder videoListItemBuilder = VideoListItemBuilder(
+        currentDownloads.toList(),
+        showDeleteButton: true,
+        openDetailPage: true,
         onRemoveVideo: cancelCurrentDownload);
 
     int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);

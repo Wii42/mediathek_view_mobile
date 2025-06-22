@@ -44,9 +44,6 @@ class Util {
       double metaFontSize) {
     return VideoPreviewAdapter(
       Video.fromVideoProgressEntity(playbackProgress),
-      // always show previews for already watched videos
-      // should be already generated
-      previewNotDownloadedVideos: true,
       isVisible: true,
       openDetailPage: false,
       defaultImageAssetPath: channelPictureImagePath,

@@ -9,26 +9,28 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-import '../global_state/video_preview_state.dart';
-
 typedef TriggerStateReloadOnPreviewReceived = void Function(String? trigger);
 
 class VideoPreviewManager {
   final Logger logger = Logger('VideoPreviewManager');
-  late final io.Directory? localDirectory;
+  final io.Directory? localDirectory;
 
   //Map<String, bool> requestedVideoPreview = new Map();
   // Maps a video id to a function that reloads the state of the widget that requested the preview
   // THis is needed because, although a video id is unique, there can be multiple widgets requesting previews for the same video id
   // this is the case when the user just watched the video (visible in recently viewed) and also downloads it at the same time
   // the preview should not be requested twice & when the preview is received, both widget should be updated with the preview
-  Map<String?, List<TriggerStateReloadOnPreviewReceived>>
-      videoIdToPreviewReceived = {};
+  //Map<String?, List<TriggerStateReloadOnPreviewReceived>>
+  //videoIdToPreviewReceived = {};
 
-  VideoPreviewManager();
+  /// Set of video ids for which a preview is currently being generated.
+  ///
+  /// Needed so that we can avoid generating the same preview multiple times.
+  Set<String> videosWaitingForPreview = {};
 
-  Future<Image?> getImagePreview(
-      String videoId, VideoPreviewState videoListState) async {
+  VideoPreviewManager(this.localDirectory);
+
+  Future<Image?> getImagePreview(String videoId) async {
     if (localDirectory == null) {
       logger.severe("No local directory set. Cannot get preview for $videoId");
       return null;
@@ -40,53 +42,25 @@ class VideoPreviewManager {
       return null;
     }
 
-    var image = Image.file(file, fit: BoxFit.cover);
-    videoListState.addImagePreview(videoId, image);
-
-    return image;
+    return Image.file(file, fit: BoxFit.cover);
   }
 
-  void startPreviewGeneration(
-      VideoPreviewState videoListState,
-      String? videoId,
-      String? title,
-      Uri url,
-      TriggerStateReloadOnPreviewReceived triggerStateReload) async {
-    if (videoListState.previewImages.containsKey(videoId)) {
+  Future<Image?> generatePreview(String videoId, Uri url,
+      {String? title}) async {
+    if (videosWaitingForPreview.contains(videoId)) {
+      logger.info("Preview requested again for $videoId. Ignored.");
       return null;
     }
 
-    if (videoIdToPreviewReceived.containsKey(videoId)) {
-      logger.info("Preview requested again for ${title!}");
-      videoIdToPreviewReceived.update(videoId, (value) {
-        List<TriggerStateReloadOnPreviewReceived> list =
-            videoIdToPreviewReceived[videoId]!;
-        list.add(triggerStateReload);
-        return list;
-      });
-      return;
-    }
-
-    videoIdToPreviewReceived.putIfAbsent(videoId, () {
-      List<TriggerStateReloadOnPreviewReceived> list = [];
-      list.add(triggerStateReload);
-      return list;
-    });
-
-    logger.info("Request preview for: ${title!}");
-    _createAndPersistThumbnail(videoId!, url, videoListState).then((filepath) {
-      // update each widget that waited for the preview
-      for (var triggerReload in videoIdToPreviewReceived[videoId]!) {
-        triggerReload(filepath);
-      }
-      videoIdToPreviewReceived.remove(videoId);
-    });
+    videosWaitingForPreview.add(videoId);
+    logger.info("Request preview for: $title");
+    Image? img = await _generatePreview(videoId, url, title: title);
+    videosWaitingForPreview.remove(videoId);
+    return img;
   }
 
-  Future<String?> _createAndPersistThumbnail(
-      String videoId, Uri url, VideoPreviewState videoListState) async {
-    Uint8List? uint8list;
-
+  Future<Image?> _generatePreview(String videoId, Uri url,
+      {String? title}) async {
     io.Directory? directory = localDirectory;
 
     String? thumbnailPath;
@@ -94,11 +68,10 @@ class VideoPreviewManager {
       thumbnailPath = getThumbnailPath(directory, videoId);
 
       if (await io.File(thumbnailPath).exists()) {
-        return thumbnailPath;
+        return getImagePreview(videoId);
       }
     } else {
-      logger.severe(
-          "No local directory set. Cannot create thumbnail for $videoId");
+      logger.severe("No local directory set. Cannot save thumbnail for $title");
     }
 
     if (url.toString().endsWith(".m3u8")) {
@@ -110,8 +83,10 @@ class VideoPreviewManager {
       }
     }
 
+    Uint8List? rawImageData;
+
     try {
-      uint8list = await VideoThumbnail.thumbnailData(
+      rawImageData = await VideoThumbnail.thumbnailData(
         video: url.toString(),
         imageFormat: ImageFormat.JPEG,
         quality: 10,
@@ -125,22 +100,20 @@ class VideoPreviewManager {
       return null;
     }
 
-    if (uint8list == null) {
+    if (rawImageData == null) {
       logger.severe("Create preview failed. No preview data returned");
       return null;
     }
 
-    logger.info("Received image for $url with size: ${uint8list.length}");
+    logger.info("Received image for $url with size: ${rawImageData.length}");
     if (thumbnailPath != null) {
-      io.File(thumbnailPath).writeAsBytes(uint8list).then(
+      io.File(thumbnailPath).writeAsBytes(rawImageData).then(
           (file) => logger.info("Wrote preview file to ${file.path}"),
           onError: (error, stacktrace) => logger.warning(
               "Failed to persist preview file $error.\nStacktrace: $stacktrace"));
     }
 
-    Image image = await _createImage(uint8list);
-    videoListState.addImagePreview(videoId, image);
-    return thumbnailPath;
+    return await _createImage(rawImageData);
   }
 
   String getThumbnailPath(io.Directory directory, String videoId) {

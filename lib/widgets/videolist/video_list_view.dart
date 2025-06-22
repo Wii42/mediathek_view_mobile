@@ -58,8 +58,9 @@ class _VideoListViewState extends State<VideoListView> {
     // do not overload CPU
     //bool previewNotDownloadedVideos = !DeviceInformation.isTablet(context);
 
-    var videoListItemBuilder = VideoListItemBuilder.name(
-        widget.videos, true, false, true,
+    var videoListItemBuilder = VideoListItemBuilder(widget.videos,
+        showDeleteButton: false,
+        openDetailPage: true,
         queryEntries: widget.queryEntries,
         amountOfVideosFetched: widget.amountOfVideosFetched,
         totalResultSize: widget.totalResultSize,

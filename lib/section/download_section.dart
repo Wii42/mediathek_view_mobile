@@ -235,8 +235,9 @@ class DownloadSectionState extends State<DownloadSection> {
           fontSize: 25.0,
           padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom: 0.0));
 
-      var videoListItemBuilder = VideoListItemBuilder.name(
-          downloadedVideos.toList(), true, true, false,
+      var videoListItemBuilder = VideoListItemBuilder(downloadedVideos.toList(),
+          showDeleteButton: true,
+          openDetailPage: false,
           onRemoveVideo: deleteDownload);
 
       downloadList = SliverGrid(

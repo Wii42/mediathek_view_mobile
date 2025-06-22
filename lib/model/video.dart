@@ -116,4 +116,44 @@ class Video {
       ..url_video = entity.urlVideo
       ..url_subtitle = entity.urlSubtitle;
   }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([
+      channel,
+      topic,
+      title,
+      description,
+      timestamp,
+      duration,
+      size,
+      url_website,
+      url_subtitle,
+      url_video,
+      url_video_low,
+      url_video_hd,
+      filmlisteTimestamp,
+      id
+    ]);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is Video &&
+            channel == other.channel &&
+            topic == other.topic &&
+            title == other.title &&
+            description == other.description &&
+            timestamp == other.timestamp &&
+            duration == other.duration &&
+            size == other.size &&
+            url_website == other.url_website &&
+            url_subtitle == other.url_subtitle &&
+            url_video == other.url_video &&
+            url_video_low == other.url_video_low &&
+            url_video_hd == other.url_video_hd &&
+            filmlisteTimestamp == other.filmlisteTimestamp &&
+            id == other.id);
+  }
 }

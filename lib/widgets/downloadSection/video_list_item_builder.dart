@@ -13,7 +13,6 @@ class VideoListItemBuilder {
 
   List<Video>? videos = [];
 
-  bool previewNotDownloadedVideos;
   bool showDeleteButton;
   bool openDetailPage;
 
@@ -25,9 +24,10 @@ class VideoListItemBuilder {
   int? currentQuerySkip;
   final int pageThreshold = 25;
 
-  VideoListItemBuilder.name(this.videos, this.previewNotDownloadedVideos,
-      this.showDeleteButton, this.openDetailPage,
-      {this.queryEntries,
+  VideoListItemBuilder(this.videos,
+      {this.showDeleteButton = true,
+      this.openDetailPage = true,
+      this.queryEntries,
       this.amountOfVideosFetched,
       this.totalResultSize,
       this.currentQuerySkip,
@@ -77,7 +77,6 @@ class VideoListItemBuilder {
     }
     return VideoPreviewAdapter(
       video,
-      previewNotDownloadedVideos: previewNotDownloadedVideos,
       isVisible: true,
       openDetailPage: openDetailPage,
       defaultImageAssetPath: assetPath,

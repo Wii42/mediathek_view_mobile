@@ -7,7 +7,6 @@ import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
-import 'package:flutter_ws/platform_channels/video_preview_manager.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,7 +28,6 @@ class AppState extends ChangeNotifier {
   late final Directory? localDirectory;
   final DownloadManager downloadManager = DownloadManager();
   late final AppDatabase appDatabase;
-  final VideoPreviewManager videoPreviewManager = VideoPreviewManager();
   late final SharedPreferences sharedPreferences;
   late final bool isPipAvailable;
   bool _initialized = false;
@@ -92,7 +90,6 @@ class AppState extends ChangeNotifier {
     await getPlatformAndSetDirectory();
     await initDBAndDownloadManager();
     isPipAvailable = await Floating().isPipAvailable;
-    videoPreviewManager.localDirectory = localDirectory;
 
     _initialized = true;
   }

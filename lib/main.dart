@@ -29,7 +29,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
         ChangeNotifierProvider<VideoPreviewState>(
-            create: (_) => VideoPreviewState())
+            create: (_) => VideoPreviewState(
+                localDirectory: appState.localDirectory,
+                targetPlatform: appState.targetPlatform)),
       ],
       child: MyApp(),
     ));

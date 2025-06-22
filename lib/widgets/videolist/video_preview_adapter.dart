@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
-import 'package:flutter_ws/util/video.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +13,6 @@ class VideoPreviewAdapter extends StatefulWidget {
   final Logger logger = Logger('VideoPreviewAdapter');
   final Video video;
   final String? defaultImageAssetPath;
-  final bool previewNotDownloadedVideos;
   final bool isVisible;
   final bool openDetailPage;
   final List<Widget> overlayWidgets;
@@ -30,7 +28,6 @@ class VideoPreviewAdapter extends StatefulWidget {
     // always hand over video. Download section needs to convert to video.
     // Needs to made uniform to be easier
     this.video, {
-    required this.previewNotDownloadedVideos,
     required this.isVisible,
     required this.openDetailPage,
     super.key,
@@ -49,7 +46,6 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
   VideoEntity? videoEntity;
   VideoProgressEntity? videoProgressEntity;
   bool isCurrentlyDownloading = false;
-  Image? previewImage;
 
   Size get size {
     if (widget.size != null) {
@@ -66,22 +62,12 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
       return Container();
     }
 
-    return Consumer2<AppState, VideoPreviewState>(
-      builder: (context, appState, videoListState, _) {
-        if (videoListState.previewImages.containsKey(widget.video.id)) {
-          widget.logger.info(
-              "Getting preview image from memory for: ${widget.video.title!}");
-          previewImage = videoListState.previewImages[widget.video.id];
-        }
-
-        if (previewImage != null) {
-          widget.logger
-              .info("Preview for video is set: ${widget.video.title!}");
-        } else {
-          widget.logger
-              .info("Preview for video is NOT set: ${widget.video.title!}");
-        }
-
+    return Consumer<AppState>(builder: (context, appState, _) {
+      return Selector<VideoPreviewState, Image?>(
+          selector: (_, previewImageState) {
+        return previewImageState.getPreviewImage(widget.video.id!,
+            createIfNotExists: true, video: widget.video, entity: videoEntity);
+      }, builder: (context, previewImage, child) {
         // check if video is currently downloading
         appState.downloadManager
             .isCurrentlyDownloading(widget.video.id)
@@ -97,24 +83,6 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
             }
           }
         });
-
-        if (previewImage == null) {
-          appState.videoPreviewManager
-              .getImagePreview(widget.video.id!, videoListState)
-              .then((image) {
-            if (image != null) {
-              widget.logger
-                  .info("Thumbnail found  for video: ${widget.video.title!}");
-              previewImage = image;
-              if (mounted) {
-                setState(() {});
-              }
-              return;
-            }
-            // request preview
-            requestPreview(appState, videoListState);
-          });
-        }
 
         return Column(
           key: Key(uuid.v1()),
@@ -135,53 +103,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
             ),
           ],
         );
-      },
-    );
-  }
-
-  void requestPreview(AppState appState, VideoPreviewState videoListState) {
-    appState.appDatabase.getDownloadedVideo(widget.video.id).then((entity) {
-      if (entity == null && !widget.previewNotDownloadedVideos) {
-        return;
-      }
-      requestThumbnailPicture(entity, widget.video, appState, videoListState);
-    });
-  }
-
-  void requestThumbnailPicture(VideoEntity? entity, Video video,
-      AppState appState, VideoPreviewState videoListState) {
-    String? url = VideoUtil.getVideoPath(appState, entity, video);
-    if (url == null) {
-      widget.logger.warning(
-          "No URL found for video: ${video.title!}. Cannot request preview.");
-      return;
-    }
-    appState.videoPreviewManager.startPreviewGeneration(
-        videoListState,
-        widget.video.id,
-        widget.video.title,
-        Uri.parse(url),
-        triggerStateReloadOnPreviewReceived);
-  }
-
-  void triggerStateReloadOnPreviewReceived(String? filepath) {
-    if (filepath == null) {
-      return;
-    }
-    if (mounted) {
-      AppState appState = Provider.of<AppState>(context, listen: false);
-      VideoPreviewState videoListState =
-          Provider.of<VideoPreviewState>(context, listen: false);
-      widget.logger.info("Preview received for video: ${widget.video.title!}");
-      // get preview from file
-      appState.videoPreviewManager
-          .getImagePreview(widget.video.id!, videoListState)
-          .then((image) {
-        previewImage = image;
-        if (mounted) {
-          setState(() {});
-        }
       });
-    }
+    });
   }
 }
