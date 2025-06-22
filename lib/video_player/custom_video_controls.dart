@@ -7,6 +7,7 @@ import 'package:chewie/chewie.dart';
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:logging/logging.dart';
@@ -43,7 +44,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   // needed to be able to show a loading spinner if the the video does not
   // progress over a certain amount of time
   DateTime lastVideoPlayerPositionUpdateTime = DateTime.now();
-  var LAGGING_THRESHOLD_IN_MILLISECONDS = 1000;
+  static const Duration LAGGING_THRESHOLD = Duration(milliseconds: 1000);
   bool isLagging = false;
 
   // Samsung TV cast
@@ -76,10 +77,8 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   Future<Null> _initialize() async {
     logger.info("custom_video_controls - initialize called");
     flutterPlayerController!.addListener(_updateFlutterPlayerState);
-    _updateFlutterPlayerState();
 
     tvPlayerController!.addListener(_updateTvPlayerState);
-    _updateTvPlayerState();
 
     // show controls for a short time and then hide
     _cancelAndRestartTimer();
@@ -91,13 +90,12 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
             flutterPlayerController!.value.position &&
         flutterPlayerController!.value.isPlaying) {
       DateTime now = DateTime.now();
-      var lag =
-          now.difference(lastVideoPlayerPositionUpdateTime).inMilliseconds;
+      Duration lag = now.difference(lastVideoPlayerPositionUpdateTime);
       logger.info("Same position detected with lag: $lag");
-      if (lag > LAGGING_THRESHOLD_IN_MILLISECONDS) {
+      if (lag > LAGGING_THRESHOLD) {
         isLagging = true;
         logger.info(
-            "Detected lag of > $LAGGING_THRESHOLD_IN_MILLISECONDS ms - showing loading indicator!");
+            "Detected lag of > $LAGGING_THRESHOLD ms - showing loading indicator!");
         if (mounted) {
           setState(() {});
         }
@@ -123,10 +121,11 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     if (tvPlayerController!.value.playbackOnTvStarted) {
       return;
     }
-    AppState? appWideState = context.read<AppState?>();
-    if (appWideState != null) {
-      appWideState.appDatabase
-          .updatePlaybackPosition(chewieController!.video!, position);
+    VideoProgressState? videoProgressState =
+        context.read<VideoProgressState?>();
+    if (videoProgressState != null) {
+      videoProgressState.updatePlaybackPosition(
+          chewieController!.video!.toVideoProgressEntity(), position);
     }
   }
 

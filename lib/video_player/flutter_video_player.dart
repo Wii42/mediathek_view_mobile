@@ -8,21 +8,22 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:flutter_ws/video_player/custom_video_controls.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../drift_database/app_database.dart';
+import '../global_state/video_progress_state.dart';
 import 'tv_player_controller.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
   final Video initialVideo;
   final VideoEntity? initialVideoEntity;
-  final VideoProgressEntity? initialProgressEntity;
   final AppState appSharedState;
 
   final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(this.appSharedState, this.initialVideo,
-      this.initialVideoEntity, this.initialProgressEntity,
+  FlutterVideoPlayer(
+      this.appSharedState, this.initialVideo, this.initialVideoEntity,
       {super.key});
 
   AppDatabase get databaseManager => appSharedState.appDatabase;
@@ -48,14 +49,12 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
   late CustomChewieController chewieController;
   late Video video;
   late VideoEntity? videoEntity;
-  late VideoProgressEntity? progressEntity;
   late bool isAlreadyPlayingDifferentVideoOnTV;
 
   @override
   void initState() {
     video = widget.initialVideo;
     videoEntity = widget.initialVideoEntity;
-    progressEntity = widget.initialProgressEntity;
     isAlreadyPlayingDifferentVideoOnTV =
         widget.isInitiallyPlayingDifferentVideoOnTV;
     videoUrl = getVideoUrl(widget.initialVideo, widget.initialVideoEntity);
@@ -67,8 +66,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     if (isAlreadyPlayingDifferentVideoOnTV) {
       return _showDialog(context);
     }
+    VideoProgressState videoProgressState =
+        Provider.of<VideoProgressState>(context, listen: false);
     initVideoPlayerController();
-    initTvVideoController();
+    initTvVideoController(videoProgressState);
     initChewieController();
     return PiPSwitcher(
         childWhenEnabled: CustomChewie(
@@ -106,14 +107,17 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
   }
 
-  void initTvVideoController() {
+  void initTvVideoController(VideoProgressState videoProgressState) {
     tvVideoController = TvPlayerController(
       widget.appSharedState.availableTvs,
       widget.appSharedState.samsungTVCastManager,
-      widget.appSharedState.appDatabase,
+      videoProgressState,
       videoUrl,
       widget.initialVideo ?? Video.fromVideoEntity(widget.initialVideoEntity!),
-      widget.initialProgressEntity?.progress ?? Duration.zero,
+      videoProgressState
+              .getVideoProgressEntity(widget.initialVideo.id!)
+              ?.progress ??
+          Duration.zero,
     );
 
     if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
@@ -221,12 +225,6 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             // get the video entity
             videoEntity = await widget.appSharedState.appDatabase
                 .getDownloadedVideo(widget.videoId);
-
-            if (widget.initialVideo.id != null) {
-              // get the video progress
-              progressEntity = await widget.appSharedState.appDatabase
-                  .getVideoProgressEntity(widget.initialVideo.id!);
-            }
 
             // start initializing players with the video playing on the TV
             setState(() {});

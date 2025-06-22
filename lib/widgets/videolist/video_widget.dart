@@ -9,9 +9,11 @@ import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:flutter_ws/widgets/videolist/video_detail_screen.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:logging/logging.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../drift_database/app_database.dart';
+import '../../global_state/video_progress_state.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
@@ -51,7 +53,6 @@ class VideoWidget extends StatefulWidget {
 
 class VideoWidgetState extends State<VideoWidget> {
   late final String heroUuid;
-  VideoProgressEntity? videoProgressEntity;
   VideoEntity? entity;
 
   @override
@@ -63,7 +64,6 @@ class VideoWidgetState extends State<VideoWidget> {
   void initState() {
     super.initState();
     heroUuid = Uuid().v1();
-    checkPlaybackProgress();
     checkIfAlreadyDownloaded();
   }
 
@@ -98,6 +98,10 @@ class VideoWidgetState extends State<VideoWidget> {
         alignment: Alignment.center,
         gaplessPlayback: true);
 
+    Duration? progress = context.select<VideoProgressState, Duration?>(
+        (progressState) =>
+            progressState.getVideoProgressEntity(widget.video.id!)?.progress);
+
     return VideoPreviewLayout(
       width: widget.width,
       thumbnailImage: Hero(
@@ -113,7 +117,7 @@ class VideoWidgetState extends State<VideoWidget> {
       ),
       videoInfoBottomBar: getBottomBar(
           Theme.of(context).textTheme,
-          videoProgressEntity,
+          progress,
           widget.video.id,
           widget.video.duration,
           widget.video.title ?? "",
@@ -150,13 +154,10 @@ class VideoWidgetState extends State<VideoWidget> {
           } else {
             // play video
             if (mounted) {
-              Util.playVideoHandler(context, widget.appWideState, entity,
-                      widget.video, videoProgressEntity)
+              Util.playVideoHandler(
+                      context, widget.appWideState, entity, widget.video)
                   .then((value) {
-                // setting state after the video player popped the Navigator context
-                // this reloads the video progress entity to show the playback progress
-                checkPlaybackProgress();
-                // also check if video is downloaded in the meantime
+                // check if video is downloaded in the meantime
                 checkIfAlreadyDownloaded();
               });
             }
@@ -186,7 +187,7 @@ class VideoWidgetState extends State<VideoWidget> {
 
   Widget getBottomBar(
       TextTheme textTheme,
-      VideoProgressEntity? playbackProgress,
+      Duration? playbackProgress,
       String? id,
       Duration? duration,
       String title,
@@ -195,8 +196,7 @@ class VideoWidgetState extends State<VideoWidget> {
       String assetPath) {
     return Column(
       children: <Widget>[
-        PlaybackProgressBar(
-            playbackProgress?.progress ?? Duration.zero, duration, true),
+        PlaybackProgressBar(playbackProgress ?? Duration.zero, duration, true),
         ClipRRect(
           borderRadius: BorderRadius.only(
               bottomLeft: VideoPreviewLayout.cornerClipping,
@@ -219,23 +219,6 @@ class VideoWidgetState extends State<VideoWidget> {
         ),
       ],
     );
-  }
-
-  void checkPlaybackProgress() async {
-    if (widget.video.id == null) {
-      widget.logger
-          .warning("Video ID is null, cannot check playback progress.");
-      return;
-    }
-    widget.appWideState.appDatabase
-        .getVideoProgressEntity(widget.video.id!)
-        .then((entity) {
-      widget.logger.info("Video has playback progress: ${widget.video.title!}");
-      if (videoProgressEntity == null && mounted) {
-        videoProgressEntity = entity;
-        setState(() {});
-      }
-    });
   }
 
   void checkIfAlreadyDownloaded() async {

@@ -7,7 +7,7 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:logging/logging.dart';
 
-import '../drift_database/app_database.dart';
+import '../global_state/video_progress_state.dart';
 import 'tv_video_player_value.dart';
 
 class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
@@ -15,7 +15,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   bool _isDisposed = false;
 
   SamsungTVCastManager samsungTVCastManager;
-  AppDatabase databaseManager;
+  VideoProgressState videoProgressState;
 
   /// The URI to the video file.
   final Uri? dataSource;
@@ -34,7 +34,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   TvPlayerController(
     List<String> availableTvs,
     this.samsungTVCastManager,
-    this.databaseManager,
+    this.videoProgressState,
     this.dataSource,
     this.video,
     this.startAt,
@@ -285,8 +285,8 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
         logger.info("Samsung TV video playback position $playbackPosition");
 
         // insert position
-        databaseManager.updatePlaybackPosition(
-            video, Duration(milliseconds: playbackPosition));
+        videoProgressState.updatePlaybackPosition(video.toVideoProgressEntity(),
+            Duration(milliseconds: playbackPosition));
 
         value = value.copyWith(
             playbackOnTvStarted: true,

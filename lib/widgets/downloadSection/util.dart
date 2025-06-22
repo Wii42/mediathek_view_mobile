@@ -7,11 +7,10 @@ import '../../model/video.dart';
 
 class Util {
   static List<Widget> getWatchHistoryItems(
-      Map<String?, VideoProgressEntity> videos, double width) {
+      List<VideoProgressEntity> videos, double width) {
     List<Widget> result = [];
-    var videoProgressEntities = videos.values.toList();
     for (var i = 0; i < videos.length; i++) {
-      Widget rect = getWatchHistoryItem(videoProgressEntities[i], width);
+      Widget rect = getWatchHistoryItem(videos[i], width);
       result.add(rect);
     }
     return result;

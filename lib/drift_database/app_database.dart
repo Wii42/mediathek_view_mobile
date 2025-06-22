@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:logging/logging.dart';
 
-import '../model/video.dart';
 import 'converters.dart';
 import 'tables.dart';
 
@@ -85,20 +84,28 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
-  Future<List<VideoProgressEntity>> getLastViewedVideos(int amount) async {
+  ProgressEntityListQuery _lastViewedVideos(int amount) {
     return managers.videoProgress
         .orderBy((o) => o.timestampLastViewed.desc())
-        .limit(amount)
-        .get();
+        .limit(amount);
   }
 
-  void updatePlaybackPosition(Video video, Duration position) {
-    getVideoProgressEntity(video.id!).then((entity) {
+  Future<List<VideoProgressEntity>> getLastViewedVideos(int amount) {
+    return _lastViewedVideos(amount).get();
+  }
+
+  Stream<List<VideoProgressEntity>> getLastViewedVideosStream(int amount) {
+    return _lastViewedVideos(amount).watch();
+  }
+
+  void updatePlaybackPosition(VideoProgressEntity video, Duration position,
+      {DateTime? lastViewed}) {
+    getVideoProgressEntity(video.id).then((entity) {
       if (entity == null) {
         // initial insert into database
-        _insertPlaybackPosition(video, position);
+        _insertPlaybackPosition(video, position, lastViewed: lastViewed);
       } else {
-        _updateProgress(video.id!, position);
+        _updateProgress(video.id, position, lastViewed: lastViewed);
       }
     });
   }
@@ -108,17 +115,18 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<int> insertVideoProgress(VideoProgressEntity entity) async {
-    return into(videoProgress)
-        .insert(entity.copyWith(timestampLastViewed: Value(DateTime.now())));
+    return into(videoProgress).insert(entity);
   }
 
   // initial insert into database containing all the video information
-  void _insertPlaybackPosition(Video video, Duration position) {
-    // get entity from video
-    VideoProgressEntity videoProgress = video.toVideoProgressEntity();
+  void _insertPlaybackPosition(VideoProgressEntity video, Duration position,
+      {DateTime? lastViewed}) {
+    // get entity from video;
 
-    insertVideoProgress(videoProgress.copyWith(progress: Value(position))).then(
-        (value) {
+    insertVideoProgress(video.copyWith(
+            progress: Value(position),
+            timestampLastViewed: Value(lastViewed ?? DateTime.now())))
+        .then((value) {
       logger
           .info("Successfully inserted progress entity for video ${video.id}");
     }, onError: (err, stackTrace) {
@@ -126,8 +134,10 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
-  void _updateProgress(String videoId, Duration position) {
-    updateVideoProgressEntity(videoId, position).then((rowsUpdated) {
+  void _updateProgress(String videoId, Duration position,
+      {DateTime? lastViewed}) {
+    updateVideoProgressEntity(videoId, position, lastViewed: lastViewed).then(
+        (rowsUpdated) {
       if (rowsUpdated < 1) {
         logger.warning("Could not update video progress. Rows Updated < 1");
       }
@@ -136,10 +146,11 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
-  Future<int> updateVideoProgressEntity(
-      String videoId, Duration position) async {
+  Future<int> updateVideoProgressEntity(String videoId, Duration position,
+      {DateTime? lastViewed}) async {
     return managers.videoProgress.filter((f) => f.id(videoId)).update((o) => o(
-        progress: Value(position), timestampLastViewed: Value(DateTime.now())));
+        progress: Value(position),
+        timestampLastViewed: Value(lastViewed ?? DateTime.now())));
   }
 
   Future<VideoEntity?> getDownloadedVideo(String? id) async {
@@ -155,3 +166,19 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 }
+
+typedef ProgressEntityListQuery = ProcessedTableManager<
+    _$AppDatabase,
+    $VideoProgressTable,
+    VideoProgressEntity,
+    $$VideoProgressTableFilterComposer,
+    $$VideoProgressTableOrderingComposer,
+    $$VideoProgressTableAnnotationComposer,
+    $$VideoProgressTableCreateCompanionBuilder,
+    $$VideoProgressTableUpdateCompanionBuilder,
+    (
+      VideoProgressEntity,
+      BaseReferences<_$AppDatabase, $VideoProgressTable, VideoProgressEntity>
+    ),
+    VideoProgressEntity,
+    PrefetchHooks Function()>;

@@ -6,8 +6,7 @@ import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/flutter_video_player.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../drift_database/app_database.dart'
-    show VideoEntity, VideoProgressEntity;
+import '../../../drift_database/app_database.dart' show VideoEntity;
 
 const ERROR_MSG_NOT_AVAILABLE = "Video nicht verfügbar";
 const ERROR_MSG_NO_INTERNET = "Keine Internet Verbindung";
@@ -52,12 +51,8 @@ class Util {
     return true;
   }
 
-  static Future<Object?> playVideoHandler(
-      BuildContext context,
-      AppState appState,
-      VideoEntity? entity,
-      Video video,
-      VideoProgressEntity? videoProgressEntity) async {
+  static Future<Object?> playVideoHandler(BuildContext context,
+      AppState appState, VideoEntity? entity, Video video) async {
     NavigatorState navigator = Navigator.of(context);
     // only check for internet connection when video is not downloaded
     bool preChecksSuccessful =
@@ -68,8 +63,7 @@ class Util {
 
     return navigator.push(MaterialPageRoute(
         builder: (BuildContext context) {
-          return FlutterVideoPlayer(
-              appState, video, entity, videoProgressEntity);
+          return FlutterVideoPlayer(appState, video, entity);
         },
         settings: RouteSettings(name: "VideoPlayer"),
         fullscreenDialog: false));

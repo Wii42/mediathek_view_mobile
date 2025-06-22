@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
 import 'package:flutter_ws/section/video_search_list_section.dart';
@@ -32,6 +33,9 @@ void main() async {
             create: (_) => VideoPreviewState(
                 localDirectory: appState.localDirectory,
                 targetPlatform: appState.targetPlatform)),
+        ChangeNotifierProvider<VideoProgressState>(
+          create: (_) => VideoProgressState(appState.appDatabase),
+        )
       ],
       child: MyApp(),
     ));

@@ -1,6 +1,7 @@
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/util/device_information.dart';
@@ -36,12 +37,10 @@ class VideoDetailScreen extends StatefulWidget {
 }
 
 class _VideoDetailScreenState extends State<VideoDetailScreen> {
-  VideoProgressEntity? videoProgressEntity;
   bool? isTablet;
 
   @override
   void didChangeDependencies() {
-    checkPlaybackProgress();
     super.didChangeDependencies();
   }
 
@@ -62,7 +61,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         widget.image, totalImageWidth, 16 / 9);
     widget.logger.info("Reduced height to: $height");
 
-    GestureDetector image = getImageSurface(totalImageWidth, height, appState);
+    Duration? progress = context.select<VideoProgressState, Duration?>(
+        (progressState) =>
+            progressState.getVideoProgressEntity(widget.video.id!)?.progress);
+
+    GestureDetector image =
+        getImageSurface(totalImageWidth, height, appState, progress);
 
     Widget downloadProgressBar = DownloadProgressBar(
       videoId: widget.video.id,
@@ -254,12 +258,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  GestureDetector getImageSurface(
-      double totalImageWidth, double height, AppState appState) {
+  GestureDetector getImageSurface(double totalImageWidth, double height,
+      AppState appState, Duration? progress) {
     Widget videoProgressBar = PlaybackProgressBar(
-        videoProgressEntity?.progress ?? Duration.zero,
-        widget.video.duration,
-        true);
+        progress ?? Duration.zero, widget.video.duration, true);
 
     return GestureDetector(
       child: AspectRatio(
@@ -292,13 +294,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       onTap: () async {
         // play video
         if (mounted) {
-          Util.playVideoHandler(context, appState, widget.entity, widget.video,
-                  videoProgressEntity)
-              .then((value) {
-            // setting state after the video player popped the Navigator context
-            // this reloads the video progress entity to show the playback progress
-            checkPlaybackProgress();
-          });
+          Util.playVideoHandler(context, appState, widget.entity, widget.video);
         }
       },
     );
@@ -322,21 +318,5 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             },
           ),
         ]));
-  }
-
-  void checkPlaybackProgress() async {
-    AppState appState = context.read<AppState>();
-    if (widget.video.id != null) {
-      appState.appDatabase
-          .getVideoProgressEntity(widget.video.id!)
-          .then((entity) {
-        widget.logger
-            .fine("Video has playback progress: ${widget.video.title!}");
-        videoProgressEntity = entity;
-        if (mounted) {
-          setState(() {});
-        }
-      });
-    }
   }
 }
