@@ -8,7 +8,6 @@ class VideoUtil {
   static String? getVideoPath(
       AppState appWideState, VideoEntity? videoEntity, Video video) {
     if (videoEntity != null && videoEntity.filePath != null) {
-      print("Filename: ${videoEntity.fileName}");
       if (appWideState.targetPlatform == TargetPlatform.android) {
         return "${videoEntity.filePath!}/${videoEntity.fileName!}";
       } else {

@@ -18,30 +18,16 @@ import '../util/countly.dart';
 class VideoListState extends ChangeNotifier {
   final Logger logger = Logger('VideoListState');
 
-  /// Saves which list tiles are currently extended.
-  final Set<String> _extendedListTiles;
   final Map<String, Image> _previewImages;
 
-  VideoListState(
-      {Set<String> extendedListTiles = const {},
-      Map<String, Image> previewImages = const {}})
-      : _extendedListTiles = {...extendedListTiles},
-        _previewImages = {...previewImages};
-
-  Set<String> get extendedListTiles => Set.unmodifiable(_extendedListTiles);
+  VideoListState({Map<String, Image> previewImages = const {}})
+      : _previewImages = {...previewImages};
 
   Map<String, Image> get previewImages => Map.unmodifiable(_previewImages);
 
   void addImagePreview(String videoId, Image preview) {
     logger.fine("Adding preview image to state for video with id $videoId");
     _previewImages.putIfAbsent(videoId, () => preview);
-    notifyListeners();
-  }
-
-  void updateExtendedListTile(String videoId) {
-    _extendedListTiles.contains(videoId)
-        ? _extendedListTiles.remove(videoId)
-        : _extendedListTiles.add(videoId);
     notifyListeners();
   }
 }
