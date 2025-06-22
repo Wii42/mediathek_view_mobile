@@ -50,7 +50,7 @@ class VideoWidget extends StatefulWidget {
 }
 
 class VideoWidgetState extends State<VideoWidget> {
-  late String heroUuid;
+  late final String heroUuid;
   VideoProgressEntity? videoProgressEntity;
   VideoEntity? entity;
 

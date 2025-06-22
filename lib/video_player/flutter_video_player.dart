@@ -21,8 +21,8 @@ class FlutterVideoPlayer extends StatefulWidget {
 
   final Logger logger = Logger('FlutterVideoPlayer');
 
-  FlutterVideoPlayer(BuildContext context, this.appSharedState,
-      this.initialVideo, this.initialVideoEntity, this.initialProgressEntity,
+  FlutterVideoPlayer(this.appSharedState, this.initialVideo,
+      this.initialVideoEntity, this.initialProgressEntity,
       {super.key});
 
   AppDatabase get databaseManager => appSharedState.appDatabase;

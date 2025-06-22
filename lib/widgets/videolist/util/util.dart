@@ -69,7 +69,7 @@ class Util {
     return navigator.push(MaterialPageRoute(
         builder: (BuildContext context) {
           return FlutterVideoPlayer(
-              context, appState, video, entity, videoProgressEntity);
+              appState, video, entity, videoProgressEntity);
         },
         settings: RouteSettings(name: "VideoPlayer"),
         fullscreenDialog: false));
