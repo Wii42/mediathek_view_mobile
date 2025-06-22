@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 
 import '../drift_database/app_database.dart' show VideoEntity;

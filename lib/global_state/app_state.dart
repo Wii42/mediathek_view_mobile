@@ -15,23 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../util/countly.dart';
 
-class VideoListState extends ChangeNotifier {
-  final Logger logger = Logger('VideoListState');
-
-  final Map<String, Image> _previewImages;
-
-  VideoListState({Map<String, Image> previewImages = const {}})
-      : _previewImages = {...previewImages};
-
-  Map<String, Image> get previewImages => Map.unmodifiable(_previewImages);
-
-  void addImagePreview(String videoId, Image preview) {
-    logger.fine("Adding preview image to state for video with id $videoId");
-    _previewImages.putIfAbsent(videoId, () => preview);
-    notifyListeners();
-  }
-}
-
 class AppState extends ChangeNotifier {
   final Logger logger = Logger('AppState');
 
@@ -45,7 +28,7 @@ class AppState extends ChangeNotifier {
   TargetPlatform? _targetPlatform;
   late final Directory? localDirectory;
   final DownloadManager downloadManager = DownloadManager();
-  late final AppDatabase databaseManager;
+  late final AppDatabase appDatabase;
   final VideoPreviewManager videoPreviewManager = VideoPreviewManager();
   late final SharedPreferences sharedPreferences;
   late final bool isPipAvailable;
@@ -115,7 +98,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> initDBAndDownloadManager() async {
-    databaseManager = AppDatabase();
+    appDatabase = AppDatabase();
     //await initializeDatabase().then((_) =>
     //    logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
@@ -173,8 +156,7 @@ class AppState extends ChangeNotifier {
   }
 
   void prefillFavoritedChannels() async {
-    List<ChannelFavorite> channels =
-        await databaseManager.getAllChannelFavorites();
+    List<ChannelFavorite> channels = await appDatabase.getAllChannelFavorites();
     logger.fine(
         "There are ${channels.length} favorited channels in the database");
     for (var entity in channels) {

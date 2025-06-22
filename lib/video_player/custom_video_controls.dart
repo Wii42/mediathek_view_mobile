@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'package:chewie/chewie.dart';
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:logging/logging.dart';
@@ -125,7 +125,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     }
     AppState? appWideState = context.read<AppState?>();
     if (appWideState != null) {
-      appWideState.databaseManager
+      appWideState.appDatabase
           .updatePlaybackPosition(chewieController!.video!, position);
     }
   }

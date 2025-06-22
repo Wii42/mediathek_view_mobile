@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/downloadSection/util.dart';
@@ -115,7 +115,7 @@ class WatchHistoryState extends State<WatchHistory> {
     //check for playback progress
     AppState appState = context.watch<AppState>();
     if (history == null || history!.isEmpty) {
-      return appState.databaseManager.getAllLastViewedVideos().then((all) {
+      return appState.appDatabase.getAllLastViewedVideos().then((all) {
         if (all.isNotEmpty) {
           history = all;
           setState(() {});

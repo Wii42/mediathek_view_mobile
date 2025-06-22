@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:flutter_ws/video_player/custom_video_controls.dart';
@@ -25,7 +25,7 @@ class FlutterVideoPlayer extends StatefulWidget {
       this.initialVideo, this.initialVideoEntity, this.initialProgressEntity,
       {super.key});
 
-  AppDatabase get databaseManager => appSharedState.databaseManager;
+  AppDatabase get databaseManager => appSharedState.appDatabase;
 
   String? get videoId => initialVideo.id ?? initialVideoEntity?.id;
 
@@ -110,7 +110,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     tvVideoController = TvPlayerController(
       widget.appSharedState.availableTvs,
       widget.appSharedState.samsungTVCastManager,
-      widget.appSharedState.databaseManager,
+      widget.appSharedState.appDatabase,
       videoUrl,
       widget.initialVideo ?? Video.fromVideoEntity(widget.initialVideoEntity!),
       widget.initialProgressEntity?.progress ?? Duration.zero,
@@ -219,12 +219,12 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             video = widget.appSharedState.tvCurrentlyPlayingVideo!;
 
             // get the video entity
-            videoEntity = await widget.appSharedState.databaseManager
+            videoEntity = await widget.appSharedState.appDatabase
                 .getDownloadedVideo(widget.videoId);
 
             if (widget.initialVideo.id != null) {
               // get the video progress
-              progressEntity = await widget.appSharedState.databaseManager
+              progressEntity = await widget.appSharedState.appDatabase
                   .getVideoProgressEntity(widget.initialVideo.id!);
             }
 

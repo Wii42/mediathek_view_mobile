@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/util/countly.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:logging/logging.dart';

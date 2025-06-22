@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/widgets/videolist/circular_progress_with_text.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';

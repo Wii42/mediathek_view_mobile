@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
@@ -227,7 +227,7 @@ class VideoWidgetState extends State<VideoWidget> {
           .warning("Video ID is null, cannot check playback progress.");
       return;
     }
-    widget.appWideState.databaseManager
+    widget.appWideState.appDatabase
         .getVideoProgressEntity(widget.video.id!)
         .then((entity) {
       widget.logger.info("Video has playback progress: ${widget.video.title!}");

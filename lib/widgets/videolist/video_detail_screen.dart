@@ -1,6 +1,6 @@
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/util/device_information.dart';
@@ -327,7 +327,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   void checkPlaybackProgress() async {
     AppState appState = context.read<AppState>();
     if (widget.video.id != null) {
-      appState.databaseManager
+      appState.appDatabase
           .getVideoProgressEntity(widget.video.id!)
           .then((entity) {
         widget.logger

@@ -4,7 +4,7 @@ import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
 import 'package:flutter_ws/section/video_search_list_section.dart';
@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import 'global_state/filter_menu_state.dart';
+import 'global_state/video_preview_state.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -27,7 +28,8 @@ void main() async {
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
-        ChangeNotifierProvider<VideoListState>(create: (_) => VideoListState())
+        ChangeNotifierProvider<VideoPreviewState>(
+            create: (_) => VideoPreviewState())
       ],
       child: MyApp(),
     ));

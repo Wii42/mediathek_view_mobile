@@ -5,10 +5,12 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
+import '../global_state/video_preview_state.dart';
 
 typedef TriggerStateReloadOnPreviewReceived = void Function(String? trigger);
 
@@ -31,7 +33,7 @@ class VideoPreviewManager {
   }
 
   Future<Image?> getImagePreview(
-      String videoId, VideoListState videoListState) async {
+      String videoId, VideoPreviewState videoListState) async {
     String thumbnailPath =
         getThumbnailPath(_appWideState.localDirectory!, videoId);
 
@@ -47,7 +49,7 @@ class VideoPreviewManager {
   }
 
   void startPreviewGeneration(
-      VideoListState videoListState,
+      VideoPreviewState videoListState,
       String? videoId,
       String? title,
       Uri url,
@@ -84,7 +86,7 @@ class VideoPreviewManager {
   }
 
   Future<String?> _createAndPersistThumbnail(
-      String videoId, Uri url, VideoListState videoListState) async {
+      String videoId, Uri url, VideoPreviewState videoListState) async {
     Uint8List? uint8list;
 
     io.Directory? directory = _appWideState.localDirectory;

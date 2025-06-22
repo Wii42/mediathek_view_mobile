@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/flutter_downloader_isolate_connection.dart';
 import 'package:logging/logging.dart';
@@ -50,7 +50,7 @@ class DownloadManager {
   late final AppState appState;
   late final FlutterDownloaderIsolateConnection backgroundIsolateConnection;
 
-  AppDatabase get databaseManager => appState.databaseManager;
+  AppDatabase get databaseManager => appState.appDatabase;
 
   //special case Android: remember Video to be able to resume download after grant of file system permission
   late Video rememberedFailedVideoDownload;
@@ -495,7 +495,7 @@ class DownloadManager {
     print(
         "Requested download of video with id ${video.id} and url ${video.url_video}");
 
-    AppDatabase databaseManager = appState.databaseManager;
+    AppDatabase databaseManager = appState.appDatabase;
 
     Countly.instance.events.recordEvent("DOWNLOAD_VIDEO", null, 1);
 

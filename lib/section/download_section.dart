@@ -1,7 +1,7 @@
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/channel_util.dart';
 import 'package:flutter_ws/util/cross_axis_count.dart';
@@ -114,7 +114,7 @@ class DownloadSectionState extends State<DownloadSection> {
 
   void loadAlreadyDownloadedVideosFromDb() async {
     List<VideoEntity> downloads =
-        await widget.appWideState.databaseManager.getAllDownloadedVideos();
+        await widget.appWideState.appDatabase.getAllDownloadedVideos();
 
     if (downloadedVideos.length != downloads.length) {
       widget.logger.info("Downloads changed");
@@ -129,7 +129,7 @@ class DownloadSectionState extends State<DownloadSection> {
   Future loadVideosWithPlaybackProgress() async {
     //check for playback progress
     if (videosWithPlaybackProgress.isEmpty) {
-      return widget.appWideState.databaseManager
+      return widget.appWideState.appDatabase
           .getLastViewedVideos(recentlyWatchedVideosLimit)
           .then((all) {
         if (all.isNotEmpty) {

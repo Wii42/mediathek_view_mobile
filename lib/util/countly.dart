@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:countly_flutter/countly_flutter.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 

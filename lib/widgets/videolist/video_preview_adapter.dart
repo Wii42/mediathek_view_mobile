@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/list_state_container.dart';
+import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/video.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../drift_database/app_database.dart';
+import '../../global_state/video_preview_state.dart';
 
 class VideoPreviewAdapter extends StatefulWidget {
   final Logger logger = Logger('VideoPreviewAdapter');
@@ -65,7 +66,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
       return Container();
     }
 
-    return Consumer2<AppState, VideoListState>(
+    return Consumer2<AppState, VideoPreviewState>(
       builder: (context, appState, videoListState, _) {
         if (videoListState.previewImages.containsKey(widget.video.id)) {
           widget.logger.info(
@@ -138,8 +139,8 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     );
   }
 
-  void requestPreview(AppState appState, VideoListState videoListState) {
-    appState.databaseManager.getDownloadedVideo(widget.video.id).then((entity) {
+  void requestPreview(AppState appState, VideoPreviewState videoListState) {
+    appState.appDatabase.getDownloadedVideo(widget.video.id).then((entity) {
       if (entity == null && !widget.previewNotDownloadedVideos) {
         return;
       }
@@ -148,7 +149,7 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
   }
 
   void requestThumbnailPicture(VideoEntity? entity, Video video,
-      AppState appState, VideoListState videoListState) {
+      AppState appState, VideoPreviewState videoListState) {
     String? url = VideoUtil.getVideoPath(appState, entity, video);
     if (url == null) {
       widget.logger.warning(
@@ -169,8 +170,8 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
     }
     if (mounted) {
       AppState appState = Provider.of<AppState>(context, listen: false);
-      VideoListState videoListState =
-          Provider.of<VideoListState>(context, listen: false);
+      VideoPreviewState videoListState =
+          Provider.of<VideoPreviewState>(context, listen: false);
       widget.logger.info("Preview received for video: ${widget.video.title!}");
       // get preview from file
       appState.videoPreviewManager
