@@ -499,11 +499,13 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         ),
       );
     }
+    //assert(_latestFlutterPlayerValue != null || _latestTvPlayerValue != null,
+    //    "Either _latestFlutterPlayerValue or _latestTvPlayerValue must not be null");
 
     GestureTapCallback gestureTapCallback;
-    if (_latestFlutterPlayerValue != null &&
-            _latestFlutterPlayerValue!.isPlaying ||
-        _latestTvPlayerValue!.isPlaying) {
+    if ((_latestFlutterPlayerValue != null &&
+            _latestFlutterPlayerValue!.isPlaying) ||
+        (_latestTvPlayerValue != null && _latestTvPlayerValue!.isPlaying)) {
       if (_hideStuff) {
         gestureTapCallback = _cancelAndRestartTimer;
       } else {

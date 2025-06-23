@@ -89,7 +89,15 @@ class AppState extends ChangeNotifier {
     // async execution to concurrently open database
     await getPlatformAndSetDirectory();
     await initDBAndDownloadManager();
-    isPipAvailable = await Floating().isPipAvailable;
+    if (targetPlatform == TargetPlatform.android) {
+      isPipAvailable = await Floating().isPipAvailable.then((value) {
+        logger.info("PIP is available: $value");
+        return value;
+      }, onError: (error, stacktrace) => logger.severe("$error:\n$stacktrace"));
+    } else {
+      isPipAvailable = false;
+      logger.info("PIP is not available on this platform");
+    }
 
     _initialized = true;
   }
@@ -126,10 +134,14 @@ class AppState extends ChangeNotifier {
     hasFilesystemPermission = hasPermission;
 
     Directory? directory;
-    if (targetPlatform == TargetPlatform.iOS) {
-      directory = await getApplicationDocumentsDirectory();
+    if (targetPlatform == TargetPlatform.android) {
+      directory = await getExternalStorageDirectory().then((dir) => dir,
+          onError: (error, stacktrace) =>
+              logger.severe("$error:\n$stacktrace"));
     } else {
-      directory = await getExternalStorageDirectory();
+      directory = await getApplicationDocumentsDirectory().then((dir) => dir,
+          onError: (error, stacktrace) =>
+              logger.severe("$error:\n$stacktrace"));
     }
     localDirectory = directory;
     logger.info("Local directory set to: ${localDirectory!.path}");

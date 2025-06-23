@@ -22,10 +22,13 @@ import 'global_state/filter_menu_state.dart';
 import 'global_state/video_preview_state.dart';
 
 void main() async {
+  print("starting app");
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
+    setupLogging();
     AppState appState = AppState();
     await appState.ensureInitialized();
+    print("AppState initialized");
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
@@ -42,20 +45,22 @@ void main() async {
   }, Countly.recordDartError);
 }
 
+void setupLogging() {
+  //Setup global log levels
+  Logger.root.level = Level.INFO;
+  Logger.root.onRecord.listen((LogRecord rec) {
+    if (kDebugMode) {
+      print('${rec.level.name}: ${rec.time}: ${rec.message}');
+    }
+  });
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     const title = 'MediathekViewMobile';
-
-    //Setup global log levels
-    Logger.root.level = Level.WARNING;
-    Logger.root.onRecord.listen((LogRecord rec) {
-      if (kDebugMode) {
-        print('${rec.level.name}: ${rec.time}: ${rec.message}');
-      }
-    });
 
     Uuid uuid = Uuid();
 
