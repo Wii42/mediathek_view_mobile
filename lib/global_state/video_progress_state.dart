@@ -13,6 +13,19 @@ class VideoProgressState extends ChangeNotifier {
   /// Set to keep track of which video ids have already been checked in the database,
   /// to avoid unnecessary database queries if null is returned.
   final Set<String> _alreadyCheckedInDb = {};
+
+  /// Map to keep track of the last thime the playback position was written to the database.
+  /// Used to avoid writing too often to the db.
+  final Map<String, DateTime> _playbackPositionWrittenToDb = {};
+  static const Duration _playbackPositionWriteCooldown = Duration(seconds: 5);
+
+  /// Map to keep track of the last time the playback position was notified to listeners.
+  /// Used to avoid notifying too often.
+  final Map<String, DateTime> _playbackPositionNotified = {};
+
+  static const Duration _playbackPositionNotifyCooldown =
+      Duration(milliseconds: 500);
+
   final Map<String, VideoProgressEntity> _videoProgressMap = {};
   final SplayTreeSet<VideoProgressEntity> _videoProgressSortedSet =
       SplayTreeSet<VideoProgressEntity>(
@@ -40,8 +53,18 @@ class VideoProgressState extends ChangeNotifier {
   void updatePlaybackPosition(VideoProgressEntity video, Duration position) {
     DateTime lastViewed = DateTime.now();
     _updateVideoProgress(video, position, lastViewed);
-    notifyListeners();
-    _db.updatePlaybackPosition(video, position, lastViewed: lastViewed);
+    if (!_playbackPositionNotified.containsKey(video.id) ||
+        DateTime.now().difference(_playbackPositionNotified[video.id]!) >=
+            _playbackPositionNotifyCooldown) {
+      notifyListeners();
+      _playbackPositionNotified[video.id] = DateTime.now();
+    }
+    if (!_playbackPositionWrittenToDb.containsKey(video.id) ||
+        DateTime.now().difference(_playbackPositionWrittenToDb[video.id]!) >=
+            _playbackPositionWriteCooldown) {
+      _db.updatePlaybackPosition(video, position, lastViewed: lastViewed);
+      _playbackPositionWrittenToDb[video.id] = DateTime.now();
+    }
   }
 
   VideoProgressEntity? getVideoProgressEntity(String id) {

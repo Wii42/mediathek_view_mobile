@@ -80,6 +80,12 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     tvPlayerController!.addListener(_updateTvPlayerState);
 
+    // Needed to avoid notifyListeners() during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateFlutterPlayerState();
+      _updateTvPlayerState();
+    });
+
     // show controls for a short time and then hide
     _cancelAndRestartTimer();
   }
