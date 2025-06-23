@@ -6,12 +6,13 @@ import 'package:logging/logging.dart';
 import '../drift_database/app_database.dart';
 import '../model/video.dart';
 import '../platform_channels/video_preview_manager.dart';
+import '../util/device_information.dart';
 import '../util/video.dart';
 
 class VideoPreviewState extends ChangeNotifier {
   final Logger logger = Logger('VideoListState');
   final VideoPreviewManager _videoPreviewManager;
-  final TargetPlatform? targetPlatform;
+  final AppPlatform? targetPlatform;
 
   final Map<String, Image> _previewImages;
 

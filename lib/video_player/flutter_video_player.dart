@@ -13,6 +13,7 @@ import 'package:video_player/video_player.dart';
 
 import '../drift_database/app_database.dart';
 import '../global_state/video_progress_state.dart';
+import '../util/device_information.dart';
 import 'tv_player_controller.dart';
 
 class FlutterVideoPlayer extends StatefulWidget {
@@ -120,7 +121,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           Duration.zero,
     );
 
-    if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
+    if (widget.appSharedState.targetPlatform == AppPlatform.android) {
       tvVideoController!.startTvDiscovery();
     }
 
@@ -156,7 +157,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
 
     String path;
-    if (widget.appSharedState.targetPlatform == TargetPlatform.android) {
+    if (widget.appSharedState.targetPlatform == AppPlatform.android) {
       path =
           "${widget.initialVideoEntity!.filePath!}/${widget.initialVideoEntity!.fileName!}";
     } else {

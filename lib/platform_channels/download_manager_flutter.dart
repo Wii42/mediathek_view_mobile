@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
@@ -12,6 +11,8 @@ import 'package:flutter_ws/platform_channels/flutter_downloader_isolate_connecti
 import 'package:logging/logging.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/collection.dart';
+
+import '../util/device_information.dart';
 
 typedef OnFailed = void Function(String? videoId);
 typedef OnComplete = void Function(String? videoId);
@@ -311,7 +312,7 @@ class DownloadManager {
     }
 
     Uri filepath;
-    if (appState.targetPlatform == TargetPlatform.iOS) {
+    if (appState.targetPlatform == AppPlatform.iOS) {
       filepath = Uri.file(
           "${appState.localDirectory!.path}/MediathekView/${entity.fileName}");
     } else {

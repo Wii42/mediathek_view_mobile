@@ -1,18 +1,18 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_ws/model/video.dart';
 
 import '../drift_database/app_database.dart' show VideoEntity;
+import 'device_information.dart';
 
 class VideoUtil {
   static String? getVideoPath(
       {required VideoEntity? videoEntity,
       required Video video,
       required Directory? localDirectory,
-      required TargetPlatform? targetPlatform}) {
+      required AppPlatform? targetPlatform}) {
     if (videoEntity != null && videoEntity.filePath != null) {
-      if (targetPlatform == TargetPlatform.android) {
+      if (targetPlatform == AppPlatform.android) {
         return "${videoEntity.filePath!}/${videoEntity.fileName!}";
       } else {
         return "${localDirectory!.path}/MediathekView/${videoEntity.fileName!}";

@@ -24,7 +24,7 @@ class AppState extends ChangeNotifier {
     this.favoriteChannels = const {},
   }) : _isCurrentlyPlayingOnTV = isCurrentlyPlayingOnTV;
 
-  TargetPlatform? _targetPlatform;
+  AppPlatform? _targetPlatform;
   late final Directory? localDirectory;
   final DownloadManager downloadManager = DownloadManager();
   late final AppDatabase appDatabase;
@@ -49,9 +49,9 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  TargetPlatform? get targetPlatform => _targetPlatform;
+  AppPlatform? get targetPlatform => _targetPlatform;
 
-  set targetPlatform(TargetPlatform? platform) {
+  set targetPlatform(AppPlatform? platform) {
     _targetPlatform = platform;
     notifyListeners();
   }
@@ -89,7 +89,7 @@ class AppState extends ChangeNotifier {
     // async execution to concurrently open database
     await getPlatformAndSetDirectory();
     await initDBAndDownloadManager();
-    if (targetPlatform == TargetPlatform.android) {
+    if (targetPlatform == AppPlatform.android) {
       isPipAvailable = await Floating().isPipAvailable.then((value) {
         logger.info("PIP is available: $value");
         return value;
@@ -103,6 +103,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> initDBAndDownloadManager() async {
+    logger.info("Initializing AppDatabase and DownloadManager");
     appDatabase = AppDatabase();
     //await initializeDatabase().then((_) =>
     //    logger.info("Database initialized: ${databaseManager.db != null}"));
@@ -134,7 +135,16 @@ class AppState extends ChangeNotifier {
     hasFilesystemPermission = hasPermission;
 
     Directory? directory;
-    if (targetPlatform == TargetPlatform.android) {
+    if (targetPlatform == AppPlatform.web) {
+      logger.warning("Web platform detected, no local directory available");
+      localDirectory = null;
+      return;
+    }
+    if (targetPlatform == null) {
+      logger.severe("Target platform is null, cannot set local directory");
+      return;
+    }
+    if (targetPlatform == AppPlatform.android) {
       directory = await getExternalStorageDirectory().then((dir) => dir,
           onError: (error, stacktrace) =>
               logger.severe("$error:\n$stacktrace"));
