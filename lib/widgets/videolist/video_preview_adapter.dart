@@ -66,7 +66,9 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
       return Selector<VideoPreviewState, Image?>(
           selector: (_, previewImageState) {
         return previewImageState.getPreviewImage(widget.video.id!,
-            createIfNotExists: true, video: widget.video, entity: videoEntity);
+            createIfNotExists: appState.canCreateThumbnail,
+            video: widget.video,
+            entity: videoEntity);
       }, builder: (context, previewImage, child) {
         // check if video is currently downloading
         appState.downloadManager

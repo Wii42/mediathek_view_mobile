@@ -182,4 +182,8 @@ class AppState extends ChangeNotifier {
       favoriteChannels.putIfAbsent(entity.channelName, () => entity);
     }
   }
+
+  bool get canCreateThumbnail =>
+      targetPlatform == AppPlatform.android ||
+      targetPlatform == AppPlatform.iOS;
 }

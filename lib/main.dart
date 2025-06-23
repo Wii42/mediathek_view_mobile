@@ -22,13 +22,11 @@ import 'global_state/filter_menu_state.dart';
 import 'global_state/video_preview_state.dart';
 
 void main() async {
-  print("starting app");
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
     setupLogging();
     AppState appState = AppState();
     await appState.ensureInitialized();
-    print("AppState initialized");
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
@@ -47,7 +45,7 @@ void main() async {
 
 void setupLogging() {
   //Setup global log levels
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((LogRecord rec) {
     if (kDebugMode) {
       print('${rec.level.name}: ${rec.time}: ${rec.message}');
