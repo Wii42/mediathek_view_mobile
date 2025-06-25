@@ -1,9 +1,8 @@
-import 'dart:collection';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '../drift_database/app_database.dart';
+import '../util/value_sorted_map.dart';
 
 class VideoProgressState extends ChangeNotifier {
   final AppDatabase _db;
@@ -26,10 +25,9 @@ class VideoProgressState extends ChangeNotifier {
   static const Duration _playbackPositionNotifyCooldown =
       Duration(milliseconds: 500);
 
-  final Map<String, VideoProgressEntity> _videoProgressMap = {};
-  final SplayTreeSet<VideoProgressEntity> _videoProgressSortedSet =
-      SplayTreeSet<VideoProgressEntity>(
-          _sortEntriesByLastWatched, _acceptEntryInSet);
+  final ValueSortedMap<String, VideoProgressEntity> _videoProgressMap =
+      ValueSortedMap<String, VideoProgressEntity>(
+          compare: _sortEntriesByLastWatched, isValidKey: _acceptEntryInSet);
 
   VideoProgressState(this._db);
 
@@ -37,14 +35,14 @@ class VideoProgressState extends ChangeNotifier {
     if (amount > _lastViewedVideosAmount || !_loadedAllFromDb) {
       _loadLastViewedFromDb(amount);
     }
-    return _videoProgressSortedSet.take(amount).toList();
+    return _videoProgressMap.getFirst(amount);
   }
 
   Future<void> _loadLastViewedFromDb(int amount) async {
     List<VideoProgressEntity> loadedEntities =
         await _db.getLastViewedVideos(amount);
     for (VideoProgressEntity entity in loadedEntities) {
-      _putIfAbsent(entity.id, entity);
+      _videoProgressMap.putIfAbsent(entity.id, entity);
     }
     _lastViewedVideosAmount = amount;
     notifyListeners();
@@ -68,7 +66,7 @@ class VideoProgressState extends ChangeNotifier {
   }
 
   VideoProgressEntity? getVideoProgressEntity(String id) {
-    VideoProgressEntity? entity = _videoProgressMap[id];
+    VideoProgressEntity? entity = _videoProgressMap.getByKey(id);
     if (entity == null &&
         !_loadedAllFromDb &&
         !_alreadyCheckedInDb.contains(id)) {
@@ -81,14 +79,14 @@ class VideoProgressState extends ChangeNotifier {
     if (!_loadedAllFromDb) {
       _loadAllLastViewedFromDb();
     }
-    return _videoProgressSortedSet.toList();
+    return _videoProgressMap.getAllSorted();
   }
 
   Future<void> _loadAllLastViewedFromDb() async {
     List<VideoProgressEntity> loadedEntities =
         await _db.getAllLastViewedVideos();
     for (VideoProgressEntity entity in loadedEntities) {
-      _putIfAbsent(entity.id, entity);
+      _videoProgressMap.putIfAbsent(entity.id, entity);
     }
     _loadedAllFromDb = true;
     notifyListeners();
@@ -107,28 +105,19 @@ class VideoProgressState extends ChangeNotifier {
     return key is VideoProgressEntity && key.timestampLastViewed != null;
   }
 
-  void _putIfAbsent(String videoId, VideoProgressEntity entity) {
-    if (!_videoProgressMap.containsKey(videoId)) {
-      _videoProgressMap[videoId] = entity;
-      _videoProgressSortedSet.add(entity);
-    }
-  }
-
   void _updateVideoProgress(
       VideoProgressEntity entity, Duration progress, DateTime lastViewed) {
     VideoProgressEntity newEntity = entity.copyWith(
       timestampLastViewed: Value(lastViewed),
       progress: Value(progress),
     );
-    _videoProgressMap[newEntity.id] = newEntity;
-    _videoProgressSortedSet.removeWhere((obj) => obj.id == newEntity.id);
-    _videoProgressSortedSet.add(newEntity);
+    _videoProgressMap.put(newEntity.id, newEntity);
   }
 
   Future<void> _loadFromDb(String id) async {
     VideoProgressEntity? loadedEntity = await _db.getVideoProgressEntity(id);
     if (loadedEntity != null) {
-      _putIfAbsent(loadedEntity.id, loadedEntity);
+      _videoProgressMap.putIfAbsent(loadedEntity.id, loadedEntity);
       notifyListeners();
     } else {
       _alreadyCheckedInDb.add(id);
