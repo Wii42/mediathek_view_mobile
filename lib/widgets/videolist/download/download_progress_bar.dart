@@ -33,7 +33,6 @@ class DownloadProgressBar extends StatefulWidget {
 }
 
 class _DownloadProgressBarState extends State<DownloadProgressBar> {
-  double downloadProgress = -1;
   DownloadValue? _latestDownloadValue;
   DownloadController? downloadController;
 
