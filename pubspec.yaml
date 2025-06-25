@@ -54,6 +54,7 @@ dev_dependencies:
   json_serializable: ^6.9.5
   build_runner: ^2.5.4
   drift_dev: ^2.27.0
+  dead_code_analyzer: ^1.1.0
 
 flutter_icons:
   ios: true

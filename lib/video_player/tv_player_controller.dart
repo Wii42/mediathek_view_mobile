@@ -192,26 +192,34 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
       var tvReadinessStream = samsungTVCastManager.getTvReadinessStream()!;
       tvConnectionSubscription = tvReadinessStream.listen((raw) {
         String connectionStatus = raw['status'];
+        TvStatus? tvStatus = TvStatus.tryFromString(connectionStatus);
         String tvName = raw['name'];
+        if (tvStatus == null) {
+          logger.warning(
+              "Samsung TV connection status event channel returned an unknown status: $connectionStatus for TV $tvName");
+          return;
+        }
         logger.info(
             "Samsung TV: received connection status $connectionStatus for TV $tvName");
-        switch (connectionStatus) {
-          case TvStatus.IS_SUPPORTED:
+        switch (tvStatus) {
+          case TvStatus.isSupported:
             {
-              value = value.copyWith(tvStatus: TvStatus.IS_SUPPORTED);
+              value = value.copyWith(tvStatus: TvStatus.isSupported);
             }
             break;
-          case TvStatus.CURRENTLY_CHECKING:
+          case TvStatus.currentlyChecking:
             {
-              value = value.copyWith(tvStatus: TvStatus.CURRENTLY_CHECKING);
+              value = value.copyWith(tvStatus: TvStatus.currentlyChecking);
             }
             break;
-          case TvStatus.UNSUPPORTED:
+          case TvStatus.unsupported:
             {
               value = value.copyWith(
-                  tvStatus: TvStatus.UNSUPPORTED,
+                  tvStatus: TvStatus.unsupported,
                   errorDescription: "Fernseher ist nicht unterstützt");
             }
+          case TvStatus.notYetChecked:
+            break;
         }
       }, onError: (e) {
         logger.severe("Samsung TV connection status returned an error: $e");
@@ -232,22 +240,29 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
     try {
       var stream = samsungTVCastManager.getTvPlayerStream()!;
       tvPlayerSubscription = stream.listen((raw) {
-        String playerStatus = raw['status'];
-        logger.info("Samsung TV: status: $playerStatus");
+        String playerStatusString = raw['status'];
+        TvPlayerStatus? playerStatus =
+            TvPlayerStatus.tryFromString(playerStatusString);
+        if (playerStatus == null) {
+          logger.warning(
+              "Samsung TV player event channel returned an unknown status: $playerStatusString");
+          return;
+        }
+        logger.info("Samsung TV: status: $playerStatusString");
         // reset, to be able to send another play request
         playRequestSend = false;
         switch (playerStatus) {
-          case TvPlayerStatus.PLAYING:
+          case TvPlayerStatus.playing:
             {
               value = value.copyWith(playbackOnTvStarted: true);
             }
             break;
-          case TvPlayerStatus.PAUSED:
+          case TvPlayerStatus.paused:
             {
               value = value.copyWith(isPlaying: false);
             }
             break;
-          case TvPlayerStatus.DISCONNECTED:
+          case TvPlayerStatus.disconnected:
             {
               value = value.copyWith(
                   isPlaying: false,
@@ -257,10 +272,14 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
               stopListeningToStreams();
             }
             break;
-          case TvPlayerStatus.STOPPED:
+          case TvPlayerStatus.stopped:
             {
               value = value.copyWith(isPlaying: false, isStopped: true);
             }
+          case TvPlayerStatus.muted:
+            break;
+          case TvPlayerStatus.unmuted:
+            break;
         }
       }, onError: (e) {
         logger.severe("Samsung TV  player event channel returned an error: $e");

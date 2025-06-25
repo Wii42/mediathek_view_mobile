@@ -1,12 +1,20 @@
-class TvPlayerStatus {
-  static const String PLAYING = "playing";
-  static const String PAUSED = "paused";
-  static const String STOPPED = "stopped";
-  static const String MUTED = "muted";
-  static const String UNMUTED = "unmuted";
-  static const String DISCONNECTED = "disconnected";
+import 'package:collection/collection.dart';
 
-  static Iterable<String> getValues() {
-    return [PLAYING, PAUSED, STOPPED, DISCONNECTED];
+enum TvPlayerStatus {
+  playing("playing"),
+  paused("paused"),
+  stopped("stopped"),
+  muted("muted"),
+  unmuted("unmuted"),
+  disconnected("disconnected");
+
+  final String value;
+
+  const TvPlayerStatus(this.value);
+
+  static TvPlayerStatus? tryFromString(String status) {
+    return TvPlayerStatus.values.firstWhereOrNull(
+      (e) => e.value == status,
+    );
   }
 }

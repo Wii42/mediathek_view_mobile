@@ -9,7 +9,7 @@ class TvVideoPlayerValue {
     this.isDisconnected = false,
     this.volume = 1.0,
     this.errorDescription,
-    this.tvStatus = TvStatus.NOT_YET_CHECKED,
+    this.tvStatus = TvStatus.notYetChecked,
     this.availableTvs = const [],
   });
 
@@ -34,7 +34,7 @@ class TvVideoPlayerValue {
   /// once video has been started on the TV it can be paused, resumed ...
   final bool playbackOnTvStarted;
 
-  final String tvStatus;
+  final TvStatus tvStatus;
 
   /// The current volume of the playback.
   final double volume;
@@ -51,13 +51,13 @@ class TvVideoPlayerValue {
   /// [errorDescription] should have information about the problem.
   bool get hasError => errorDescription != null;
 
-  bool get isCurrentlyCheckingTV => tvStatus == TvStatus.CURRENTLY_CHECKING;
+  bool get isCurrentlyCheckingTV => tvStatus == TvStatus.currentlyChecking;
 
-  bool get isTvSupported => tvStatus == TvStatus.IS_SUPPORTED;
+  bool get isTvSupported => tvStatus == TvStatus.isSupported;
 
-  bool get isTvUnsupported => tvStatus == TvStatus.UNSUPPORTED;
+  bool get isTvUnsupported => tvStatus == TvStatus.unsupported;
 
-  bool get hasAlreadyCheckedTv => tvStatus != TvStatus.NOT_YET_CHECKED;
+  bool get hasAlreadyCheckedTv => tvStatus != TvStatus.notYetChecked;
 
   /// Returns a new instance that has the same values as this current instance,
   /// except for any overrides passed in as arguments to [copyWidth].
@@ -68,7 +68,7 @@ class TvVideoPlayerValue {
     bool? isPlaying,
     bool? isStopped,
     bool? isDisconnected,
-    String? tvStatus,
+    TvStatus? tvStatus,
     double? volume,
     String? errorDescription,
     List<String>? availableTvs,

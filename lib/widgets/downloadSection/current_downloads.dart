@@ -27,13 +27,12 @@ class CurrentDownloads extends StatefulWidget {
 
 class _CurrentDownloadsState extends State<CurrentDownloads> {
   List<Video> currentDownloads = [];
-  Map<DownloadController, Function> downloadControllerToListener =
-      <DownloadController, Function>{};
+  Map<DownloadController, void Function()> downloadControllerToListener = {};
 
   @override
   void dispose() {
     downloadControllerToListener.forEach((controller, listener) {
-      controller.removeListener(listener as void Function());
+      controller.removeListener(listener);
       controller.dispose();
     });
     super.dispose();
