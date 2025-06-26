@@ -105,11 +105,13 @@ class VideoWidgetState extends State<VideoWidget> {
         tag: heroUuid,
         child: AnimatedCrossFade(
           firstChild: placeholderImage,
-          secondChild: widget.previewImage ?? placeholderImage,
+          secondChild: widget.previewImage ?? SizedBox(),
           crossFadeState: widget.previewImage == null
               ? CrossFadeState.showFirst
               : CrossFadeState.showSecond,
-          duration: const Duration(milliseconds: 750),
+          duration: const Duration(milliseconds: 250),
+          firstCurve: Curves.easeInOut,
+          secondCurve: Curves.easeInOut,
         ),
       ),
       videoInfoBottomBar: getBottomBar(
