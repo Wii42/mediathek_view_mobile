@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
@@ -27,6 +28,12 @@ void main() async {
     setupLogging();
     AppState appState = AppState();
     await appState.ensureInitialized();
+    VideoDownloadState? videoDownloadState;
+    if (appState.localDirectory != null && appState.targetPlatform != null) {
+      videoDownloadState = VideoDownloadState(appState.appDatabase,
+          appState.localDirectory!, appState.targetPlatform!);
+    }
+    await videoDownloadState?.initialize();
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
@@ -36,7 +43,10 @@ void main() async {
                 targetPlatform: appState.targetPlatform)),
         ChangeNotifierProvider<VideoProgressState>(
           create: (_) => VideoProgressState(appState.appDatabase),
-        )
+        ),
+        if (videoDownloadState != null)
+          ChangeNotifierProvider<VideoDownloadState>.value(
+              value: videoDownloadState),
       ],
       child: MyApp(),
     ));
@@ -202,7 +212,7 @@ class HomePageState extends State<MyHomePage>
       return _showGDPRDialog(context);
     }
 
-    downloadSection ??= DownloadSection(appWideState!);
+    downloadSection ??= DownloadSection();
 
     return Scaffold(
       backgroundColor: backgroundColor,

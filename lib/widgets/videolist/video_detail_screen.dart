@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/model/video.dart';
-import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
@@ -23,13 +22,11 @@ class VideoDetailScreen extends StatefulWidget {
   final Image image;
   final Video video;
   final VideoEntity? entity;
-  final bool isDownloading;
-  final bool isDownloaded;
   final String? heroUuid;
   final String? defaultImageAssetPath;
 
-  VideoDetailScreen(this.image, this.video, this.entity, this.isDownloading,
-      this.isDownloaded, this.heroUuid, this.defaultImageAssetPath,
+  VideoDetailScreen(this.image, this.video, this.entity, this.heroUuid,
+      this.defaultImageAssetPath,
       {super.key});
 
   @override
@@ -71,14 +68,13 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     Widget downloadProgressBar = DownloadProgressBar(
       videoId: widget.video.id,
       videoTitle: widget.video.title,
-      downloadManager: appState.downloadManager,
       isOnDetailScreen: true,
     );
 
     Widget layout;
     if (isTablet && orientation == Orientation.landscape) {
-      layout = buildTabletLandscapeLayout(totalImageWidth, height, image,
-          downloadProgressBar, appState.downloadManager);
+      layout = buildTabletLandscapeLayout(
+          totalImageWidth, height, image, downloadProgressBar);
     } else if (!isTablet && orientation == Orientation.landscape) {
       // mobile landscape -> only provide ability to play video. no title nothing
       layout = Container(color: Colors.grey[900], child: image);
@@ -88,8 +84,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       // first the title underneath
       // then rating
       // then description
-      layout = buildVerticalLayout(
-          image, downloadProgressBar, appState.downloadManager);
+      layout = buildVerticalLayout(image, downloadProgressBar);
     }
 
     return Scaffold(
@@ -109,12 +104,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  Column buildTabletLandscapeLayout(
-      double totalImageWidth,
-      double height,
-      GestureDetector image,
-      Widget downloadProgressBar,
-      DownloadManager downloadManager) {
+  Column buildTabletLandscapeLayout(double totalImageWidth, double height,
+      GestureDetector image, Widget downloadProgressBar) {
     Widget description = getDescription();
 
     double rowPaddingLeft = 10;
@@ -169,9 +160,6 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           margin: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
           child: DownloadSwitch(
               widget.video,
-              widget.isDownloading,
-              widget.isDownloaded,
-              downloadManager,
               widget.video.size != null ? filesize(widget.video.size) : "",
               isTablet),
         ),
@@ -179,8 +167,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     );
   }
 
-  Column buildVerticalLayout(GestureDetector image, Widget downloadProgressBar,
-      DownloadManager downloadManager) {
+  Column buildVerticalLayout(
+      GestureDetector image, Widget downloadProgressBar) {
     Widget sideBar = Container();
     if (widget.video.description != null &&
         widget.video.description!.isNotEmpty) {
@@ -227,9 +215,6 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           Divider(),
           DownloadSwitch(
               widget.video,
-              widget.isDownloading,
-              widget.isDownloaded,
-              downloadManager,
               widget.video.size != null ? filesize(widget.video.size) : "",
               isTablet),
           sideBar,

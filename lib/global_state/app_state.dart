@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/model/video.dart';
-import 'package:flutter_ws/platform_channels/download_manager_flutter.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:logging/logging.dart';
@@ -26,7 +24,7 @@ class AppState extends ChangeNotifier {
 
   AppPlatform? _targetPlatform;
   late final Directory? localDirectory;
-  final DownloadManager downloadManager = DownloadManager();
+  //late final DownloadManager downloadManager;
   late final AppDatabase appDatabase;
   late final SharedPreferences sharedPreferences;
   late final bool isPipAvailable;
@@ -83,12 +81,12 @@ class AppState extends ChangeNotifier {
       return;
     }
     logger.info("Initializing AppState");
-    FlutterDownloader.initialize(debug: true);
+    //FlutterDownloader.initialize(debug: true);
 
     logger.info("Initializing Filesystem Permission Manager");
     // async execution to concurrently open database
     await getPlatformAndSetDirectory();
-    await initDBAndDownloadManager();
+    await initDB();
     if (targetPlatform == AppPlatform.android) {
       isPipAvailable = await Floating().isPipAvailable.then((value) {
         logger.info("PIP is available: $value");
@@ -102,19 +100,12 @@ class AppState extends ChangeNotifier {
     _initialized = true;
   }
 
-  Future<void> initDBAndDownloadManager() async {
+  Future<void> initDB() async {
     logger.info("Initializing AppDatabase and DownloadManager");
     appDatabase = AppDatabase();
     //await initializeDatabase().then((_) =>
     //    logger.info("Database initialized: ${databaseManager.db != null}"));
     //start subscription to Flutter Download Manager
-    downloadManager.initialize(this);
-
-    //check for downloads that have been completed while flutter app was not running
-    downloadManager.syncCompletedDownloads();
-
-    //check for failed DownloadTasks and retry them
-    downloadManager.retryFailedDownloads();
 
     prefillFavoritedChannels();
     logger.info("initialized DB and DownloadManager");

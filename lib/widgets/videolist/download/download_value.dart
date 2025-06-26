@@ -23,7 +23,6 @@ class DownloadValue {
     String? videoId,
     double? progress,
     DownloadTaskStatus? status,
-    bool? isDownloading,
   }) {
     return DownloadValue(
       videoId: videoId ?? this.videoId,

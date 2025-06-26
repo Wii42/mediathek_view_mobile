@@ -38,14 +38,16 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<int> updateDownloadingVideoEntity(
-      {required String taskId,
+      {required String oldTaskId,
       Value<String?> filePath = const Value.absent(),
       Value<String?> fileName = const Value.absent(),
-      Value<DateTime?> timestampVideoSaved = const Value.absent()}) async {
-    return managers.videos.filter((f) => f.taskId(taskId)).update((o) => o(
+      Value<DateTime?> timestampVideoSaved = const Value.absent(),
+      Value<String> newTaskId = const Value.absent()}) async {
+    return managers.videos.filter((f) => f.taskId(oldTaskId)).update((o) => o(
         filePath: filePath,
         fileName: fileName,
-        timestampVideoSaved: timestampVideoSaved));
+        timestampVideoSaved: timestampVideoSaved,
+        taskId: newTaskId));
   }
 
   Future<VideoEntity?> getVideoEntity(String id) async {
@@ -82,6 +84,10 @@ class AppDatabase extends _$AppDatabase {
         .filter((f) => f.fileName.isNotNull() & f.fileName("").not())
         .orderBy((o) => o.timestampVideoSaved.desc())
         .get();
+  }
+
+  Future<List<VideoEntity>> getAllVideoEntities() async {
+    return managers.videos.orderBy((o) => o.timestampVideoSaved.desc()).get();
   }
 
   ProgressEntityListQuery _lastViewedVideos(int amount) {

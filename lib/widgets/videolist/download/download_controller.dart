@@ -14,8 +14,7 @@ class DownloadController extends ValueNotifier<DownloadValue> {
   final String? videoTitle;
   DownloadManager downloadManager;
 
-  DownloadController(
-      String? videoId, this.videoTitle, this.downloadManager)
+  DownloadController(String? videoId, this.videoTitle, this.downloadManager)
       : super(DownloadValue(videoId: videoId));
 
   void initialize() {
@@ -54,29 +53,25 @@ class DownloadController extends ValueNotifier<DownloadValue> {
 
   void onDownloaderFailed(String? videoId) {
     logger.info("Download video: ${videoId!} received 'failed' signal");
-    value =
-        value.copyWith(isDownloading: false, status: DownloadTaskStatus.failed);
+    value = value.copyWith(status: DownloadTaskStatus.failed);
   }
 
   void onDownloaderComplete(String? videoId) {
     logger.info("Download video: ${videoId!} received 'complete' signal");
-    value = value.copyWith(
-        isDownloading: false, status: DownloadTaskStatus.complete);
+    value = value.copyWith(status: DownloadTaskStatus.complete);
   }
 
   void onSubscriptionCanceled(String? videoId) {
     logger.info("Download video: ${videoId!} received 'canceled' signal");
-    value = value.copyWith(
-        isDownloading: false, status: DownloadTaskStatus.canceled);
+    value = value.copyWith(status: DownloadTaskStatus.canceled);
   }
 
-  void onDownloadStateChanged(String? videoId, DownloadTaskStatus? updatedStatus,
-      double updatedProgress) {
-    logger.info("Download: ${videoId!} status: $updatedStatus progress: $updatedProgress");
+  void onDownloadStateChanged(String? videoId,
+      DownloadTaskStatus? updatedStatus, double updatedProgress) {
+    logger.info(
+        "Download: ${videoId!} status: $updatedStatus progress: $updatedProgress");
 
     value = value.copyWith(
-        isDownloading: true,
-        status: DownloadTaskStatus.running,
-        progress: updatedProgress);
+        status: DownloadTaskStatus.running, progress: updatedProgress);
   }
 }

@@ -71,20 +71,20 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
             entity: videoEntity);
       }, builder: (context, previewImage, child) {
         // check if video is currently downloading
-        appState.downloadManager
-            .isCurrentlyDownloading(widget.video.id)
-            .then((value) {
-          if (value != null) {
-            if (isCurrentlyDownloading) {
-              widget.logger
-                  .info("Video is downloading:  ${widget.video.title!}");
-              isCurrentlyDownloading = true;
-              if (mounted) {
-                setState(() {});
-              }
-            }
-          }
-        });
+        //appState.downloadManager
+        //    .isCurrentlyDownloading(widget.video.id)
+        //    .then((value) {
+        //  if (value != null) {
+        //    if (isCurrentlyDownloading) {
+        //      widget.logger
+        //          .info("Video is downloading:  ${widget.video.title!}");
+        //      isCurrentlyDownloading = true;
+        //      if (mounted) {
+        //        setState(() {});
+        //      }
+        //    }
+        //  }
+        //});
 
         return Column(
           key: Key(uuid.v1()),
@@ -94,7 +94,6 @@ class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
               child: VideoWidget(
                 appState,
                 widget.video,
-                isCurrentlyDownloading,
                 widget.openDetailPage,
                 previewImage: previewImage,
                 defaultImageAssetPath: widget.defaultImageAssetPath,

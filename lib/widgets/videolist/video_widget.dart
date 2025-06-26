@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
@@ -30,13 +31,11 @@ class VideoWidget extends StatefulWidget {
   final double? presetAspectRatio;
   final List<Widget> overlayWidgets;
 
-  final bool isDownloading;
   final bool openDetailPage;
 
   VideoWidget(
     this.appWideState,
     this.video,
-    this.isDownloading,
     this.openDetailPage, {
     super.key,
     this.previewImage,
@@ -53,7 +52,6 @@ class VideoWidget extends StatefulWidget {
 
 class VideoWidgetState extends State<VideoWidget> {
   late final String heroUuid;
-  VideoEntity? entity;
 
   @override
   void dispose() {
@@ -64,7 +62,6 @@ class VideoWidgetState extends State<VideoWidget> {
   void initState() {
     super.initState();
     heroUuid = Uuid().v1();
-    checkIfAlreadyDownloaded();
   }
 
   @override
@@ -79,9 +76,7 @@ class VideoWidgetState extends State<VideoWidget> {
     Widget downloadProgressBar = DownloadProgressBar(
       videoId: widget.video.id,
       videoTitle: widget.video.title,
-      downloadManager: widget.appWideState.downloadManager,
       isOnDetailScreen: false,
-      triggerParentStateReload: checkIfAlreadyDownloaded,
     );
 
     String assetName;
@@ -101,6 +96,10 @@ class VideoWidgetState extends State<VideoWidget> {
     Duration? progress = context.select<VideoProgressState, Duration?>(
         (progressState) =>
             progressState.getVideoProgressEntity(widget.video.id!)?.progress);
+    DownloadInfo? downloadInfo =
+        context.select<VideoDownloadState?, DownloadInfo?>(
+            (downloadState) => downloadState?.getEntityForId(widget.video.id!));
+    VideoEntity? entity = downloadInfo?.videoEntity;
 
     return VideoPreviewLayout(
       width: widget.width,
@@ -123,7 +122,8 @@ class VideoWidgetState extends State<VideoWidget> {
           widget.video.title ?? "",
           widget.video.topic,
           widget.video.timestamp,
-          widget.defaultImageAssetPath!),
+          widget.defaultImageAssetPath!,
+          downloadInfo?.isDownloadedAlready() ?? false),
       aspectRatio:
           totalWidth > height ? totalWidth / height : height / totalWidth,
       overlayWidgets: [
@@ -144,8 +144,6 @@ class VideoWidgetState extends State<VideoWidget> {
                         widget.previewImage ?? placeholderImage,
                         widget.video,
                         entity,
-                        widget.isDownloading,
-                        entity != null,
                         heroUuid,
                         widget.defaultImageAssetPath,
                       );
@@ -155,11 +153,7 @@ class VideoWidgetState extends State<VideoWidget> {
             // play video
             if (mounted) {
               Util.playVideoHandler(
-                      context, widget.appWideState, entity, widget.video)
-                  .then((value) {
-                // check if video is downloaded in the meantime
-                checkIfAlreadyDownloaded();
-              });
+                  context, widget.appWideState, entity, widget.video);
             }
           }
         },
@@ -193,7 +187,8 @@ class VideoWidgetState extends State<VideoWidget> {
       String title,
       String? topic,
       DateTime? timestamp,
-      String assetPath) {
+      String assetPath,
+      bool isDownloaded) {
     return Column(
       children: <Widget>[
         PlaybackProgressBar(playbackProgress ?? Duration.zero, duration, true),
@@ -212,23 +207,12 @@ class VideoWidgetState extends State<VideoWidget> {
                   topic: topic,
                   timestamp: timestamp,
                   assetPath: assetPath,
-                  isDownloaded: entity != null,
+                  isDownloaded: isDownloaded,
                   titleMaxLines: 2),
             ),
           ),
         ),
       ],
     );
-  }
-
-  void checkIfAlreadyDownloaded() async {
-    widget.appWideState.downloadManager
-        .isAlreadyDownloaded(widget.video.id)
-        .then((entity) {
-      if (this.entity == null && mounted) {
-        this.entity = entity;
-        setState(() {});
-      }
-    });
   }
 }

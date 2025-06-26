@@ -18,7 +18,8 @@ class ValueSortedMap<K, V> {
     }
   }
 
-  V? getByKey(K key) {
+  V? getByKey(K? key) {
+    if (key == null) return null;
     return _videoProgressMap[key];
   }
 
@@ -43,5 +44,15 @@ class ValueSortedMap<K, V> {
 
   bool containsKey(K key) {
     return _videoProgressMap.containsKey(key);
+  }
+
+  bool remove(K key) {
+    V? value = _videoProgressMap.remove(key);
+    if (value != null) {
+      _videoProgressSortedSet.remove(value);
+      return true;
+    }
+
+    return false;
   }
 }
