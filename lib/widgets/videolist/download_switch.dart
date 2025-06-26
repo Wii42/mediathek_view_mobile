@@ -12,6 +12,8 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../model/download_info.dart';
+
 const ERROR_MSG = "Löschen fehlgeschlagen";
 
 class DownloadSwitch extends StatefulWidget {

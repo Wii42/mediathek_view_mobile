@@ -37,13 +37,13 @@ class FlutterDownloaderIsolateConnection {
   }
 
   void _onData(dynamic data) {
-    print("DATA RECEIVED IN UI: $data");
+    logger.finer("DATA RECEIVED IN UI: $data");
     final String taskId = (data as List<dynamic>)[0] as String;
     final DownloadTaskStatus status =
         DownloadTaskStatus.fromInt(data[1] as int);
     final int progress = data[2] as int;
 
-    print(
+    logger.finer(
         "Received download update with id: $taskId, status: $status, progress: $progress");
     onDownloadProgress(taskId, status, progress);
   }

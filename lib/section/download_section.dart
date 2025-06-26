@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 
 import '../drift_database/app_database.dart'
     show VideoEntity, VideoProgressEntity;
+import '../model/download_info.dart';
 import '../util/device_information.dart';
 
 const ERROR_MSG = "Deletion of video failed.";

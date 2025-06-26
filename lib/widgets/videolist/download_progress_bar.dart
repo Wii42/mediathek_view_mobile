@@ -3,6 +3,8 @@ import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/download_info.dart';
+
 class DownloadProgressBar extends StatelessWidget {
   final Logger logger = Logger('DownloadProgressBar');
   final int downloadManagerIdentifier = 1;

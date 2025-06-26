@@ -15,6 +15,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../drift_database/app_database.dart';
 import '../../global_state/video_progress_state.dart';
+import '../../model/download_info.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
