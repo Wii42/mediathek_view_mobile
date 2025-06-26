@@ -5,6 +5,8 @@ import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
+import 'countly_secrets.dart';
+
 class CountlyUtil {
   static final Uri COUNTLY_GITHUB = Uri.parse(
       "https://raw.githubusercontent.com/mediathekview/MediathekViewMobile/master/resources/countly/config/endpoint.txt");
@@ -29,6 +31,20 @@ class CountlyUtil {
     String countlyAppKey = responseList.elementAt(1);
 
     logger.info("Loaded Countly data from Github");
+
+    appWideState.hasCountlyPermission = consentGiven;
+    appWideState.sharedPreferences
+        .setString(SHARED_PREFERENCE_KEY_COUNTLY_API, countlyAPI);
+    appWideState.sharedPreferences
+        .setString(SHARED_PREFERENCE_KEY_COUNTLY_APP_KEY, countlyAppKey);
+
+    initializeCountly(logger, countlyAPI, countlyAppKey, consentGiven);
+  }
+
+  static Future<void> loadCountlyWithLocalSecrets(
+      Logger logger, AppState appWideState, bool consentGiven) async {
+    String countlyAppKey = CountlySecrets.app;
+    String countlyAPI = CountlySecrets.server;
 
     appWideState.hasCountlyPermission = consentGiven;
     appWideState.sharedPreferences

@@ -394,7 +394,7 @@ class HomePageState extends State<MyHomePage>
       actions: [
         FilledButton(
           onPressed: () {
-            CountlyUtil.loadCountlyInformationFromGithub(
+            CountlyUtil.loadCountlyWithLocalSecrets(
                 logger, appWideState!, false);
             setState(() {
               showCountlyGDPRDialog = false;
@@ -407,7 +407,7 @@ class HomePageState extends State<MyHomePage>
         ),
         TextButton(
           onPressed: () {
-            CountlyUtil.loadCountlyInformationFromGithub(
+            CountlyUtil.loadCountlyWithLocalSecrets(
                 logger, appWideState!, true);
             setState(() {
               showCountlyGDPRDialog = false;

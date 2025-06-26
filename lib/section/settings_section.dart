@@ -156,7 +156,7 @@ class _SettingsStateState extends State<SettingsState> {
                             widget.logger, countlyAPI, countlyAppKey, value);
                       }
                     }
-                    CountlyUtil.loadCountlyInformationFromGithub(
+                    CountlyUtil.loadCountlyWithLocalSecrets(
                         widget.logger, appWideState, value);
                   },
                   activeTrackColor: Colors.lightGreenAccent,
