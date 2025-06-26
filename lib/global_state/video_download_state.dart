@@ -258,7 +258,7 @@ class VideoDownloadState extends ChangeNotifier {
     Countly.instance.events.recordEvent("CANCEL_DOWNLOAD", null, 1);
 
     return FlutterDownloader.cancel(taskId: taskId).then((_) =>
-        FlutterDownloader.remove(taskId: taskId, shouldDeleteContent: false));
+        FlutterDownloader.remove(taskId: taskId, shouldDeleteContent: true));
   }
 
   Future<void> retryFailedDownloads() async {
