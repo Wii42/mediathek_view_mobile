@@ -5,7 +5,7 @@ import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
-import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
+import 'package:flutter_ws/widgets/videolist/download_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:flutter_ws/widgets/videolist/video_detail_screen.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';

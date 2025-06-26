@@ -6,7 +6,7 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
-import 'package:flutter_ws/widgets/videolist/download/download_progress_bar.dart';
+import 'package:flutter_ws/widgets/videolist/download_progress_bar.dart';
 import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
