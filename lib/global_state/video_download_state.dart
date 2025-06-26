@@ -46,7 +46,11 @@ class VideoDownloadState extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
-    await FlutterDownloader.initialize(debug: true);
+    await FlutterDownloader.initialize(debug: true).then((_) {
+      logger.info("FlutterDownloader initialized successfully");
+    }, onError: (e, stacktrace) {
+      logger.severe("Error initializing FlutterDownloader: $e\n$stacktrace");
+    });
     backgroundIsolateConnection.startListening();
     await initialLoadFromDbs();
 

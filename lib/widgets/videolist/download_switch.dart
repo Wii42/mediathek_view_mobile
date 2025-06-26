@@ -27,41 +27,25 @@ class DownloadSwitch extends StatefulWidget {
   DownloadSwitch(this.video, this.filesize, this.isTablet, {super.key});
 
   @override
-  State<DownloadSwitch> createState() {
-    return DownloadSwitchState();
-  }
+  State<DownloadSwitch> createState() => DownloadSwitchState();
 }
 
 class DownloadSwitchState extends State<DownloadSwitch> {
   bool permissionDenied = false;
   Uuid uuid = Uuid();
-  late bool isLivestreamVideo;
-
-  //DownloadValue? _latestDownloadValue;
-  //DownloadController? downloadController;
-
-  //late bool isDownloadedAlready;
-  //late bool isCurrentlyDownloading;
 
   DownloadSwitchState();
 
-  @override
-  void dispose() {
-    widget.logger.info("Disposing DownloadSwitch");
-
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    //isDownloadedAlready = widget.isDownloadedAlready;
-    //isCurrentlyDownloading = widget.isCurrentlyDownloading;
-    isLivestreamVideo = VideoUtil.isLivestreamVideo(widget.video);
-    super.initState();
-  }
+  bool get isLivestreamVideo => VideoUtil.isLivestreamVideo(widget.video);
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<VideoDownloadState?>(context) == null) {
+      widget.logger
+          .fine("VideoDownloadState is null, not rendering DownloadSwitch");
+      return SizedBox();
+    }
+
     DownloadInfo? downloadInfo =
         context.select<VideoDownloadState?, DownloadInfo?>(
             (downloadState) => downloadState?.getEntityForId(widget.video.id!));

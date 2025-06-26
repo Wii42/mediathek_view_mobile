@@ -11,6 +11,7 @@ import 'package:flutter_ws/section/download_section.dart';
 import 'package:flutter_ws/section/settings_section.dart';
 import 'package:flutter_ws/section/video_search_list_section.dart';
 import 'package:flutter_ws/util/countly.dart';
+import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/introSlider/intro_slider.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
@@ -29,11 +30,15 @@ void main() async {
     AppState appState = AppState();
     await appState.ensureInitialized();
     VideoDownloadState? videoDownloadState;
-    if (appState.localDirectory != null && appState.targetPlatform != null) {
+    if (appState.localDirectory != null &&
+        (appState.targetPlatform == AppPlatform.android ||
+            appState.targetPlatform == AppPlatform.iOS)) {
       videoDownloadState = VideoDownloadState(appState.appDatabase,
           appState.localDirectory!, appState.targetPlatform!);
     }
+    print("AppState initialized");
     await videoDownloadState?.initialize();
+    print("VideoDownloadState initialized");
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),

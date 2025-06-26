@@ -81,7 +81,6 @@ class AppState extends ChangeNotifier {
       return;
     }
     logger.info("Initializing AppState");
-    //FlutterDownloader.initialize(debug: true);
 
     logger.info("Initializing Filesystem Permission Manager");
     // async execution to concurrently open database
