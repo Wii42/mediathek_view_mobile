@@ -140,15 +140,8 @@ class VideoWidgetState extends State<VideoWidget> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) {
-                      return VideoDetailScreen(
-                        widget.previewImage ?? placeholderImage,
-                        widget.video,
-                        entity,
-                        heroUuid,
-                        widget.defaultImageAssetPath,
-                      );
-                    },
+                    builder: (context) =>
+                        videoDetailsPage(context, placeholderImage),
                     fullscreenDialog: true));
           } else {
             // play video
@@ -159,6 +152,22 @@ class VideoWidgetState extends State<VideoWidget> {
           }
         },
       ),
+    );
+  }
+
+  Widget videoDetailsPage(BuildContext context, Image placeholderImage) {
+    DownloadInfo? downloadInfo =
+        context.select<VideoDownloadState?, DownloadInfo?>(
+            (downloadState) => downloadState?.getEntityForId(widget.video.id!));
+    VideoEntity? entity = downloadInfo?.videoEntity;
+
+    return VideoDetailScreen(
+      widget.previewImage ?? placeholderImage,
+      widget.video,
+      entity,
+      heroUuid,
+      widget.defaultImageAssetPath,
+      isDownloaded: downloadInfo?.isDownloadedAlready() ?? false,
     );
   }
 

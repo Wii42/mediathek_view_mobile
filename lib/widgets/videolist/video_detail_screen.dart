@@ -16,30 +16,19 @@ import '../../drift_database/app_database.dart';
 import 'download_switch.dart';
 import 'meta_info_list_tile.dart';
 
-class VideoDetailScreen extends StatefulWidget {
+class VideoDetailScreen extends StatelessWidget {
   final Logger logger = Logger('VideoDetailScreen');
 
   final Image image;
   final Video video;
   final VideoEntity? entity;
+  final bool isDownloaded;
   final String? heroUuid;
   final String? defaultImageAssetPath;
 
   VideoDetailScreen(this.image, this.video, this.entity, this.heroUuid,
       this.defaultImageAssetPath,
-      {super.key});
-
-  @override
-  State<VideoDetailScreen> createState() => _VideoDetailScreenState();
-}
-
-class _VideoDetailScreenState extends State<VideoDetailScreen> {
-  bool? isTablet;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
+      {this.isDownloaded = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,40 +40,40 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
     if (isTablet && orientation == Orientation.landscape) {
       totalImageWidth = totalImageWidth * 0.7;
-      widget.logger.info("Reduced with to: $totalImageWidth");
+      logger.info("Reduced with to: $totalImageWidth");
     }
 
-    double height = VideoWidgetState.calculateImageHeight(
-        widget.image, totalImageWidth, 16 / 9);
-    widget.logger.info("Reduced height to: $height");
+    double height =
+        VideoWidgetState.calculateImageHeight(image, totalImageWidth, 16 / 9);
+    logger.info("Reduced height to: $height");
 
     Duration? progress = context.select<VideoProgressState, Duration?>(
         (progressState) =>
-            progressState.getVideoProgressEntity(widget.video.id!)?.progress);
+            progressState.getVideoProgressEntity(video.id!)?.progress);
 
-    GestureDetector image =
-        getImageSurface(totalImageWidth, height, appState, progress);
+    GestureDetector thumbnail =
+        getImageSurface(totalImageWidth, height, appState, progress, context);
 
     Widget downloadProgressBar = DownloadProgressBar(
-      videoId: widget.video.id,
-      videoTitle: widget.video.title,
+      videoId: video.id,
+      videoTitle: video.title,
       isOnDetailScreen: true,
     );
 
     Widget layout;
     if (isTablet && orientation == Orientation.landscape) {
       layout = buildTabletLandscapeLayout(
-          totalImageWidth, height, image, downloadProgressBar);
+          totalImageWidth, height, thumbnail, downloadProgressBar, context);
     } else if (!isTablet && orientation == Orientation.landscape) {
       // mobile landscape -> only provide ability to play video. no title nothing
-      layout = Container(color: Colors.grey[900], child: image);
+      layout = Container(color: Colors.grey[900], child: thumbnail);
       // layout = buildMobileLandscapeLayout();
     } else {
       // all portrait:  like youtube:
       // first the title underneath
       // then rating
       // then description
-      layout = buildVerticalLayout(image, downloadProgressBar);
+      layout = buildVerticalLayout(thumbnail, downloadProgressBar, context);
     }
 
     return Scaffold(
@@ -93,7 +82,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         child: CustomScrollView(
           slivers: <Widget>[
             SliverToBoxAdapter(
-              child: getAppBar(),
+              child: getAppBar(context),
             ),
             SliverToBoxAdapter(
               child: layout,
@@ -105,7 +94,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   Column buildTabletLandscapeLayout(double totalImageWidth, double height,
-      GestureDetector image, Widget downloadProgressBar) {
+      GestureDetector image, Widget downloadProgressBar, BuildContext context) {
     Widget description = getDescription();
 
     double rowPaddingLeft = 10;
@@ -158,20 +147,31 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         ),
         Container(
           margin: const EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
-          child: DownloadSwitch(
-              widget.video,
-              widget.video.size != null ? filesize(widget.video.size) : "",
-              isTablet),
+          child: Column(
+            children: [
+              DownloadSwitch(
+                video,
+                video.size != null ? filesize(video.size) : "",
+              ),
+              MetaInfoListTile(
+                  textTheme: Theme.of(context).textTheme,
+                  duration: video.duration,
+                  title: video.title ?? "",
+                  topic: video.topic,
+                  timestamp: video.timestamp,
+                  assetPath: defaultImageAssetPath!,
+                  isDownloaded: isDownloaded)
+            ],
+          ),
         ),
       ],
     );
   }
 
   Column buildVerticalLayout(
-      GestureDetector image, Widget downloadProgressBar) {
+      GestureDetector image, Widget downloadProgressBar, BuildContext context) {
     Widget sideBar = Container();
-    if (widget.video.description != null &&
-        widget.video.description!.isNotEmpty) {
+    if (video.description != null && video.description!.isNotEmpty) {
       sideBar = SingleChildScrollView(
         child: Container(
           margin: const EdgeInsets.only(left: 35, top: 10, right: 30),
@@ -181,7 +181,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               Text("Description",
                   style: headerTextStyle.copyWith(fontSize: 30)),
               Container(height: 10),
-              Text(widget.video.description!,
+              Text(video.description!,
                   style: subHeaderTextStyle.copyWith(fontSize: 20)),
             ],
           ),
@@ -206,17 +206,17 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               ]),
           MetaInfoListTile(
               textTheme: Theme.of(context).textTheme,
-              duration: widget.video.duration,
-              title: widget.video.title ?? "",
-              topic: widget.video.topic,
-              timestamp: widget.video.timestamp,
-              assetPath: widget.defaultImageAssetPath!,
-              isDownloaded: widget.entity != null),
+              duration: video.duration,
+              title: video.title ?? "",
+              topic: video.topic,
+              timestamp: video.timestamp,
+              assetPath: defaultImageAssetPath!,
+              isDownloaded: isDownloaded),
           Divider(),
           DownloadSwitch(
-              widget.video,
-              widget.video.size != null ? filesize(widget.video.size) : "",
-              isTablet),
+            video,
+            video.size != null ? filesize(video.size) : "",
+          ),
           sideBar,
         ]);
   }
@@ -224,14 +224,13 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   SingleChildScrollView getDescription() {
     var container = Container();
 
-    if (widget.video.description != null &&
-        widget.video.description!.isNotEmpty) {
+    if (video.description != null && video.description!.isNotEmpty) {
       container = Container(
         margin: EdgeInsets.only(left: 5),
         child: Column(
           children: <Widget>[
-            Text("Description", style: headerTextStyle.copyWith(fontSize: 30)),
-            Text(widget.video.description!,
+            Text("Beschreibung", style: headerTextStyle.copyWith(fontSize: 30)),
+            Text(video.description!,
                 style: subHeaderTextStyle.copyWith(fontSize: 20)),
           ],
         ),
@@ -244,9 +243,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   }
 
   GestureDetector getImageSurface(double totalImageWidth, double height,
-      AppState appState, Duration? progress) {
-    Widget videoProgressBar = PlaybackProgressBar(
-        progress ?? Duration.zero, widget.video.duration, true);
+      AppState appState, Duration? progress, BuildContext context) {
+    Widget videoProgressBar =
+        PlaybackProgressBar(progress ?? Duration.zero, video.duration, true);
 
     return GestureDetector(
       child: AspectRatio(
@@ -259,7 +258,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              Hero(tag: widget.heroUuid!, child: widget.image),
+              Hero(tag: heroUuid!, child: image),
               Positioned(
                 bottom: 0,
                 left: 0.0,
@@ -278,14 +277,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       ),
       onTap: () async {
         // play video
-        if (mounted) {
-          Util.playVideoHandler(context, appState, widget.entity, widget.video);
-        }
+        Util.playVideoHandler(context, appState, entity, video);
       },
     );
   }
 
-  AppBar getAppBar() {
+  AppBar getAppBar(BuildContext context) {
     return AppBar(
         backgroundColor: Color(0xffffbf00),
         titleSpacing: 0.0,

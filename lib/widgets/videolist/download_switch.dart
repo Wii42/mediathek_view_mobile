@@ -20,11 +20,10 @@ class DownloadSwitch extends StatefulWidget {
   final Logger logger = Logger('DownloadSwitch');
 
   final Video video;
-  final bool? isTablet;
 
   final String? filesize;
 
-  DownloadSwitch(this.video, this.filesize, this.isTablet, {super.key});
+  DownloadSwitch(this.video, this.filesize, {super.key});
 
   @override
   State<DownloadSwitch> createState() => DownloadSwitchState();
