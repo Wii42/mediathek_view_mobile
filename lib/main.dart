@@ -18,7 +18,6 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 import 'global_state/filter_menu_state.dart';
 import 'global_state/video_preview_state.dart';
@@ -36,9 +35,7 @@ void main() async {
       videoDownloadState = VideoDownloadState(appState.appDatabase,
           appState.localDirectory!, appState.targetPlatform!);
     }
-    print("AppState initialized");
     await videoDownloadState?.initialize();
-    print("VideoDownloadState initialized");
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider<AppState>.value(value: appState),
@@ -75,8 +72,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const title = 'MediathekViewMobile';
 
-    Uuid uuid = Uuid();
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -100,7 +95,6 @@ class MyApp extends StatelessWidget {
       ),
       title: title,
       home: MyHomePage(
-        key: Key(uuid.v1()),
         title: title,
       ),
     );
@@ -176,10 +170,9 @@ class HomePageState extends State<MyHomePage>
     aboutSection = SettingsSection();
 
     //keys
-    Uuid uuid = Uuid();
-    videoListKey = Key(uuid.v1());
-    statusBarKey = Key(uuid.v1());
-    indexingBarKey = Key(uuid.v1());
+    videoListKey = Key("videoListKey");
+    statusBarKey = Key("statusBarKey");
+    indexingBarKey = Key("indexingBarKey");
 
     checkForFirstStart();
 

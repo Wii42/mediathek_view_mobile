@@ -23,7 +23,7 @@ class VideoDetailScreen extends StatelessWidget {
   final Video video;
   final VideoEntity? entity;
   final bool isDownloaded;
-  final String? heroUuid;
+  final String heroUuid;
   final String? defaultImageAssetPath;
 
   VideoDetailScreen(this.image, this.video, this.entity, this.heroUuid,
@@ -258,7 +258,7 @@ class VideoDetailScreen extends StatelessWidget {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: <Widget>[
-              Hero(tag: heroUuid!, child: image),
+              Hero(tag: heroUuid, child: image),
               Positioned(
                 bottom: 0,
                 left: 0.0,
@@ -277,7 +277,7 @@ class VideoDetailScreen extends StatelessWidget {
       ),
       onTap: () async {
         // play video
-        Util.playVideoHandler(context, appState, entity, video);
+        Util.playVideoHandler(context, entity, video);
       },
     );
   }

@@ -6,7 +6,7 @@ import 'package:flutter_ws/widgets/videolist/loading_list_view.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
 import 'package:logging/logging.dart';
 
-class VideoListView extends StatefulWidget {
+class VideoListView extends StatelessWidget {
   final Logger logger = Logger('VideoListView');
 
   final List<Video>? videos;
@@ -29,28 +29,15 @@ class VideoListView extends StatefulWidget {
   });
 
   @override
-  State<VideoListView> createState() => _VideoListViewState();
-}
-
-class _VideoListViewState extends State<VideoListView> {
-  ScrollController? scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    widget.logger.info(
-        "Rendering Main Video List with list length ${widget.videos!.length}");
+    logger.info("Rendering Main Video List with list length ${videos!.length}");
 
-    if (widget.videos!.isEmpty && widget.amountOfVideosFetched == 0) {
-      widget.logger.info("No Videos found");
+    if (videos!.isEmpty && amountOfVideosFetched == 0) {
+      logger.info("No Videos found");
       return SliverToBoxAdapter(child: buildNoVideosFound());
-    } else if (widget.videos!.isEmpty) {
-      widget.logger.info(
-          "Searching: video list length : 0 & amountFetched: ${widget.amountOfVideosFetched}");
+    } else if (videos!.isEmpty) {
+      logger.info(
+          "Searching: video list length : 0 & amountFetched: $amountOfVideosFetched");
       return LoadingListPage();
     }
 
@@ -58,18 +45,18 @@ class _VideoListViewState extends State<VideoListView> {
     // do not overload CPU
     //bool previewNotDownloadedVideos = !DeviceInformation.isTablet(context);
 
-    var videoListItemBuilder = VideoListItemBuilder(widget.videos,
+    var videoListItemBuilder = VideoListItemBuilder(videos,
         showDeleteButton: false,
         openDetailPage: true,
-        queryEntries: widget.queryEntries,
-        amountOfVideosFetched: widget.amountOfVideosFetched,
-        totalResultSize: widget.totalResultSize,
-        currentQuerySkip: widget.currentQuerySkip);
+        queryEntries: queryEntries,
+        amountOfVideosFetched: amountOfVideosFetched,
+        totalResultSize: totalResultSize,
+        currentQuerySkip: currentQuerySkip);
 
     return VideoPreviewLayout.getVideoListViewLayout(
         context,
         SliverChildBuilderDelegate(videoListItemBuilder.itemBuilder,
-            childCount: widget.videos!.length));
+            childCount: videos!.length));
   }
 
   Center buildNoVideosFound() {

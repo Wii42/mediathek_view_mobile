@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/videolist/video_widget.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../drift_database/app_database.dart';
 import '../../global_state/video_preview_state.dart';
 
-class VideoPreviewAdapter extends StatefulWidget {
+class VideoPreviewAdapter extends StatelessWidget {
   final Logger logger = Logger('VideoPreviewAdapter');
   final Video video;
   final String? defaultImageAssetPath;
@@ -38,73 +38,45 @@ class VideoPreviewAdapter extends StatefulWidget {
     this.overlayWidgets = const [],
   });
 
-  @override
-  State<VideoPreviewAdapter> createState() => _VideoPreviewAdapterState();
-}
-
-class _VideoPreviewAdapterState extends State<VideoPreviewAdapter> {
-  VideoEntity? videoEntity;
-  VideoProgressEntity? videoProgressEntity;
-  bool isCurrentlyDownloading = false;
-
-  Size get size {
-    if (widget.size != null) {
-      return widget.size!;
+  Size getSize(BuildContext context) {
+    if (size != null) {
+      return size!;
     }
     return MediaQuery.of(context).size;
   }
 
-  final Uuid uuid = Uuid();
-
   @override
   Widget build(BuildContext context) {
-    if (!widget.isVisible) {
+    if (!isVisible) {
       return Container();
     }
 
-    return Consumer<AppState>(builder: (context, appState, _) {
-      return Selector<VideoPreviewState, Image?>(
-          selector: (_, previewImageState) {
-        return previewImageState.getPreviewImage(widget.video.id!,
-            createIfNotExists: appState.canCreateThumbnail,
-            video: widget.video,
-            entity: videoEntity);
-      }, builder: (context, previewImage, child) {
-        // check if video is currently downloading
-        //appState.downloadManager
-        //    .isCurrentlyDownloading(widget.video.id)
-        //    .then((value) {
-        //  if (value != null) {
-        //    if (isCurrentlyDownloading) {
-        //      widget.logger
-        //          .info("Video is downloading:  ${widget.video.title!}");
-        //      isCurrentlyDownloading = true;
-        //      if (mounted) {
-        //        setState(() {});
-        //      }
-        //    }
-        //  }
-        //});
+    bool canCreateThumbnail = context
+        .select<AppState, bool>((appState) => appState.canCreateThumbnail);
+    VideoEntity? videoEntity =
+        context.select<VideoDownloadState?, VideoEntity?>((downloadState) =>
+            downloadState?.getEntityForId(video.id!)?.videoEntity);
 
-        return Column(
-          key: Key(uuid.v1()),
-          children: <Widget>[
-            Container(
-              key: Key(uuid.v1()),
-              child: VideoWidget(
-                appState,
-                widget.video,
-                widget.openDetailPage,
-                previewImage: previewImage,
-                defaultImageAssetPath: widget.defaultImageAssetPath,
-                width: widget.width ?? size.width,
-                presetAspectRatio: widget.presetAspectRatio,
-                overlayWidgets: widget.overlayWidgets,
-              ),
-            ),
-          ],
-        );
-      });
+    return Selector<VideoPreviewState, Image?>(
+        selector: (_, previewImageState) {
+      return previewImageState.getPreviewImage(video.id!,
+          createIfNotExists: canCreateThumbnail,
+          video: video,
+          entity: videoEntity);
+    }, builder: (context, previewImage, child) {
+      return Column(
+        children: <Widget>[
+          VideoWidget(
+            video,
+            openDetailPage,
+            previewImage: previewImage,
+            defaultImageAssetPath: defaultImageAssetPath,
+            width: width ?? getSize(context).width,
+            presetAspectRatio: presetAspectRatio,
+            overlayWidgets: overlayWidgets,
+          ),
+        ],
+      );
     });
   }
 }

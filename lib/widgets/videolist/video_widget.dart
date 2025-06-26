@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/bars/playback_progress_bar.dart';
@@ -23,7 +22,6 @@ class VideoWidget extends StatefulWidget {
       Color(0xFF424242); // Colors.grey[800]
 
   final Logger logger = Logger('VideoWidget');
-  final AppState appWideState;
   final Video video;
   final String? mimeType;
   final String? defaultImageAssetPath;
@@ -35,7 +33,6 @@ class VideoWidget extends StatefulWidget {
   final bool openDetailPage;
 
   VideoWidget(
-    this.appWideState,
     this.video,
     this.openDetailPage, {
     super.key,
@@ -146,8 +143,7 @@ class VideoWidgetState extends State<VideoWidget> {
           } else {
             // play video
             if (mounted) {
-              Util.playVideoHandler(
-                  context, widget.appWideState, entity, widget.video);
+              Util.playVideoHandler(context, entity, widget.video);
             }
           }
         },

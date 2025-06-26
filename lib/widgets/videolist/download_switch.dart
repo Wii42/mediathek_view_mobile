@@ -10,44 +10,34 @@ import 'package:flutter_ws/widgets/videolist/util/util.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../model/download_info.dart';
 
 const ERROR_MSG = "Löschen fehlgeschlagen";
 
-class DownloadSwitch extends StatefulWidget {
+class DownloadSwitch extends StatelessWidget {
   final Logger logger = Logger('DownloadSwitch');
 
   final Video video;
 
   final String? filesize;
 
+  final bool permissionDenied = false;
+
   DownloadSwitch(this.video, this.filesize, {super.key});
 
-  @override
-  State<DownloadSwitch> createState() => DownloadSwitchState();
-}
-
-class DownloadSwitchState extends State<DownloadSwitch> {
-  bool permissionDenied = false;
-  Uuid uuid = Uuid();
-
-  DownloadSwitchState();
-
-  bool get isLivestreamVideo => VideoUtil.isLivestreamVideo(widget.video);
+  bool get isLivestreamVideo => VideoUtil.isLivestreamVideo(video);
 
   @override
   Widget build(BuildContext context) {
     if (Provider.of<VideoDownloadState?>(context) == null) {
-      widget.logger
-          .fine("VideoDownloadState is null, not rendering DownloadSwitch");
+      logger.fine("VideoDownloadState is null, not rendering DownloadSwitch");
       return SizedBox();
     }
 
     DownloadInfo? downloadInfo =
         context.select<VideoDownloadState?, DownloadInfo?>(
-            (downloadState) => downloadState?.getEntityForId(widget.video.id!));
+            (downloadState) => downloadState?.getEntityForId(video.id!));
     Widget download = Container();
     if (!isLivestreamVideo) {
       ActionChip downloadChip = ActionChip(
@@ -89,11 +79,9 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     }
 
     return Row(
-      key: Key(uuid.v1()),
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          key: Key(uuid.v1()),
           //padding: new EdgeInsets.only(left: 40.0, right: 12.0),
           child: download,
         ),
@@ -115,9 +103,8 @@ class DownloadSwitchState extends State<DownloadSwitch> {
       return;
     }
 
-    widget.logger
-        .info("Triggering download for video with id ${widget.video.id!}");
-    downloadVideo();
+    logger.info("Triggering download for video with id ${video.id!}");
+    downloadVideo(context);
   }
 
   bool downloadFailed(DownloadInfo? downloadInfo) {
@@ -128,14 +115,14 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     if (downloadInfo == null ||
         downloadInfo.downloadStatus == DownloadTaskStatus.undefined ||
         downloadInfo.downloadStatus == DownloadTaskStatus.canceled) {
-      return widget.filesize != null && widget.filesize!.isNotEmpty
-          ? "Download (${widget.filesize})"
+      return filesize != null && filesize!.isNotEmpty
+          ? "Download ($filesize)"
           : "Download";
     }
 
     if (downloadInfo.isDownloadedAlready()) {
-      return widget.filesize != null && widget.filesize!.isNotEmpty
-          ? "Löschen (${widget.filesize})"
+      return filesize != null && filesize!.isNotEmpty
+          ? "Löschen ($filesize)"
           : "Löschen";
     } else if (downloadInfo.isDownloading &&
         downloadInfo.downloadProgress == null) {
@@ -173,11 +160,11 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     }
   }
 
-  void downloadVideo() async {
-    widget.logger.info("Download video: ${widget.video.title!}");
+  void downloadVideo(BuildContext context) async {
+    logger.info("Download video: ${video.title!}");
     VideoDownloadState? downloadState = context.read<VideoDownloadState?>();
     if (downloadState == null) {
-      widget.logger.severe("VideoDownloadState is null, cannot download video");
+      logger.severe("VideoDownloadState is null, cannot download video");
       return;
     }
     AppState appState = context.read<AppState>();
@@ -186,58 +173,51 @@ class DownloadSwitchState extends State<DownloadSwitch> {
     if (connectivityResult.contains(ConnectivityResult.none)) {
       SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
       downloadState.setStatusForDownloadInfo(
-          widget.video.id!, DownloadTaskStatus.failed);
+          video.id!, DownloadTaskStatus.failed);
       return;
     }
 
     // also check if video url is accessible
-    final response = await http.head(widget.video.url_video!);
+    final response = await http.head(video.url_video!);
 
     if (response.statusCode >= 300) {
       SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);
       downloadState.setStatusForDownloadInfo(
-          widget.video.id!, DownloadTaskStatus.failed);
+          video.id!, DownloadTaskStatus.failed);
       return;
     }
 
-    widget.logger.fine("Video available, starting download...");
+    logger.fine("Video available, starting download...");
 
     // start download animation right away.
     downloadState.setStatusForDownloadInfo(
-        widget.video.id!, DownloadTaskStatus.enqueued);
+        video.id!, DownloadTaskStatus.enqueued);
     // check for filesystem permissions
     // if user grants permission, start downloading right away
     if (appState.hasFilesystemPermission) {
-      widget.logger
-          .fine("Filesystem permission already granted, starting download");
-      downloadState.checkAndRequestFilesystemPermissions(widget.video);
+      logger.fine("Filesystem permission already granted, starting download");
+      downloadState.checkAndRequestFilesystemPermissions(video);
       return;
     }
 
-    downloadState
-        .downloadFile(widget.video)
-        .then((video) => widget.logger.info("Downloaded request successfull"),
-            onError: (e) {
-      widget.logger.severe(
-          "Error starting download: ${widget.video.title!}. Error:  $e");
+    downloadState.downloadFile(video).then(
+        (video) => logger.info("Downloaded request successfull"), onError: (e) {
+      logger.severe("Error starting download: ${video.title!}. Error:  $e");
     });
   }
 
   void deleteVideo(VideoDownloadState? downloadState) {
     if (downloadState == null) {
-      widget.logger.severe("VideoDownloadState is null, cannot delete video");
+      logger.severe("VideoDownloadState is null, cannot delete video");
       return;
     }
-    downloadState
-        .deleteVideo(widget.video.id!)
-        .then((bool deletedSuccessfully) {
+    downloadState.deleteVideo(video.id!).then((bool deletedSuccessfully) {
       if (!deletedSuccessfully) {
-        widget.logger
-            .severe("Failed to delete video with title ${widget.video.title!}");
+        logger.severe("Failed to delete video with title ${video.title!}");
       }
 
       downloadState.setStatusForDownloadInfo(
-          widget.video.id!, DownloadTaskStatus.undefined,
+          video.id!, DownloadTaskStatus.undefined,
           progress: null);
     });
   }

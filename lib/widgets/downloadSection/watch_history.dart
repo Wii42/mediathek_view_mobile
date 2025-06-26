@@ -8,18 +8,11 @@ import 'package:provider/provider.dart';
 
 import '../../drift_database/app_database.dart' show VideoProgressEntity;
 
-class WatchHistory extends StatefulWidget {
+class WatchHistory extends StatelessWidget {
   final Logger logger = Logger('WatchHistory');
 
   WatchHistory({super.key});
 
-  @override
-  WatchHistoryState createState() {
-    return WatchHistoryState();
-  }
-}
-
-class WatchHistoryState extends State<WatchHistory> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

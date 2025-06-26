@@ -5,6 +5,7 @@ import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/util/show_snackbar.dart';
 import 'package:flutter_ws/video_player/flutter_video_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../../../drift_database/app_database.dart' show VideoEntity;
 
@@ -51,8 +52,8 @@ class Util {
     return true;
   }
 
-  static Future<Object?> playVideoHandler(BuildContext context,
-      AppState appState, VideoEntity? entity, Video video) async {
+  static Future<Object?> playVideoHandler(
+      BuildContext context, VideoEntity? entity, Video video) async {
     NavigatorState navigator = Navigator.of(context);
     // only check for internet connection when video is not downloaded
     bool preChecksSuccessful =
@@ -63,6 +64,7 @@ class Util {
 
     return navigator.push(MaterialPageRoute(
         builder: (BuildContext context) {
+          AppState appState = context.read<AppState>();
           return FlutterVideoPlayer(appState, video, entity);
         },
         settings: RouteSettings(name: "VideoPlayer"),
