@@ -61,12 +61,11 @@ class VideoDownloadState extends ChangeNotifier {
     DownloadInfo? entity = _downloads.getByKey(videoId);
     if (entity != null) {
       logger.fine("Cache hit for TaskID -> DownloadInfo");
-      _downloads.put(
-          videoId!,
-          entity.copyWith(
-            downloadStatus: status,
-            downloadProgress: progress,
-          ));
+      DownloadInfo newDownloadInfo = entity.copyWith(
+        downloadStatus: status,
+        downloadProgress: progress,
+      );
+      _downloads.put(videoId!, newDownloadInfo);
       switch (status) {
         case null:
         case DownloadTaskStatus.undefined:
@@ -76,11 +75,11 @@ class VideoDownloadState extends ChangeNotifier {
           notifyListeners();
           break;
         case DownloadTaskStatus.complete:
-          _handleCompletedDownload(entity);
+          _handleCompletedDownload(newDownloadInfo);
         case DownloadTaskStatus.failed:
-          _handleFailedDownload(entity.videoEntity);
+          _handleFailedDownload(newDownloadInfo.videoEntity);
         case DownloadTaskStatus.canceled:
-          _handleCanceledDownload(entity.videoEntity);
+          _handleCanceledDownload(newDownloadInfo.videoEntity);
       }
     } else {
       logger.severe(
@@ -114,6 +113,8 @@ class VideoDownloadState extends ChangeNotifier {
   }
 
   void _handleCompletedDownload(DownloadInfo downloadInfo) async {
+    logger.info(
+        "Download completed for video: ${downloadInfo.videoEntity.title}");
     Countly.instance.events.recordEvent("DOWNLOAD_COMPLETED", null, 1);
     VideoEntity entity = downloadInfo.videoEntity;
     String taskId = entity.taskId;
@@ -122,12 +123,16 @@ class VideoDownloadState extends ChangeNotifier {
         [];
 
     if (list.isEmpty) {
+      logger.severe(
+          "No DownloadTask found for taskId $taskId. This should not happen.");
       return;
     }
 
     DownloadTask task = list.first;
     assert(task.taskId == entity.taskId,
         "TaskId from DownloadManager does not match TaskId from FlutterDownloader");
+
+    logger.info("point1");
 
     await _updateDbAndCacheDownloadingVideo(
       downloadInfo,
@@ -146,6 +151,8 @@ class VideoDownloadState extends ChangeNotifier {
   }) async {
     VideoEntity entity = downloadInfo.videoEntity;
 
+    logger.info("point2");
+
     _downloads.put(
       entity.id,
       downloadInfo.copyWith(
@@ -153,11 +160,12 @@ class VideoDownloadState extends ChangeNotifier {
           filePath: filePath,
           fileName: fileName,
           timestampVideoSaved: timestampVideoSaved,
-          taskId: taskId.value,
+          taskId: taskId.present ? taskId.value : null,
         ),
       ),
     );
     notifyListeners();
+    logger.info("Done downloading: ${_downloads.getByKey(entity.id)}");
     // for ios, saving the directory is useless as the base directory gets mounted to a unique id every restart
     int rowsUpdated = await appDatabase.updateDownloadingVideoEntity(
         oldTaskId: entity.taskId,

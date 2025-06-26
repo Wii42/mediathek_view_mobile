@@ -140,8 +140,12 @@ class DownloadSwitchState extends State<DownloadSwitch> {
   }
 
   String getVideoDownloadText(DownloadInfo? downloadInfo) {
-    if (downloadInfo == null) {
-      return "";
+    if (downloadInfo == null ||
+        downloadInfo.downloadStatus == DownloadTaskStatus.undefined ||
+        downloadInfo.downloadStatus == DownloadTaskStatus.canceled) {
+      return widget.filesize != null && widget.filesize!.isNotEmpty
+          ? "Download (${widget.filesize})"
+          : "Download";
     }
 
     if (downloadInfo.isDownloadedAlready()) {
@@ -159,11 +163,6 @@ class DownloadSwitchState extends State<DownloadSwitch> {
       return "Waiting...";
     } else if (downloadInfo.isFailed) {
       return "Download failed";
-    } else if (downloadInfo.downloadStatus == DownloadTaskStatus.undefined ||
-        downloadInfo.downloadStatus == DownloadTaskStatus.canceled) {
-      return widget.filesize != null && widget.filesize!.isNotEmpty
-          ? "Download (${widget.filesize})"
-          : "Download";
     }
     return "Unknown status";
   }

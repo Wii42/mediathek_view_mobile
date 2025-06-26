@@ -117,3 +117,6 @@ coverage/
 
 # FVM Version Cache
 .fvm/
+
+# Countly Secrets
+lib/util/countly_secrets.dart
