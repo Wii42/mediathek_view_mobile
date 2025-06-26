@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';
 import 'package:flutter_ws/widgets/downloadSection/util.dart';
@@ -20,36 +20,21 @@ class WatchHistory extends StatefulWidget {
 }
 
 class WatchHistoryState extends State<WatchHistory> {
-  List<VideoProgressEntity>? history;
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     var orientation = MediaQuery.of(context).orientation;
 
-    loadWatchHistory();
-
-    if (history == null) {
-      return SizedBox(
-        width: size.width,
-        height: size.width / 16 * 9,
-        child: const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-            strokeWidth: 2.0,
-            backgroundColor: Colors.white,
-          ),
-        ),
-      );
-    }
+    List<VideoProgressEntity>? history =
+        context.watch<VideoProgressState>().getAllLastViewedVideos();
 
     List<Widget> watchHistoryWidgets;
     if (DeviceInformation.isTablet(context)) {
       watchHistoryWidgets = getHistoryGridList(
-          size.width, (orientation == Orientation.portrait) ? 2 : 3);
+          size.width, (orientation == Orientation.portrait) ? 2 : 3, history);
     } else {
       watchHistoryWidgets = getHistoryGridList(
-          size.width, orientation == Orientation.portrait ? 1 : 2);
+          size.width, orientation == Orientation.portrait ? 1 : 2, history);
     }
 
     var sliverAppBar = SliverAppBar(
@@ -111,20 +96,6 @@ class WatchHistoryState extends State<WatchHistory> {
     }
   }
 
-  Future loadWatchHistory() async {
-    //check for playback progress
-    AppState appState = context.watch<AppState>();
-    if (history == null || history!.isEmpty) {
-      return appState.appDatabase.getAllLastViewedVideos().then((all) {
-        if (all.isNotEmpty) {
-          history = all;
-          setState(() {});
-        }
-        return;
-      });
-    }
-  }
-
   String getWeekday(int weekday) {
     switch (weekday) {
       case 1:
@@ -145,11 +116,12 @@ class WatchHistoryState extends State<WatchHistory> {
     throw ArgumentError("Illegal argument, weekday must be between 0 and 7");
   }
 
-  List<Widget> getHistoryGridList(double width, int crossAxisCount) {
+  List<Widget> getHistoryGridList(
+      double width, int crossAxisCount, List<VideoProgressEntity> history) {
     Map<int, MapEntry<VideoProgressEntity, List<Widget>>> watchHistoryItems =
         {};
-    for (int i = 0; i < history!.length; i++) {
-      VideoProgressEntity progress = history!.elementAt(i);
+    for (int i = 0; i < history.length; i++) {
+      VideoProgressEntity progress = history.elementAt(i);
 
       int daysPassedSinceVideoWatched;
       try {

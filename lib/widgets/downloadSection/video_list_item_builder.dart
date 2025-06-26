@@ -105,24 +105,5 @@ class VideoListItemBuilder {
       elevation: 20,
       padding: EdgeInsets.all(10),
     );
-
-    //Center(
-    //  child: FloatingActionButton(
-    //    heroTag: null, // explicitly set to null
-    //    mini: true,
-    //    onPressed: () {
-    //      if (showDeleteButton) {
-    //        onRemoveVideo?.call(context, id);
-    //      }
-    //    },
-    //    backgroundColor: Colors.red[800],
-    //    highlightElevation: 10.0,
-    //    isExtended: true,
-    //    foregroundColor: Colors.black,
-    //    elevation: 7.0,
-    //    tooltip: "Delete",
-    //    child: Icon(Icons.delete_forever, color: Colors.white),
-    //  ),
-    //);
   }
 }

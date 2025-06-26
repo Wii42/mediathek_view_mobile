@@ -4,6 +4,7 @@ import 'package:countly_flutter/countly_flutter.dart';
 import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
+import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/video_player/custom_chewie_player.dart';
 import 'package:flutter_ws/video_player/custom_video_controls.dart';
@@ -26,8 +27,6 @@ class FlutterVideoPlayer extends StatefulWidget {
   FlutterVideoPlayer(
       this.appSharedState, this.initialVideo, this.initialVideoEntity,
       {super.key});
-
-  AppDatabase get databaseManager => appSharedState.appDatabase;
 
   String? get videoId => initialVideo.id ?? initialVideoEntity?.id;
 
@@ -224,8 +223,11 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
             video = widget.appSharedState.tvCurrentlyPlayingVideo!;
 
             // get the video entity
-            videoEntity = await widget.appSharedState.appDatabase
-                .getDownloadedVideo(widget.videoId);
+            VideoDownloadState? videoDownloadState =
+                context.read<VideoDownloadState?>();
+            videoEntity = videoDownloadState
+                ?.getEntityForId(widget.videoId!)
+                ?.videoEntity;
 
             // start initializing players with the video playing on the TV
             setState(() {});
