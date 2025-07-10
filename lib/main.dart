@@ -135,8 +135,8 @@ class HomePageState extends State<MyHomePage>
 
   //Tabs
   late VideoSearchListSection videoSearchListSection;
-  static DownloadSection? downloadSection;
-  SettingsSection? aboutSection;
+  late DownloadSection downloadSection;
+  late SettingsSection aboutSection;
 
   //intro slider
   late SharedPreferences prefs;
@@ -180,6 +180,8 @@ class HomePageState extends State<MyHomePage>
 
     videoSearchListSection = createVideoSearchListSection();
 
+    downloadSection = DownloadSection();
+
     super.initState();
   }
 
@@ -210,8 +212,6 @@ class HomePageState extends State<MyHomePage>
       return _showGDPRDialog(context);
     }
 
-    downloadSection ??= DownloadSection();
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: TabBarView(
@@ -221,8 +221,8 @@ class HomePageState extends State<MyHomePage>
             create: (_) => FilterMenuState(),
             child: videoSearchListSection,
           ),
-          downloadSection!,
-          aboutSection ?? SettingsSection()
+          downloadSection,
+          aboutSection,
         ],
       ),
       bottomNavigationBar: Theme(
