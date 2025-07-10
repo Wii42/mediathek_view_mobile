@@ -23,6 +23,10 @@ class AppDatabase extends _$AppDatabase {
         // database files in `getApplicationDocumentsDirectory()`.
         databaseDirectory: databaseDir,
       ),
+      web: DriftWebOptions(
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
     );
   }
 

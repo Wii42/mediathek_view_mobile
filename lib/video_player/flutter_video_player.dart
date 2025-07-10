@@ -68,9 +68,10 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     }
     VideoProgressState videoProgressState =
         Provider.of<VideoProgressState>(context, listen: false);
+    AppState appSharedState = context.watch<AppState>();
     initVideoPlayerController();
     initTvVideoController(videoProgressState);
-    initChewieController();
+    initChewieController(appSharedState.isPipAvailable);
     return PiPSwitcher(
         childWhenEnabled: CustomChewie(
           controller: chewieController,
@@ -184,9 +185,8 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
     videoController = VideoPlayerController.file(file);
   }
 
-  void initChewieController() {
+  void initChewieController(bool allowPictureInPicture) {
     chewieController = CustomChewieController(
-      context: context,
       videoPlayerController: videoController!,
       tvPlayerController: tvVideoController,
       looping: false,
@@ -196,7 +196,7 @@ class _FlutterVideoPlayerState extends State<FlutterVideoPlayer> {
           iconColor: Color(0xffffbf00)),
       fullScreenByDefault: true,
       allowedScreenSleep: false,
-      allowPictureInPicture: false,
+      allowPictureInPicture: allowPictureInPicture,
       isCurrentlyPlayingOnTV: widget.appSharedState.isCurrentlyPlayingOnTV,
       video: widget.initialVideo,
       aspectRatio: Rational(16, 9),

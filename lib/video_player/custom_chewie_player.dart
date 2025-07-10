@@ -72,7 +72,6 @@ class CustomChewieState extends State<CustomChewie> {
 /// `VideoPlayerController`.
 class CustomChewieController extends ChangeNotifier {
   CustomChewieController({
-    this.context,
     required this.videoPlayerController,
     this.tvPlayerController,
     this.aspectRatio,
@@ -105,8 +104,6 @@ class CustomChewieController extends ChangeNotifier {
   }
 
   final Logger logger = Logger('SamsungTvCastManager');
-
-  final BuildContext? context;
 
   /// The controller for the video you want to play
   final VideoPlayerController videoPlayerController;
@@ -171,7 +168,7 @@ class CustomChewieController extends ChangeNotifier {
   /// Defines if the mute control should be shown
   final bool allowMuting;
 
-  /// Defines if the button to allow picture-in-picture mode should be shown
+  /// Defines if picture-in-picture mode should be allowed
   final bool allowPictureInPicture;
 
   /// Defines the system overlays visible after exiting fullscreen
@@ -244,6 +241,10 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Enables the Picture-in-Picture mode when the user leaves the app.
   Future<PiPStatus> enableOnLeavePip() async {
+    if (!allowPictureInPicture) {
+      logger.warning("Picture-in-Picture mode is not allowed.");
+      return PiPStatus.disabled;
+    }
     PiPStatus status = await Floating()
         .enable(OnLeavePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
     logger.info("enableOnLeavePip called, status: $status");
@@ -252,6 +253,10 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Enables the Picture-in-Picture mode immediately.
   Future<PiPStatus> enableImmediatePip() async {
+    if (!allowPictureInPicture) {
+      logger.warning("Picture-in-Picture mode is not allowed.");
+      return PiPStatus.disabled;
+    }
     PiPStatus status = await Floating()
         .enable(ImmediatePiP(aspectRatio: aspectRatio ?? Rational.landscape()));
     logger.info("enableImmediatePip called, status: $status");
@@ -260,6 +265,10 @@ class CustomChewieController extends ChangeNotifier {
 
   /// Cancels the Picture-in-Picture mode when the user leaves the app.
   Future<void> cancelOnLeavePip() async {
+    if (!allowPictureInPicture) {
+      logger.warning("Picture-in-Picture mode is not allowed.");
+      return;
+    }
     await Floating().cancelOnLeavePiP();
     logger.info("cancelOnLeavePip called");
   }
