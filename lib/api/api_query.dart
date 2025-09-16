@@ -118,8 +118,8 @@ class APIQuery {
   }
 
   void execute(String query) {
-    http
-        .post(requestUri, body: query)
-        .then((value) => onDataReceived(value.body), onError: onError);
+    http.post(requestUri, body: query, headers: {
+      'Content-Type': 'application/json',
+    }).then((value) => onDataReceived(value.body), onError: onError);
   }
 }

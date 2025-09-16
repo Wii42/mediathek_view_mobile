@@ -175,7 +175,18 @@ class _VideoSearchListSectionState extends State<VideoSearchListSection>
       HapticFeedback.lightImpact();
     }
     logger.fine("start parsing response");
-    ApiResponse apiResponse = ApiResponse.fromJson(jsonDecode(data));
+    ApiResponse apiResponse;
+    try {
+      apiResponse = ApiResponse.fromJson(jsonDecode(data));
+    } catch (e, stacktrace) {
+      logger.severe("Error parsing API response: $e\n$stacktrace");
+      if (mounted) {
+        setState(() {
+          apiError = true;
+        });
+      }
+      apiResponse = ApiResponse(error: e);
+    }
     QueryResult? queryResult = apiResponse.result;
     logger.fine("finished parsing response");
     if (queryResult == null) {

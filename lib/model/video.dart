@@ -27,8 +27,8 @@ class Video {
   Uri? url_video_low;
   Uri? url_video_hd;
   @JsonKey(
-      fromJson: DateTimeParser.fromSecondsSinceEpochString,
-      toJson: DateTimeParser.toSecondsSinceEpochString)
+      fromJson: DateTimeParser.fromSecondsSinceEpoch,
+      toJson: DateTimeParser.toSecondsSinceEpoch)
   DateTime? filmlisteTimestamp;
   String? id;
 

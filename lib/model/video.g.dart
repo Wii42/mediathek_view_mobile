@@ -32,8 +32,8 @@ Video _$VideoFromJson(Map<String, dynamic> json) => Video(
       ..url_video_hd = json['url_video_hd'] == null
           ? null
           : Uri.parse(json['url_video_hd'] as String)
-      ..filmlisteTimestamp = DateTimeParser.fromSecondsSinceEpochString(
-          json['filmlisteTimestamp'] as String?);
+      ..filmlisteTimestamp = DateTimeParser.fromSecondsSinceEpoch(
+          json['filmlisteTimestamp'] as num?);
 
 Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
       'channel': instance.channel,
@@ -49,6 +49,6 @@ Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
       'url_video_low': instance.url_video_low?.toString(),
       'url_video_hd': instance.url_video_hd?.toString(),
       'filmlisteTimestamp':
-          DateTimeParser.toSecondsSinceEpochString(instance.filmlisteTimestamp),
+          DateTimeParser.toSecondsSinceEpoch(instance.filmlisteTimestamp),
       'id': instance.id,
     };
