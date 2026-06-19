@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/util/countly.dart';
@@ -99,8 +101,8 @@ class SettingsSection extends StatelessWidget {
   }
 
   Future<void> _launchURL(Uri url) async {
-    if (await canLaunchUrl(url) || true) {
-      //  || true is a workaround for android
+    if (await canLaunchUrl(url) || Platform.isAndroid || Platform.isIOS) {
+      //  workaround as else on Android and iOS it always returns false
       await launchUrl(url);
     } else {
       logger.warning('Could not launch $url');

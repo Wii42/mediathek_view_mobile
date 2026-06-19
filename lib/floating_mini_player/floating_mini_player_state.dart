@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class FloatingMiniPlayerState extends ChangeNotifier {
@@ -81,7 +83,7 @@ class FloatingMiniPlayerState extends ChangeNotifier {
   void updateScalingFactor(double factor) {
     if (_scalingFactor != factor) {
       _scalingFactor = factor;
-      print('SCALE: $_scalingFactor');
+      log('SCALE: $_scalingFactor');
       notifyListeners();
     }
   }
