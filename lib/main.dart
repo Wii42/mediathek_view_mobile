@@ -375,7 +375,7 @@ class HomePageState extends State<MyHomePage>
       //key: keys[1],
       Image.network(
         "https://raw.githubusercontent.com/Shashank02051997/FancyGifDialog-Android/master/GIF's/gif14.gif",
-        height: MediaQuery.of(context).size.height * 0.4,
+        height: MediaQuery.sizeOf(context).height * 0.4,
         fit: BoxFit.contain,
       ),
       entryAnimation: EntryAnimation.topLeft,

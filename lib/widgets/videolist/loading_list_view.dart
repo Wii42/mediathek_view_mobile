@@ -10,7 +10,7 @@ class LoadingListPage extends StatelessWidget {
 
   int determineNumberOfNeededTilesToFillScreen(
       BuildContext context, double listRowHeight) {
-    double height = MediaQuery.of(context).size.height;
+    double height = MediaQuery.sizeOf(context).height;
     // not filling whole available space
     return (height / listRowHeight).floor() - 1;
   }
@@ -28,7 +28,7 @@ class LoadingListPage extends StatelessWidget {
   Widget loadingVideoPreviewSkeleton(BuildContext context, int index) {
     Widget dummyChannelThumbnail = withShimmer(getDummyChannelThumbnail());
     return VideoPreviewLayout(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.sizeOf(context).width,
         thumbnailImage: withShimmer(Container(
             color: Colors.grey, constraints: BoxConstraints.expand())),
         videoInfoBottomBar: Container(

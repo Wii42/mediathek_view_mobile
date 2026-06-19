@@ -204,10 +204,8 @@ class VideoWidgetState extends State<VideoWidget> {
           borderRadius: BorderRadius.only(
               bottomLeft: VideoPreviewLayout.cornerClipping,
               bottomRight: VideoPreviewLayout.cornerClipping),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-            child: Container(
-              color: VideoWidget.bottomBarBackgroundColor.withAlpha(177),
+          child: Container(
+              color: VideoWidget.bottomBarBackgroundColor.withAlpha(200),
               child: MetaInfoListTile(
                   textTheme: textTheme,
                   duration: duration,
@@ -219,7 +217,6 @@ class VideoWidgetState extends State<VideoWidget> {
                   titleMaxLines: 2),
             ),
           ),
-        ),
       ],
     );
   }

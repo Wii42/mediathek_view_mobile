@@ -15,8 +15,8 @@ class WatchHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    Orientation orientation = MediaQuery.of(context).orientation;
+    Size size = MediaQuery.sizeOf(context);
+    Orientation orientation = MediaQuery.orientationOf(context);
 
     List<VideoProgressEntity>? history =
         context.watch<VideoProgressState>().getAllLastViewedVideos();

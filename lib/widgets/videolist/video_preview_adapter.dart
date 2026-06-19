@@ -42,7 +42,7 @@ class VideoPreviewAdapter extends StatelessWidget {
     if (size != null) {
       return size!;
     }
-    return MediaQuery.of(context).size;
+    return MediaQuery.sizeOf(context);
   }
 
   @override

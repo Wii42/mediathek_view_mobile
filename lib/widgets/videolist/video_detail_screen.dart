@@ -34,9 +34,9 @@ class VideoDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     AppState appState = context.watch<AppState>();
     bool isTablet = DeviceInformation.isTablet(context);
-    double totalImageWidth = MediaQuery.of(context).size.width;
+    double totalImageWidth = MediaQuery.sizeOf(context).width;
 
-    Orientation orientation = MediaQuery.of(context).orientation;
+    Orientation orientation = MediaQuery.orientationOf(context);
 
     if (isTablet && orientation == Orientation.landscape) {
       totalImageWidth = totalImageWidth * 0.7;
@@ -133,7 +133,7 @@ class VideoDetailScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 child: Container(
-                  width: MediaQuery.of(context).size.width -
+                  width: MediaQuery.sizeOf(context).width -
                       totalImageWidth -
                       rowPaddingLeft -
                       rowPaddingRight,
