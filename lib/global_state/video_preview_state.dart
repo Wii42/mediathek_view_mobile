@@ -104,7 +104,7 @@ class VideoPreviewState extends ChangeNotifier {
       return Future.value(null);
     }
     return _videoPreviewManager.generatePreview(video.id!, Uri.parse(url),
-        title: video.title);
+        title: video.title, videoDuration: video.duration);
   }
 
   int _hashVideoAndEntity(Video? video, VideoEntity? entity) {

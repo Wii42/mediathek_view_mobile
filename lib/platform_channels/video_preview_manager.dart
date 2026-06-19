@@ -46,7 +46,7 @@ class VideoPreviewManager {
   }
 
   Future<Image?> generatePreview(String videoId, Uri url,
-      {String? title}) async {
+      {String? title, Duration? videoDuration}) async {
     if (videosWaitingForPreview.contains(videoId)) {
       logger.info("Preview requested again for $videoId. Ignored.");
       return null;
@@ -54,13 +54,13 @@ class VideoPreviewManager {
 
     videosWaitingForPreview.add(videoId);
     logger.info("Request preview for: $title");
-    Image? img = await _generatePreview(videoId, url, title: title);
+    Image? img = await _generatePreview(videoId, url, title: title, videoDuration: videoDuration);
     videosWaitingForPreview.remove(videoId);
     return img;
   }
 
   Future<Image?> _generatePreview(String videoId, Uri url,
-      {String? title}) async {
+      {String? title, Duration? videoDuration}) async {
     io.Directory? directory = localDirectory;
 
     String? thumbnailPath;
@@ -89,7 +89,8 @@ class VideoPreviewManager {
       rawImageData = await VideoThumbnail.thumbnailData(
         video: url.toString(),
         imageFormat: ImageFormat.JPEG,
-        quality: 10,
+        quality: 60,
+        timeMs: (videoDuration?.inMilliseconds ?? 0) ~/ 10
       );
     } on PlatformException catch (e) {
       logger.severe("Create preview failed. Reason $e");
