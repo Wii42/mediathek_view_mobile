@@ -104,8 +104,8 @@ class _VideoProgressBarState extends State<CustomCupertinoVideoProgressBar> {
     return GestureDetector(
       child: Center(
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.sizeOf(context).height,
+          width: MediaQuery.sizeOf(context).width,
           color: Colors.transparent,
           child: CustomPaint(
             painter: painter,

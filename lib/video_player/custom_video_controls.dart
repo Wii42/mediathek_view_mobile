@@ -271,7 +271,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     final backgroundColor = widget.backgroundColor;
     final iconColor = widget.iconColor;
-    final orientation = MediaQuery.of(context).orientation;
+    final orientation = MediaQuery.orientationOf(context);
     final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
     final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
 
@@ -711,7 +711,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
         ],
       ),
     );
-    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+    if (MediaQuery.orientationOf(context) == Orientation.landscape) {
       // stay clear of the top bar
       return SafeArea(child: topBar);
     }

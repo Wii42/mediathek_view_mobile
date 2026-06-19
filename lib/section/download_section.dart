@@ -33,7 +33,7 @@ class DownloadSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.sizeOf(context);
 
     Widget loadingIndicator = getCurrentDownloadsTopBar(context);
 
@@ -74,7 +74,7 @@ class DownloadSection extends StatelessWidget {
 
                 // special case for mobile & portrait -> use swiper instead of horizontally scrolling list
                 if (!DeviceInformation.isTablet(context) &&
-                    MediaQuery.of(context).orientation ==
+                    MediaQuery.orientationOf(context) ==
                         Orientation.portrait) {
                   recentlyViewedSwiper = getMobileRecentlyWatchedSwiper(
                       context, watchHistoryItems);

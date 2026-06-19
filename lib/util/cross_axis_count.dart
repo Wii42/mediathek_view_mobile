@@ -5,7 +5,7 @@ import 'device_information.dart';
 class CrossAxisCount {
   static int getCrossAxisCount(BuildContext context) {
     bool isTablet = DeviceInformation.isTablet(context);
-    Orientation orientation = MediaQuery.of(context).orientation;
+    Orientation orientation = MediaQuery.orientationOf(context);
 
     if (isTablet && orientation == Orientation.portrait) {
       return 2;
