@@ -1,3 +1,5 @@
+import com.android.build.gradle.LibraryExtension
+
 allprojects {
     repositories {
         google()
@@ -14,6 +16,17 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+// Force video_thumbnail to SDK 34
+subprojects {
+    if (path == ":video_thumbnail") {
+        afterEvaluate {
+            extensions.configure<LibraryExtension>("android") {
+                compileSdk = 34
+            }
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
