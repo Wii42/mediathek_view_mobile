@@ -160,7 +160,7 @@ class _SettingsStateState extends State<SettingsState> {
                         widget.logger, appWideState, value);
                   },
                   activeTrackColor: Colors.lightGreenAccent,
-                  activeColor: Colors.green,
+                  activeThumbColor: Colors.green,
                 ),
               ),
             ),
