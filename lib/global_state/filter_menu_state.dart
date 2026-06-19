@@ -40,7 +40,7 @@ class SearchFilters extends ChangeNotifier {
   ///
   /// Analog tho [Map[filterId]].
   SearchFilter<T>? getByType<T extends Object>(SearchFilterType filterType) {
-    for (var filter in toList()) {
+    for (SearchFilter<Object> filter in toList()) {
       if (filter.filterType == filterType) {
         assert(filter.filterValue is T,
             "Filter value type mismatch: expected $T but got ${filter.filterValue.runtimeType}");

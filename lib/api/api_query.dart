@@ -81,7 +81,7 @@ class APIQuery {
     }
 
     if (searchFilters.channels != null) {
-      for (var channel in searchFilters.channels!.filterValue) {
+      for (String channel in searchFilters.channels!.filterValue) {
         queryFilters.add({
           "fields": ["channel"],
           "query": channel.toLowerCase()

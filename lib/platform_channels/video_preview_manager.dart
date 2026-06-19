@@ -144,7 +144,7 @@ class VideoPreviewManager {
   }
 
   Future<Uri?> _getPreviewUrlFromM3U8Video(Uri m3u8Url) async {
-    final response = await http.get(m3u8Url);
+    final http.Response response = await http.get(m3u8Url);
     if (response.statusCode != 200) {
       logger.severe(
           "Failed to fetch M3U8 file from $m3u8Url. Status code: ${response.statusCode}, body: ${response.body}");

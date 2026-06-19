@@ -77,9 +77,9 @@ class PlayerWithControls extends StatelessWidget {
   }
 
   double _calculateAspectRatio(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final width = size.width;
-    final height = size.height;
+    final Size size = MediaQuery.sizeOf(context);
+    final double width = size.width;
+    final double height = size.height;
 
     return width > height ? width / height : height / width;
   }

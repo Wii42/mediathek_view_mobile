@@ -42,8 +42,9 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var availableTVs = tvPlayerController!.value.availableTvs
-        .map((tv) => SimpleDialogOption(
+    List<SimpleDialogOption> availableTVs =
+        tvPlayerController!.value.availableTvs
+            .map((tv) => SimpleDialogOption(
               child: Text(tv,
                   style: TextStyle(color: Colors.white, fontSize: 18.0)),
               onPressed: () {

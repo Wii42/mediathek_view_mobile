@@ -169,7 +169,8 @@ class DownloadSwitch extends StatelessWidget {
     }
     AppState appState = context.read<AppState>();
     ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
-    var connectivityResult = await (Connectivity().checkConnectivity());
+    List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.none)) {
       SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
       downloadState.setStatusForDownloadInfo(
@@ -178,7 +179,7 @@ class DownloadSwitch extends StatelessWidget {
     }
 
     // also check if video url is accessible
-    final response = await http.head(video.url_video!);
+    final http.Response response = await http.head(video.url_video!);
 
     if (response.statusCode >= 300) {
       SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NOT_AVAILABLE);

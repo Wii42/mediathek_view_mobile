@@ -322,7 +322,7 @@ class HomePageState extends State<MyHomePage>
 
   Future<void> checkForFirstStart() async {
     prefs = await SharedPreferences.getInstance();
-    var firstStart = prefs.getBool('firstStart');
+    bool? firstStart = prefs.getBool('firstStart');
     if (firstStart == null) {
       logger.info("First start");
       setState(() {
@@ -333,7 +333,7 @@ class HomePageState extends State<MyHomePage>
 
   void setupCountly() async {
     logger.info("setup countly");
-    var sharedPreferences = await SharedPreferences.getInstance();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     appWideState!.setSharedPreferences(sharedPreferences);
 
     logger.info("setup countly -2");

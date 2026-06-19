@@ -24,7 +24,7 @@ class FlutterDownloaderIsolateConnection {
   }
 
   void _bindBackgroundIsolate() {
-    final isSuccess = IsolateNameServer.registerPortWithName(
+    final bool isSuccess = IsolateNameServer.registerPortWithName(
       _port.sendPort,
       'downloader_send_port',
     );

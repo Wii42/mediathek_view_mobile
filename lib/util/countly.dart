@@ -18,15 +18,16 @@ class CountlyUtil {
 
   static Future<void> loadCountlyInformationFromGithub(
       Logger logger, AppState appWideState, bool consentGiven) async {
-    var response = await http.get(COUNTLY_GITHUB);
+    http.Response response = await http.get(COUNTLY_GITHUB);
     if (response.statusCode != 200) {
       logger.warning("failed to setup countly");
       return;
     }
 
-    var responseList = LineSplitter().convert(utf8.decode(response.bodyBytes));
+    List<String> responseList =
+        LineSplitter().convert(utf8.decode(response.bodyBytes));
     // in this simple format it is assumed that the countly API is on line 1,
-    // the APP_KEY on line 2 and the tampering salt und line 3
+    // the APP_KEY on line 2 and the tampering salt on line 3
     String countlyAPI = responseList.elementAt(0);
     String countlyAppKey = responseList.elementAt(1);
 

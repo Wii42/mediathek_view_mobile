@@ -36,7 +36,7 @@ class VideoDetailScreen extends StatelessWidget {
     bool isTablet = DeviceInformation.isTablet(context);
     double totalImageWidth = MediaQuery.of(context).size.width;
 
-    var orientation = MediaQuery.of(context).orientation;
+    Orientation orientation = MediaQuery.of(context).orientation;
 
     if (isTablet && orientation == Orientation.landscape) {
       totalImageWidth = totalImageWidth * 0.7;

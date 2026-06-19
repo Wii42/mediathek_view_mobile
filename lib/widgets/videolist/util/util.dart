@@ -19,7 +19,8 @@ class Util {
       BuildContext context, VideoEntity? entity, Video? video) async {
     ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
     if (entity == null) {
-      var connectivityResult = await (Connectivity().checkConnectivity());
+      List<ConnectivityResult> connectivityResult =
+          await (Connectivity().checkConnectivity());
       if (connectivityResult.contains(ConnectivityResult.none)) {
         SnackbarActions.showError(scaffoldMessenger, ERROR_MSG_NO_INTERNET);
         return false;
@@ -28,7 +29,7 @@ class Util {
 
     //  video has been removed from the Mediathek already
     if (entity == null && video != null && video.url_video != null) {
-      final response = await http.head(video.url_video!);
+      final http.Response response = await http.head(video.url_video!);
 
       if (response.statusCode >= 300) {
         String? detailedError = switch (response.statusCode) {

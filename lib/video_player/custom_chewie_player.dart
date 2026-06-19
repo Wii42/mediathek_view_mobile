@@ -182,7 +182,7 @@ class CustomChewieController extends ChangeNotifier {
   final bool? isCurrentlyPlayingOnTV;
 
   static CustomChewieController of(BuildContext context) {
-    final chewieControllerProvider = context
+    final _ChewieControllerProvider chewieControllerProvider = context
         .dependOnInheritedWidgetOfExactType<_ChewieControllerProvider>()!;
 
     return chewieControllerProvider.controller;

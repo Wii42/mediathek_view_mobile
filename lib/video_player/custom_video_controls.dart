@@ -230,7 +230,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   @override
   void didChangeDependencies() {
     logger.info("didChangeDependencies called");
-    final oldController = chewieController;
+    final CustomChewieController? oldController = chewieController;
     chewieController = CustomChewieController.of(context);
     flutterPlayerController = chewieController!.videoPlayerController;
     tvPlayerController = chewieController!.tvPlayerController;
@@ -269,13 +269,14 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
     flutterPlayerController = chewieController!.videoPlayerController;
     tvPlayerController = chewieController!.tvPlayerController;
 
-    final backgroundColor = widget.backgroundColor;
-    final iconColor = widget.iconColor;
-    final orientation = MediaQuery.orientationOf(context);
-    final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
-    final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
+    final ui.Color backgroundColor = widget.backgroundColor;
+    final ui.Color iconColor = widget.iconColor;
+    final Orientation orientation = MediaQuery.orientationOf(context);
+    final double barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
+    final double buttonPadding =
+        orientation == Orientation.portrait ? 16.0 : 24.0;
 
-    final isLoading = isScrubbing ||
+    final bool isLoading = isScrubbing ||
         flutterPlayerController == null ||
         !flutterPlayerController!.value.isInitialized ||
         //flutterPlayerController!.value.isBuffering ||
@@ -357,9 +358,9 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   AnimatedOpacity _buildPlayerCenterControls(bool showLoadingIndicator) {
-    var skipBack = _buildSkipBack(60.0);
-    var playPause = _buildPlayPause(showLoadingIndicator, 60.0);
-    var skipForward = _buildSkipForward(60.0);
+    GestureDetector skipBack = _buildSkipBack(60.0);
+    GestureDetector playPause = _buildPlayPause(showLoadingIndicator, 60.0);
+    GestureDetector skipForward = _buildSkipForward(60.0);
 
     Row playerControlsRow = Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -605,7 +606,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   Widget _buildPosition(Color iconColor) {
-    final position = _latestFlutterPlayerValue != null
+    final Duration position = _latestFlutterPlayerValue != null
         ? _latestFlutterPlayerValue!.position
         : Duration(seconds: 0);
 
@@ -636,7 +637,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
   }
 
   Widget _buildRemaining(Color iconColor) {
-    final position = _latestFlutterPlayerValue != null
+    final Duration position = _latestFlutterPlayerValue != null
         ? _latestFlutterPlayerValue!.duration -
             _latestFlutterPlayerValue!.position
         : Duration(seconds: 0);
@@ -780,9 +781,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _skipBack() {
     _cancelAndRestartTimer();
-    final beginning = Duration(seconds: 0).inMilliseconds;
-    final skip = (_latestFlutterPlayerValue!.position - Duration(seconds: 15))
-        .inMilliseconds;
+    final int beginning = Duration(seconds: 0).inMilliseconds;
+    final int skip =
+        (_latestFlutterPlayerValue!.position - Duration(seconds: 15))
+            .inMilliseconds;
 
     Duration position = Duration(milliseconds: math.max(skip, beginning));
     if (_latestTvPlayerValue != null &&
@@ -796,9 +798,10 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
   void _skipForward() {
     _cancelAndRestartTimer();
-    final end = _latestFlutterPlayerValue!.duration.inMilliseconds;
-    final skip = (_latestFlutterPlayerValue!.position + Duration(seconds: 15))
-        .inMilliseconds;
+    final int end = _latestFlutterPlayerValue!.duration.inMilliseconds;
+    final int skip =
+        (_latestFlutterPlayerValue!.position + Duration(seconds: 15))
+            .inMilliseconds;
     var position = Duration(milliseconds: math.min(skip, end));
 
     if (_latestTvPlayerValue != null &&

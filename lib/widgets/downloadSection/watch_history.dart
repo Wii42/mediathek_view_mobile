@@ -16,7 +16,7 @@ class WatchHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    var orientation = MediaQuery.of(context).orientation;
+    Orientation orientation = MediaQuery.of(context).orientation;
 
     List<VideoProgressEntity>? history =
         context.watch<VideoProgressState>().getAllLastViewedVideos();
@@ -140,7 +140,8 @@ class WatchHistory extends StatelessWidget {
     // now for each day group create a grid
     List<Widget> resultList = [];
 
-    for (var entry in watchHistoryItems.entries) {
+    for (MapEntry<int, MapEntry<VideoProgressEntity, List<Widget>>> entry
+        in watchHistoryItems.entries) {
       String heading = getWatchHistoryHeading(
           entry.key, entry.value.key.timestampLastViewed!);
 

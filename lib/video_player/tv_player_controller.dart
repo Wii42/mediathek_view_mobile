@@ -189,7 +189,8 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
   // listeners should react according to the connection update
   void listenToConnectionStream() {
     try {
-      var tvReadinessStream = samsungTVCastManager.getTvReadinessStream()!;
+      Stream<dynamic> tvReadinessStream =
+          samsungTVCastManager.getTvReadinessStream()!;
       tvConnectionSubscription = tvReadinessStream.listen((raw) {
         String connectionStatus = raw['status'];
         TvStatus? tvStatus = TvStatus.tryFromString(connectionStatus);
@@ -238,7 +239,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToTVPlayerStream() {
     try {
-      var stream = samsungTVCastManager.getTvPlayerStream()!;
+      Stream<dynamic> stream = samsungTVCastManager.getTvPlayerStream()!;
       tvPlayerSubscription = stream.listen((raw) {
         String playerStatusString = raw['status'];
         TvPlayerStatus? playerStatus =
@@ -298,7 +299,8 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToTVPlaybackPosition() async {
     try {
-      var stream = samsungTVCastManager.getTvPlaybackPositionStream()!;
+      Stream<dynamic> stream =
+          samsungTVCastManager.getTvPlaybackPositionStream()!;
       tvPlaybackPositionSubscription = stream.listen((raw) {
         int playbackPosition = raw['playbackPosition'];
         logger.info("Samsung TV video playback position $playbackPosition");
@@ -332,7 +334,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToFoundTVStream() {
     try {
-      var stream = samsungTVCastManager.getFoundTVStream()!;
+      Stream<dynamic> stream = samsungTVCastManager.getFoundTVStream()!;
       foundTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
         logger.info("discovered TV with name $tvName");
@@ -360,7 +362,7 @@ class TvPlayerController extends ValueNotifier<TvVideoPlayerValue> {
 
   void listenToLostTvStream() {
     try {
-      var stream = samsungTVCastManager.getLostTVStream()!;
+      Stream<dynamic> stream = samsungTVCastManager.getLostTVStream()!;
       lostTVsSubscription = stream.listen((raw) {
         String tvName = raw['name'];
         logger.info("lost TV with name $tvName");

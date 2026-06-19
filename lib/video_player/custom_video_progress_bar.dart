@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:video_player/video_player.dart';
 
-import 'tv_player_controller.dart';
 import 'custom_chewie_player.dart';
+import 'tv_player_controller.dart';
 
 class CustomCupertinoVideoProgressBar extends StatefulWidget {
   CustomCupertinoVideoProgressBar(
@@ -195,7 +195,7 @@ class _ProgressBarPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final barHeight = 6.0;
     final handleHeight = 11.0;
-    final baseOffset = size.height / 2 - barHeight / 2.0;
+    final double baseOffset = size.height / 2 - barHeight / 2.0;
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(

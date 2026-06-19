@@ -25,7 +25,8 @@ class _RangeSliderState extends State<VideoLengthSlider> {
 
   @override
   void initState() {
-    final originalCallback = widget.initialSearchFilter.handleTabCallback;
+    final void Function(SearchFilterType) originalCallback =
+        widget.initialSearchFilter.handleTabCallback;
     searchFilter =
         widget.initialSearchFilter.copyWith(handleTabCallback: (filter) {
       originalCallback(filter);
