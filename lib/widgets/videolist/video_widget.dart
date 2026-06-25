@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 import '../../drift_database/app_database.dart';
 import '../../global_state/video_progress_state.dart';
 import '../../model/download_info.dart';
+import '../../util/cross_axis_count.dart';
 import 'meta_info_list_tile.dart';
 
 class VideoWidget extends StatefulWidget {
@@ -98,6 +99,8 @@ class VideoWidgetState extends State<VideoWidget> {
             (downloadState) => downloadState?.getEntityForId(widget.video.id!));
     VideoEntity? entity = downloadInfo?.videoEntity;
 
+    int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
+
     return VideoPreviewLayout(
       width: widget.width,
       thumbnailImage: Hero(
@@ -122,7 +125,9 @@ class VideoWidgetState extends State<VideoWidget> {
           widget.video.topic,
           widget.video.timestamp,
           widget.defaultImageAssetPath!,
-          downloadInfo?.isDownloadedAlready() ?? false),
+          downloadInfo?.isDownloadedAlready() ?? false,
+        titleMaxLines: crossAxisCount == 1? 5 :1,
+      ),
       aspectRatio:
           totalWidth > height ? totalWidth / height : height / totalWidth,
       overlayWidgets: [
@@ -195,7 +200,7 @@ class VideoWidgetState extends State<VideoWidget> {
       String? topic,
       DateTime? timestamp,
       String assetPath,
-      bool isDownloaded) {
+      bool isDownloaded, {int titleMaxLines = 1}) {
     return Column(
       children: <Widget>[
         PlaybackProgressBar(playbackProgress ?? Duration.zero, duration, true),
@@ -213,7 +218,7 @@ class VideoWidgetState extends State<VideoWidget> {
                   timestamp: timestamp,
                   assetPath: assetPath,
                   isDownloaded: isDownloaded,
-                  titleMaxLines: 2),
+                  titleMaxLines: titleMaxLines),
             ),
           ),
       ],

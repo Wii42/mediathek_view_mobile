@@ -120,3 +120,4 @@ coverage/
 
 # Countly Secrets
 lib/util/countly_secrets.dart
+/ios/Flutter/ephemeral/flutter_native_integration.env
