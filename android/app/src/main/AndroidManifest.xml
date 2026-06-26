@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_USER_VISUAL_USER_SELECTED"/>
     <application
-        android:label="flutter_ws"
+        android:label="MediathekViewMobile"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <provider
