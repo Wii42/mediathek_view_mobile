@@ -13,7 +13,8 @@ class SnackbarActions {
     );
   }
 
-  static void showSuccess(ScaffoldMessengerState scaffoldMessenger, String msg) {
+  static void showSuccess(
+      ScaffoldMessengerState scaffoldMessenger, String msg) {
     scaffoldMessenger.showSnackBar(
       SnackBar(
         backgroundColor: Colors.green,
@@ -25,7 +26,8 @@ class SnackbarActions {
     );
   }
 
-  static void showInfo(ScaffoldMessengerState scaffoldMessenger, String msg, {Duration? duration}) {
+  static void showInfo(ScaffoldMessengerState scaffoldMessenger, String msg,
+      {Duration? duration}) {
     scaffoldMessenger.showSnackBar(
       SnackBar(
         duration: duration ?? Duration(seconds: 4),
@@ -38,8 +40,12 @@ class SnackbarActions {
     );
   }
 
-  static void showErrorWithTryAgain(ScaffoldMessengerState scaffoldMessenger, String errorMsg,
-      String tryAgainMsg, dynamic onTryAgainPressed, String videoId) {
+  static void showErrorWithTryAgain(
+      ScaffoldMessengerState scaffoldMessenger,
+      String errorMsg,
+      String tryAgainMsg,
+      dynamic onTryAgainPressed,
+      String videoId) {
     scaffoldMessenger.showSnackBar(
       SnackBar(
         backgroundColor: Colors.red,

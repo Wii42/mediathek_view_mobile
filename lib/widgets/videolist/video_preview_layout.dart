@@ -49,18 +49,18 @@ class VideoPreviewLayout extends StatelessWidget {
     double totalWidth = width - 36.0; //Intendation: 28 left, 8 right
 
     return AspectRatio(
-          aspectRatio: aspectRatio,
-          child: SizedBox(
-            width: totalWidth,
-            child: Stack(
-              alignment: Alignment.center,
-              fit: StackFit.passthrough,
-              children: [
-                thumbnailImage,
-                ...overlayWidgets,
-              ],
-            ),
-          ),
+      aspectRatio: aspectRatio,
+      child: SizedBox(
+        width: totalWidth,
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.passthrough,
+          children: [
+            thumbnailImage,
+            ...overlayWidgets,
+          ],
+        ),
+      ),
     );
   }
 
@@ -68,7 +68,7 @@ class VideoPreviewLayout extends StatelessWidget {
       BuildContext context, SliverChildDelegate videoListItemBuilder) {
     int crossAxisCount = CrossAxisCount.getCrossAxisCount(context);
 
-    if (crossAxisCount == 1){
+    if (crossAxisCount == 1) {
       return SliverList(delegate: videoListItemBuilder);
     }
     return SliverGrid(

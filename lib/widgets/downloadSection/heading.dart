@@ -5,7 +5,8 @@ class Heading extends StatelessWidget {
   final double fontSize;
   final EdgeInsets padding;
 
-  const Heading(this.heading, {required this.fontSize, required this.padding, super.key});
+  const Heading(this.heading,
+      {required this.fontSize, required this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {

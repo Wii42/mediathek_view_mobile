@@ -45,25 +45,25 @@ class _AvailableTVsDialogState extends State<AvailableTVsDialog> {
     List<SimpleDialogOption> availableTVs =
         tvPlayerController!.value.availableTvs
             .map((tv) => SimpleDialogOption(
-              child: Text(tv,
-                  style: TextStyle(color: Colors.white, fontSize: 18.0)),
-              onPressed: () {
-                logger.info("Connecting to Samsung TV $tv");
+                  child: Text(tv,
+                      style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                  onPressed: () {
+                    logger.info("Connecting to Samsung TV $tv");
 
-                // initialize tvPlayer controller
-                if (!widget.tvPlayerController!
-                    .isListeningToPlatformChannels()) {
-                  widget.tvPlayerController!.initialize();
-                }
+                    // initialize tvPlayer controller
+                    if (!widget.tvPlayerController!
+                        .isListeningToPlatformChannels()) {
+                      widget.tvPlayerController!.initialize();
+                    }
 
-                context
-                    .watch<AppState>()
-                    .samsungTVCastManager
-                    .checkIfTvIsSupported(tv);
-                Navigator.pop(context, true);
-              },
-            ))
-        .toList();
+                    context
+                        .watch<AppState>()
+                        .samsungTVCastManager
+                        .checkIfTvIsSupported(tv);
+                    Navigator.pop(context, true);
+                  },
+                ))
+            .toList();
     if (tvPlayerController!.value.playbackOnTvStarted) {
       availableTVs.add(SimpleDialogOption(
         child: ElevatedButton(

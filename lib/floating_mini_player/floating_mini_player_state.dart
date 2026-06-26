@@ -16,8 +16,8 @@ class FloatingMiniPlayerState extends ChangeNotifier {
   FloatingMiniPlayerState({
     Offset initialRelativePosition = const Offset(1, 1),
     double initialScalingFactor = 1,
-  }) : _relativePosition = initialRelativePosition,
-       _scalingFactor = initialScalingFactor;
+  })  : _relativePosition = initialRelativePosition,
+        _scalingFactor = initialScalingFactor;
 
   bool get isVisible => _floatingMiniPlayer != null;
 

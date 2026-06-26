@@ -19,7 +19,8 @@ class StatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logger.fine("Rendering Status bar. videoListIsEmpty: $videoListIsEmpty api error: $apiError firstAppStartup: $firstAppStartup lastAmountOfVideosRetrieved: $lastAmountOfVideosRetrieved");
+    logger.fine(
+        "Rendering Status bar. videoListIsEmpty: $videoListIsEmpty api error: $apiError firstAppStartup: $firstAppStartup lastAmountOfVideosRetrieved: $lastAmountOfVideosRetrieved");
 
     if (apiError!) {
       return CircularProgressWithText(

@@ -54,7 +54,8 @@ class VideoPreviewManager {
 
     videosWaitingForPreview.add(videoId);
     logger.info("Request preview for: $title");
-    Image? img = await _generatePreview(videoId, url, title: title, videoDuration: videoDuration);
+    Image? img = await _generatePreview(videoId, url,
+        title: title, videoDuration: videoDuration);
     videosWaitingForPreview.remove(videoId);
     return img;
   }
@@ -87,11 +88,10 @@ class VideoPreviewManager {
 
     try {
       rawImageData = await VideoThumbnail.thumbnailData(
-        video: url.toString(),
-        imageFormat: ImageFormat.JPEG,
-        quality: 60,
-        timeMs: (videoDuration?.inMilliseconds ?? 0) ~/ 10
-      );
+          video: url.toString(),
+          imageFormat: ImageFormat.JPEG,
+          quality: 60,
+          timeMs: (videoDuration?.inMilliseconds ?? 0) ~/ 10);
     } on PlatformException catch (e) {
       logger.severe("Create preview failed. Reason $e");
       return null;

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:flutter_ws/model/video.dart';
@@ -117,16 +116,16 @@ class VideoWidgetState extends State<VideoWidget> {
         ),
       ),
       videoInfoBottomBar: getBottomBar(
-          Theme.of(context).textTheme,
-          progress,
-          widget.video.id,
-          widget.video.duration,
-          widget.video.title ?? "",
-          widget.video.topic,
-          widget.video.timestamp,
-          widget.defaultImageAssetPath!,
-          downloadInfo?.isDownloadedAlready() ?? false,
-        titleMaxLines: crossAxisCount == 1? 5 :1,
+        Theme.of(context).textTheme,
+        progress,
+        widget.video.id,
+        widget.video.duration,
+        widget.video.title ?? "",
+        widget.video.topic,
+        widget.video.timestamp,
+        widget.defaultImageAssetPath!,
+        downloadInfo?.isDownloadedAlready() ?? false,
+        titleMaxLines: crossAxisCount == 1 ? 5 : 1,
       ),
       aspectRatio:
           totalWidth > height ? totalWidth / height : height / totalWidth,
@@ -200,7 +199,8 @@ class VideoWidgetState extends State<VideoWidget> {
       String? topic,
       DateTime? timestamp,
       String assetPath,
-      bool isDownloaded, {int titleMaxLines = 1}) {
+      bool isDownloaded,
+      {int titleMaxLines = 1}) {
     return Column(
       children: <Widget>[
         PlaybackProgressBar(playbackProgress ?? Duration.zero, duration, true),
@@ -209,18 +209,18 @@ class VideoWidgetState extends State<VideoWidget> {
               bottomLeft: VideoPreviewLayout.cornerClipping,
               bottomRight: VideoPreviewLayout.cornerClipping),
           child: Container(
-              color: VideoWidget.bottomBarBackgroundColor.withAlpha(200),
-              child: MetaInfoListTile(
-                  textTheme: textTheme,
-                  duration: duration,
-                  title: title,
-                  topic: topic,
-                  timestamp: timestamp,
-                  assetPath: assetPath,
-                  isDownloaded: isDownloaded,
-                  titleMaxLines: titleMaxLines),
-            ),
+            color: VideoWidget.bottomBarBackgroundColor.withAlpha(200),
+            child: MetaInfoListTile(
+                textTheme: textTheme,
+                duration: duration,
+                title: title,
+                topic: topic,
+                timestamp: timestamp,
+                assetPath: assetPath,
+                isDownloaded: isDownloaded,
+                titleMaxLines: titleMaxLines),
           ),
+        ),
       ],
     );
   }

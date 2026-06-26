@@ -74,8 +74,7 @@ class DownloadSection extends StatelessWidget {
 
                 // special case for mobile & portrait -> use swiper instead of horizontally scrolling list
                 if (!DeviceInformation.isTablet(context) &&
-                    MediaQuery.orientationOf(context) ==
-                        Orientation.portrait) {
+                    MediaQuery.orientationOf(context) == Orientation.portrait) {
                   recentlyViewedSwiper = getMobileRecentlyWatchedSwiper(
                       context, watchHistoryItems);
                 }

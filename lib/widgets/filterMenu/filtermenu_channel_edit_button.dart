@@ -21,7 +21,8 @@ class FilterMenuChannelEditButton extends StatelessWidget {
               backgroundColor: WidgetStateProperty.all<Color>(Colors.black),
               shape: WidgetStateProperty.all<OutlinedBorder>(
                   RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0))),elevation: WidgetStateProperty.all<double>(6.0)),
+                      borderRadius: BorderRadius.circular(8.0))),
+              elevation: WidgetStateProperty.all<double>(6.0)),
           onPressed: () {
             handleTabCallback(context);
           },

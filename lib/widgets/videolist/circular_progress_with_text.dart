@@ -6,7 +6,8 @@ class CircularProgressWithText extends StatelessWidget {
   final Color indicatorColor;
   final double? height;
 
-  const CircularProgressWithText(this.text, this.containerColor, this.indicatorColor,
+  const CircularProgressWithText(
+      this.text, this.containerColor, this.indicatorColor,
       {super.key, this.height});
 
   @override
@@ -22,20 +23,19 @@ class CircularProgressWithText extends StatelessWidget {
       child: Container(
         height: height,
         color: containerColor,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              text,
-              Container(width: 8.0),
-              Container(
-                constraints: BoxConstraints.tight(Size.square(13.0)),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
-                  strokeWidth: 2.0,
-                  backgroundColor: Colors.white,
-                ),
-              ),
-            ]),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          text,
+          Container(width: 8.0),
+          Container(
+            constraints: BoxConstraints.tight(Size.square(13.0)),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+              strokeWidth: 2.0,
+              backgroundColor: Colors.white,
+            ),
+          ),
+        ]),
       ),
     );
   }
