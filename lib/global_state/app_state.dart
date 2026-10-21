@@ -16,11 +16,11 @@ class AppState extends ChangeNotifier {
   final Logger logger = Logger('AppState');
 
   AppState({
-    bool isCurrentlyPlayingOnTV = false,
+    this._isCurrentlyPlayingOnTV = false,
     this.tvCurrentlyPlayingVideo,
     this.availableTvs = const [],
     this.favoriteChannels = const {},
-  }) : _isCurrentlyPlayingOnTV = isCurrentlyPlayingOnTV;
+  });
 
   AppPlatform? _targetPlatform;
   late final Directory? localDirectory;

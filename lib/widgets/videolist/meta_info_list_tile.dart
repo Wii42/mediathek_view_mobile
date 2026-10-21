@@ -71,7 +71,7 @@ class MetaInfoListTile extends StatelessWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (topicWidget != null) topicWidget,
+          ?topicWidget,
           titleWidget,
         ],
       ),

@@ -29,10 +29,10 @@ class SearchFilters extends ChangeNotifier {
   /// Returns a list of all filters that are not null.
   List<SearchFilter> toList() {
     return [
-      if (topic != null) topic!,
-      if (title != null) title!,
-      if (channels != null) channels!,
-      if (videoLength != null) videoLength!,
+      ?topic,
+      ?title,
+      ?channels,
+      ?videoLength,
     ];
   }
 

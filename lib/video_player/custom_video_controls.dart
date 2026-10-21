@@ -286,7 +286,7 @@ class _CustomVideoControlsState extends State<CustomVideoControls> {
 
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (_, __) {
+      onPopInvokedWithResult: (_, _) {
         _onExit();
       },
       child: GestureDetector(
