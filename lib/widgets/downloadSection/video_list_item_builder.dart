@@ -1,5 +1,5 @@
 import 'package:filesize/filesize.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/enum/channels.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_adapter.dart';

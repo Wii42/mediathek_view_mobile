@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:floating/floating.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/drift_database/app_database.dart';
 import 'package:flutter_ws/model/video.dart';
 import 'package:flutter_ws/platform_channels/samsung_tv_cast_manager.dart';

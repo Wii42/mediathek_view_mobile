@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:flutter_ws/util/text_styles.dart';

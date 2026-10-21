@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:countly_flutter/countly_flutter.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_ws/util/device_information.dart';
 import 'package:logging/logging.dart';

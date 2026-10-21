@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SnackbarActions {
   static void showError(ScaffoldMessengerState scaffoldMessenger, String msg) {

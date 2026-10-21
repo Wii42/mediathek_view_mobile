@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_ws/enum/tv_player_status.dart';
 import 'package:flutter_ws/enum/tv_status.dart';
 import 'package:flutter_ws/model/video.dart';

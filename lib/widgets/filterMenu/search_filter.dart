@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SearchFilter<T extends Object> extends StatelessWidget {
   //Der Wert nachdem gefiltert wird

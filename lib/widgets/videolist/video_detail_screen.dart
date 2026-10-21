@@ -1,5 +1,5 @@
 import 'package:filesize/filesize.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/global_state/app_state.dart';
 import 'package:flutter_ws/global_state/video_progress_state.dart';
 import 'package:flutter_ws/model/video.dart';

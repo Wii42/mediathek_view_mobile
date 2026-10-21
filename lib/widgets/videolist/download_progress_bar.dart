@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/global_state/video_download_state.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';

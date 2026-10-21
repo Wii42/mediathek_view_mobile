@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_ws/widgets/videolist/channel_thumbnail.dart';
 import 'package:flutter_ws/widgets/videolist/meta_info_list_tile.dart';
 import 'package:flutter_ws/widgets/videolist/video_preview_layout.dart';
