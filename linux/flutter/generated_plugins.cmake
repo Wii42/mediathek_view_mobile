@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  fc_native_video_thumbnail
   rive_common
   url_launcher_linux
 )

@@ -27,7 +27,8 @@ dependencies:
   shared_preferences: ^2.5.6
   intro_slider: ^4.2.5
   connectivity_plus: ^7.3.2
-  video_thumbnail: ^0.5.6
+  #video_thumbnail: ^0.5.6
+  fc_native_video_thumbnail: ^4.0.0
   countly_flutter: ^26.1.1
   giffy_dialog: ^2.3.0
   filesize: ^2.0.1
