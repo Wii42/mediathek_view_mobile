@@ -18,12 +18,12 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
-// Force video_thumbnail to SDK 34
+// Force countly_flutter to SDK 36
 subprojects {
-    if (path == ":video_thumbnail") {
+    if (path == ":countly_flutter") {
         afterEvaluate {
             extensions.configure<LibraryExtension>("android") {
-                compileSdk = 34
+                compileSdk = 36
             }
         }
     }
