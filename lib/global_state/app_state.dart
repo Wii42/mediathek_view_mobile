@@ -175,5 +175,6 @@ class AppState extends ChangeNotifier {
 
   bool get canCreateThumbnail =>
       targetPlatform == AppPlatform.android ||
-      targetPlatform == AppPlatform.iOS;
+      targetPlatform == AppPlatform.iOS
+  || targetPlatform == AppPlatform.linux;
 }
