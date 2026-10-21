@@ -7,7 +7,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail_platform_interface.dart'
+    show FcVideoThumbnailTime, FcVideoThumbnailTimeUnit;
 
 typedef TriggerStateReloadOnPreviewReceived = void Function(String? trigger);
 
@@ -87,11 +89,18 @@ class VideoPreviewManager {
     Uint8List? rawImageData;
 
     try {
-      rawImageData = await VideoThumbnail.thumbnailData(
-          video: url.toString(),
-          imageFormat: ImageFormat.JPEG,
-          quality: 60,
-          timeMs: (videoDuration?.inMilliseconds ?? 0) ~/ 10);
+      rawImageData = await FcNativeVideoThumbnail().saveThumbnailToBytes(
+        srcFile: url.toString(),
+        srcFileUri: true,
+        width: 640,
+        height: 360,
+        format: 'jpeg',
+        quality: 60,
+        at: FcVideoThumbnailTime(
+          (videoDuration?.inMilliseconds ?? 0) ~/ 10,
+          FcVideoThumbnailTimeUnit.milliseconds,
+        ),
+      );
     } on PlatformException catch (e) {
       logger.severe("Create preview failed. Reason $e");
       return null;
