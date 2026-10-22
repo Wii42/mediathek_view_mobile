@@ -52,6 +52,10 @@ Then install MediathekViewMobile by executing `flutter run --release` from the r
 
 Alternatively build the APK from source using `flutter build apk`
 
+## Linux build prerequisites
+
+Linux requires FFmpeg (`libavformat`, `libavcodec`, `libavutil`, and `libswscale`) and `libjpeg` to be installed on the system.
+
 ## Installation from Source for iOS
 
 In addition to the steps for iOS, you need to setup XCode and configure the project to use your Apple ID.
